@@ -1,0 +1,45 @@
+<h2 class="my-4">Thêm sản phẩm</h2>
+<form [formGroup]="form" (ngSubmit)="onHandleSubmit()">
+  <div class="mb-3">
+    <label for="productName" class="form-label">Tên sản phẩm</label>
+    <input
+      type="text"
+      class="form-control"
+      id="productName"
+      formControlName="name"
+    />
+    <div
+      class="form-text text-danger"
+      *ngIf="
+        form.get('name')?.invalid &&
+        (form.get('name')?.touched || form.get('name')?.dirty)
+      "
+    >
+      <div *ngIf="form.get('name')?.hasError('required')">
+        Bắt buộc phải nhập tên
+      </div>
+      <div *ngIf="form.get('name')?.hasError('minlength')">Ít nhất 3 ký tự</div>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="productPrice" class="form-label">Giá</label>
+    <input
+      type="number"
+      class="form-control"
+      id="productPrice"
+      formControlName="price"
+    />
+    <div
+      class="form-text text-danger"
+      *ngIf="
+        form.get('price')?.invalid &&
+        (form.get('price')?.touched || form.get('price')?.dirty)
+      "
+    >
+      <div *ngIf="form.get('price')?.hasError('required')">
+        Bắt buộc phải nhập tên
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>

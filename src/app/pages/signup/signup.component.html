@@ -1,0 +1,50 @@
+<h2 class="my-4">Đăng ký</h2>
+<form novalidate [formGroup]="form" (ngSubmit)="onHandleSubmit()">
+  <div class="mb-3">
+    <label for="productName" class="form-label">Tên sản phẩm</label>
+    <input
+      type="email"
+      class="form-control"
+      id="productName"
+      formControlName="email"
+    />
+    <div
+      class="form-text text-danger"
+      *ngIf="
+        form.get('email')?.invalid &&
+        (form.get('email')?.touched || form.get('email')?.dirty)
+      "
+    >
+      <div *ngIf="form.get('email')?.hasError('email')">
+        Định dạng không đúng
+      </div>
+      <div *ngIf="form.get('email')?.hasError('minlength')">
+        Ít nhất 3 ký tự
+      </div>
+      <div *ngIf="form.get('email')?.hasError('required')">
+        Bắt buộc phải nhập
+      </div>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="productPrice" class="form-label">Mật khẩu</label>
+    <input
+      type="password"
+      class="form-control"
+      id="productPrice"
+      formControlName="password"
+    />
+    <div
+      class="form-text text-danger"
+      *ngIf="
+        form.get('password')?.invalid &&
+        (form.get('password')?.touched || form.get('password')?.dirty)
+      "
+    >
+      <div *ngIf="form.get('password')?.hasError('required')">
+        Bắt buộc phải nhập mật khẩu
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -1,0 +1,27 @@
+<div class="d-flex justify-content-between align-items-center">
+  <h2 class="my-4">Quản lý sản phẩm</h2>
+  <a routerLink="/add" class="btn btn-primary">Thêm sản phẩm</a>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Price</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of products; index as i">
+      <th scope="row">{{ i + 1 }}</th>
+      <td>{{ product.name }}</td>
+      <td>{{ product.price }}</td>
+      <td>
+        <button class="btn btn-danger me-3" (click)="removeItem(product.id)">
+          Delete
+        </button>
+        <a routerLink="edit/{{ product.id }}" class="btn btn-info">Edit</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
