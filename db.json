@@ -26,11 +26,5 @@
       "id": 5
     }
   ],
-  "users": [
-    {
-      "email": "admin@gmail.com",
-      "password": "$2a$10$4epwYKKWRUNmUBUxI2b3rOkNs135LSXgFDs9qFQ2AeOzOzobG1bde",
-      "id": 1
-    }
-  ]
+  "users": []
 }
