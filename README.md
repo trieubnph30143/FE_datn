@@ -1,7 +1,7 @@
 # Base Project Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
+Sử dụng base Angular để làm bài thi môn WEB208 [Angular](https://github.com/datlt2306/Base-Project/tree/angular)
 
 # Base Project React
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Sử dụng base Angular để làm bài thi môn WEB209 [ReactJs](https://github.com/datlt2306/Base-Project/tree/react)
