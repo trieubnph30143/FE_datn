@@ -33,11 +33,17 @@ const SideBar = () => {
 
   return (
     <Box
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        position: "relative",
+      }}>
       <Stack
         direction={"row"}
         alignItems={"center"}
         position={"relative"}
+        zIndex={11}
         left={"35%"}>
         <SpeedDial
           FabProps={{ size: "small" }}
@@ -45,9 +51,14 @@ const SideBar = () => {
           icon={<SpeedDialIcon />}
           direction={"right"}>
           <SpeedDialAction
+            sx={{ position: "relative", zIndex: 100 }}
             key={"Name"}
             icon={<EditIcon />}
-            tooltipTitle={"Name"}
+            tooltipTitle={
+              <Box>
+                <p>Viết Blog</p>
+              </Box>
+            }
             tooltipPlacement={"bottom"}
           />
         </SpeedDial>

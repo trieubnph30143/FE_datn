@@ -20,7 +20,9 @@ const LayoutWebsite = () => {
         alignItems={"center"}>
         <SideBar />
       </Box>
-      <Outlet />
+      <Box padding={"90px 0 0 120px"}>
+        <Outlet />
+      </Box>
     </div>
   );
 };
