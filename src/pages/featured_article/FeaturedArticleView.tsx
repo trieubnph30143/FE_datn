@@ -1,13 +1,42 @@
-import { Box, Button, Pagination, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Fade,
+  Pagination,
+  Paper,
+  Popover,
+  Popper,
+  PopperPlacementType,
+  Stack,
+  Typography,
+} from "@mui/material";
 import article from "../../images/article.png";
 import user from "../../images/user.png";
 import b from "../../images/b.png";
-import { RiBookmarkLine, RiMoreFill } from "react-icons/ri";
+import {
+  RiBookmarkLine,
+  RiFacebookCircleFill,
+  RiMailFill,
+  RiMoreFill,
+  RiTwitterFill,
+} from "react-icons/ri";
+import { useState } from "react";
 
 const FeaturedArticleView = () => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
   return (
     <Box>
-      <Typography variant='h4' fontWeight={"bold"}>
+      <Typography variant="h4" fontWeight={"bold"}>
         Bài viết nổi bật
       </Typography>
       <Typography mt={"20px"} fontSize={"14px"} color={"#333"}>
@@ -19,32 +48,34 @@ const FeaturedArticleView = () => {
           <Box
             width={"100%"}
             sx={{ border: " 2px solid #e8e8e8", borderRadius: "16px" }}
-            padding={"15px 25px"}>
+            padding={"15px 25px"}
+          >
             <Stack
               mb={"10px"}
               direction={"row"}
               justifyContent={"space-between"}
-              alignItems={"center"}>
+              alignItems={"center"}
+            >
               <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
                 <img
                   width={26}
                   height={26}
                   style={{ borderRadius: "50%" }}
                   src={user}
-                  alt=''
+                  alt=""
                 />
                 <Typography mt={"5px"} fontSize={"12px"}>
                   Thánh Wibu
                 </Typography>
               </Stack>
               <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-                <RiBookmarkLine color='#333' size={"20px"} />
-                <RiMoreFill color='#333' size={"20px"} />
+                <RiBookmarkLine color="#333" size={"20px"} />
+                <RiMoreFill onClick={handleClick} color="#333" size={"20px"} />
               </Stack>
             </Stack>
             <Stack direction={"row"}>
               <Box width={"60%"}>
-                <Typography variant='h6' fontWeight={"bold"}>
+                <Typography variant="h6" fontWeight={"bold"}>
                   Config Zsh bằng Oh-my-zsh và P10k trên WSL cực ngầu ✨
                 </Typography>
                 <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
@@ -59,13 +90,14 @@ const FeaturedArticleView = () => {
                 <Box
                   display={"flex"}
                   justifyContent={"center"}
-                  alignItems={"center"}>
+                  alignItems={"center"}
+                >
                   <img
                     width={"200px"}
                     style={{ borderRadius: "8px" }}
                     height={"112px"}
                     src={article}
-                    alt=''
+                    alt=""
                   />
                 </Box>
               </Box>
@@ -74,32 +106,34 @@ const FeaturedArticleView = () => {
           <Box
             width={"100%"}
             sx={{ border: " 2px solid #e8e8e8", borderRadius: "16px" }}
-            padding={"15px 25px"}>
+            padding={"15px 25px"}
+          >
             <Stack
               mb={"10px"}
               direction={"row"}
               justifyContent={"space-between"}
-              alignItems={"center"}>
+              alignItems={"center"}
+            >
               <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
                 <img
                   width={26}
                   height={26}
                   style={{ borderRadius: "50%" }}
                   src={user}
-                  alt=''
+                  alt=""
                 />
                 <Typography mt={"5px"} fontSize={"12px"}>
                   Thánh Wibu
                 </Typography>
               </Stack>
               <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-                <RiBookmarkLine color='#333' size={"20px"} />
-                <RiMoreFill color='#333' size={"20px"} />
+                <RiBookmarkLine color="#333" size={"20px"} />
+                <RiMoreFill color="#333" size={"20px"} />
               </Stack>
             </Stack>
             <Stack direction={"row"}>
               <Box width={"60%"}>
-                <Typography variant='h6' fontWeight={"bold"}>
+                <Typography variant="h6" fontWeight={"bold"}>
                   Config Zsh bằng Oh-my-zsh và P10k trên WSL cực ngầu ✨
                 </Typography>
                 <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
@@ -114,13 +148,14 @@ const FeaturedArticleView = () => {
                 <Box
                   display={"flex"}
                   justifyContent={"center"}
-                  alignItems={"center"}>
+                  alignItems={"center"}
+                >
                   <img
                     width={"200px"}
                     style={{ borderRadius: "8px" }}
                     height={"112px"}
                     src={article}
-                    alt=''
+                    alt=""
                   />
                 </Box>
               </Box>
@@ -129,32 +164,34 @@ const FeaturedArticleView = () => {
           <Box
             width={"100%"}
             sx={{ border: " 2px solid #e8e8e8", borderRadius: "16px" }}
-            padding={"15px 25px"}>
+            padding={"15px 25px"}
+          >
             <Stack
               mb={"10px"}
               direction={"row"}
               justifyContent={"space-between"}
-              alignItems={"center"}>
+              alignItems={"center"}
+            >
               <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
                 <img
                   width={26}
                   height={26}
                   style={{ borderRadius: "50%" }}
                   src={user}
-                  alt=''
+                  alt=""
                 />
                 <Typography mt={"5px"} fontSize={"12px"}>
                   Thánh Wibu
                 </Typography>
               </Stack>
               <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-                <RiBookmarkLine color='#333' size={"20px"} />
-                <RiMoreFill color='#333' size={"20px"} />
+                <RiBookmarkLine color="#333" size={"20px"} />
+                <RiMoreFill color="#333" size={"20px"} />
               </Stack>
             </Stack>
             <Stack direction={"row"}>
               <Box width={"60%"}>
-                <Typography variant='h6' fontWeight={"bold"}>
+                <Typography variant="h6" fontWeight={"bold"}>
                   Config Zsh bằng Oh-my-zsh và P10k trên WSL cực ngầu ✨
                 </Typography>
                 <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
@@ -169,20 +206,21 @@ const FeaturedArticleView = () => {
                 <Box
                   display={"flex"}
                   justifyContent={"center"}
-                  alignItems={"center"}>
+                  alignItems={"center"}
+                >
                   <img
                     width={"200px"}
                     style={{ borderRadius: "8px" }}
                     height={"112px"}
                     src={article}
-                    alt=''
+                    alt=""
                   />
                 </Box>
               </Box>
             </Stack>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Pagination count={10} color='primary' />
+            <Pagination count={10} color="primary" />
           </Box>
         </Stack>
         <Stack width={"25%"}>
@@ -198,7 +236,8 @@ const FeaturedArticleView = () => {
                 borderRadius: "30px",
                 fontSize: "12px",
                 padding: "5px 8px",
-              }}>
+              }}
+            >
               Front-end / Mobile apps
             </Button>
             <Button
@@ -209,7 +248,8 @@ const FeaturedArticleView = () => {
                 borderRadius: "30px",
                 fontSize: "12px",
                 padding: "5px 8px",
-              }}>
+              }}
+            >
               Back-end / Devops
             </Button>
             <Button
@@ -220,7 +260,8 @@ const FeaturedArticleView = () => {
                 borderRadius: "30px",
                 fontSize: "12px",
                 padding: "5px 8px",
-              }}>
+              }}
+            >
               UI / UX / Design
             </Button>
           </Stack>
@@ -230,11 +271,44 @@ const FeaturedArticleView = () => {
               width={"300px"}
               height={"250px"}
               style={{ borderRadius: "10px", objectFit: "cover" }}
-              alt=''
+              alt=""
             />
           </Box>
         </Stack>
       </Stack>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+      >
+        <Paper>
+          <Stack padding={"18px"} direction={"column"} gap={"20px"}>
+            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+              <RiFacebookCircleFill />
+              <Typography fontSize={"14px"} color={"#333"}>
+                Chia sẻ lên Facebook
+              </Typography>{" "}
+            </Stack>
+            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+              <RiTwitterFill />
+              <Typography fontSize={"14px"} color={"#333"}>
+                Chia sẻ lên Twiter
+              </Typography>{" "}
+            </Stack>
+            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+              <RiMailFill />
+              <Typography fontSize={"14px"} color={"#333"}>
+                Chia sẻ lên Email
+              </Typography>{" "}
+            </Stack>
+          </Stack>
+        </Paper>
+      </Popover>
     </Box>
   );
 };

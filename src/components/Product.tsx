@@ -3,8 +3,8 @@ import product from "../images/product.png";
 
 const Product = () => {
   return (
-    <Box width={"303px"}>
-      <Box sx={{ position: "relative", height: "170px" }}>
+    <Box width={"100%"}>
+      <Box sx={{ position: "relative",  }}>
         <img
           src={product}
           width={"100%"}
@@ -15,7 +15,7 @@ const Product = () => {
           sx={{
             position: "absolute",
             width: "100%",
-            height: "100%",
+            height: "98%",
             top: 0,
             left: 0,
             background: "rgba(0,0,0,.5)",

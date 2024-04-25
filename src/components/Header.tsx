@@ -43,8 +43,8 @@ const Header = () => {
     <Box
       padding={"10px 20px 15px 20px"}
       position={"fixed"}
-      width={"calc(100% - 40px)"}
-      zIndex={1}
+      width={"100%"}
+      zIndex={100}
       top={0}
       left={0}
       bgcolor={"white"}

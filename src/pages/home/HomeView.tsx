@@ -32,10 +32,10 @@ const HomeView = () => {
       <Box
         sx={{
           ".slick-slider": {
-            zIndex: -2,
+            zIndex: 0,
+            width: "97.5%",
           },
           ".slick-list": {
-            width: "1370px",
             borderRadius: "20px",
             zIndex: "0 !important",
           },
@@ -46,7 +46,7 @@ const HomeView = () => {
             left: "5px",
           },
           ".slick-next": {
-            right: "60px",
+            right: "19px",
           },
           ".slick-prev:before,.slick-next:before": {
             fontSize: "34px !important",

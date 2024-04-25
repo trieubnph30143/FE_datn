@@ -17,7 +17,8 @@ const LayoutWebsite = () => {
         paddingTop={"80px"}
         display={"flex"}
         flexDirection={"column"}
-        alignItems={"center"}>
+        alignItems={"center"}
+        zIndex={2}>
         <SideBar />
       </Box>
       <Box padding={"90px 0 0 120px"}>

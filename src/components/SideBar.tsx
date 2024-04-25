@@ -16,6 +16,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SideBar = () => {
   const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
@@ -30,7 +31,7 @@ const SideBar = () => {
     },
   }));
   const [active, setActive] = useState(0);
-
+  const navigate = useNavigate();
   return (
     <Box
       sx={{
@@ -51,6 +52,7 @@ const SideBar = () => {
           icon={<SpeedDialIcon />}
           direction={"right"}>
           <SpeedDialAction
+            onClick={() => navigate("/posts")}
             sx={{ position: "relative", zIndex: 100 }}
             key={"Name"}
             icon={<EditIcon />}
@@ -69,7 +71,10 @@ const SideBar = () => {
           width={"72px"}
           height={"72px"}
           bgcolor={active == 0 ? "#e8ebed" : undefined}
-          onClick={() => setActive(0)}
+          onClick={() => {
+            navigate("/");
+            setActive(0);
+          }}
           borderRadius={"16px"}
           direction={"row"}
           justifyContent={"center"}
@@ -100,7 +105,10 @@ const SideBar = () => {
           width={"72px"}
           height={"72px"}
           bgcolor={active == 1 ? "#e8ebed" : undefined}
-          onClick={() => setActive(1)}
+          onClick={() => {
+            navigate("/learning_roadmap");
+            setActive(1);
+          }}
           borderRadius={"16px"}
           direction={"row"}
           justifyContent={"center"}
@@ -132,7 +140,10 @@ const SideBar = () => {
           width={"72px"}
           height={"72px"}
           bgcolor={active == 2 ? "#e8ebed" : undefined}
-          onClick={() => setActive(2)}
+          onClick={() => {
+            navigate("/article");
+            setActive(2);
+          }}
           borderRadius={"16px"}
           direction={"row"}
           justifyContent={"center"}

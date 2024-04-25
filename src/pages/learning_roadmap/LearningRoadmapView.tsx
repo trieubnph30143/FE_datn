@@ -18,7 +18,6 @@ const LearningRoadmapView = () => {
       </Typography>
       <Stack direction={"row"} gap={"20px"} mt={"60px"}>
         <Box
-          height={"180px"}
           width={"450px"}
           sx={{ border: " 2px solid #e8e8e8", borderRadius: "16px" }}
           padding={"15px 25px"}>
@@ -61,7 +60,6 @@ const LearningRoadmapView = () => {
           </Stack>
         </Box>
         <Box
-          height={"180px"}
           width={"450px"}
           sx={{ border: " 2px solid #e8e8e8", borderRadius: "16px" }}
           padding={"15px 25px"}>
