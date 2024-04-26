@@ -29,16 +29,19 @@ const WiteBlogPostView = () => {
 
   return (
     <Box>
-      <Stack direction={"row"} gap={"42.5%"} mb={"10px"}>
-        <Typography fontWeight={"bold"} fontSize={"23px"}>
+      <Stack direction={"row"} justifyContent={"space-between"}  mb={"20px"}>
+        <Typography width={"50%"} fontWeight={"bold"} fontSize={"23px"}>
           Viết bài Blog
         </Typography>
         <Typography
+        width={"50%"}
+        ml={"50px"}
           fontWeight={"bold"}
           sx={{ display: "flex", alignItems: "end" }}
           fontSize={"18px"}>
           Ảnh minh họa
         </Typography>
+       
       </Stack>
       <Stack direction={"row"} gap={"30px"}>
         <Stack width={"28%"} direction={"column"} gap={"15px"}>
@@ -73,11 +76,11 @@ const WiteBlogPostView = () => {
             </Typography>
           </Box>
         </Stack>
-        <Box>
+        <Box sx={{ width: "19.5%"}}>
           <div
             className='container'
             style={{
-              width: "260px",
+              width: "100%",
             }}>
             <label
               htmlFor='input-img'
@@ -125,6 +128,7 @@ const WiteBlogPostView = () => {
           </div>
         </Box>
         <Box width={"45%"}>
+        
           <img src={minhhoa} width={"100%"} height={263} alt='' />
         </Box>
       </Stack>

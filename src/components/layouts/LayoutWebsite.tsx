@@ -21,7 +21,7 @@ const LayoutWebsite = () => {
         zIndex={2}>
         <SideBar />
       </Box>
-      <Box padding={"90px 0 0 120px"}>
+      <Box padding={"120px 0 0 120px"}>
         <Outlet />
       </Box>
     </div>

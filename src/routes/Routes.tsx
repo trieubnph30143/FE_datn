@@ -4,6 +4,9 @@ import FeaturedArticleController from "@/pages/featured_article/FeaturedArticleC
 import HomeController from "@/pages/home/HomeController";
 import LearningController from "@/pages/learning/LearningController";
 import LearningRoadmapController from "@/pages/learning_roadmap/LearningRoadmapController";
+import MyArticleController from "@/pages/my_article/MyArticleController";
+import ProfileController from "@/pages/profile/ProfileController";
+import SettingProfileController from "@/pages/setting_profile/SettingProfileController";
 import WiteBlogPostController from "@/pages/wite_blog_post/WiteBlogPostController";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -17,6 +20,9 @@ const Router = () => {
           <Route path='learning_roadmap' element={<LearningRoadmapController />} />
           <Route path='article' element={<FeaturedArticleController />} />
           <Route path='posts' element={<WiteBlogPostController />} />
+          <Route path='profile' element={<ProfileController />} />
+          <Route path='my_article' element={<MyArticleController />} />
+          <Route path='setting' element={<SettingProfileController />} />
         </Route>
         <Route path="/learning" element={<LearningController/>} />
       </Routes>

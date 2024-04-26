@@ -211,10 +211,10 @@ const HomeView = () => {
           </Box>
         </Slider>
       </Box>
-      <ProductList title='Khóa học Pro' />
-      <ProductList title='Khóa học miễn phí' />
-      <ProductList title='Bài viết nổi bật' />
-      <ProductList title='Videos nổi bật' />
+      <ProductList type="takecharge" title='Khóa học Pro' />
+      <ProductList type={"free"} title='Khóa học miễn phí' />
+      <ProductList type={"blog"} title='Bài viết nổi bật' />
+      <ProductList type={"video"} title='Videos nổi bật' />
     </>
   );
 };

@@ -1,7 +1,9 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import product from "../images/product.png";
-
-const Product = () => {
+import { RiEyeFill, RiGroup2Line, RiMessage2Fill } from "react-icons/ri";
+import user from "../images/user.png"
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+const Product = ({type}:{type?:string}) => {
   return (
     <Box width={"100%"}>
       <Box sx={{ position: "relative",  }}>
@@ -46,20 +48,42 @@ const Product = () => {
                 backgroundColor: "white",
               },
             }}>
-            Xem khóa học
+              {type ==="video"&&"Xem video"}
+              {type !=="video"&&type!=="blog"&&"Xem khóa học"}
+              {type ==="blog"&&"Xem Bài viết"}
+            
           </Button>
         </Box>
       </Box>
       <Box mt={"10px"}>
-        <Typography variant='h6' fontSize={"16px"}>
+        <Typography variant='h6' fontWeight={"bold"} fontSize={"16px"}>
           HTML CSS Pro
         </Typography>
+        <Box >
+        {type==="free"&&<Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+        <RiGroup2Line size={24} color={"#666666"}/> <Typography fontSize={"14px"} color={"#666666"}>132.500</Typography>
+          </Stack>}
+          {type ==="takecharge"&&
         <Stack direction={"row"} gap={1.5}>
           <Typography sx={{ textDecoration: "line-through" }}>
             2.500.000
           </Typography>
           <Typography sx={{ color: "red" }}>1.500.000</Typography>
-        </Stack>
+        </Stack>}
+        {type ==="blog"&&
+        <Stack direction={"row"} alignItems={"center"} gap={1.5}>
+          <img src={user} width={30} height={30} style={{borderRadius:"50%"}} alt="" />
+          <Typography fontWeight={"600"} fontSize={"14px"}>Bùi Văn Toản</Typography>
+          <Typography fontSize={"12px"} color={"#666666"}>6 phút đọc</Typography>
+        </Stack>}
+        {type ==="video"&&
+        <Stack direction={"row"} alignItems={"center"} gap={1.5}>
+         <Box display={"flex"} alignItems={"center"} gap={"5px"}><RiEyeFill size={"16px"} color={"#666666"} /><Typography fontSize={"13px"} color={"#666666"}>245.400</Typography></Box>
+         <Box display={"flex"} alignItems={"center"} gap={"5px"}><ThumbUpIcon sx={{color:"#666666",fontSize:"16px"}}/><Typography fontSize={"13px"} color={"#666666"}>400</Typography></Box>
+         <Box display={"flex"} alignItems={"center"} gap={"5px"}><RiMessage2Fill size={"16px"} color={"#666666"}/><Typography fontSize={"13px"} color={"#666666"}>200</Typography></Box>
+        </Stack>}
+        </Box>
+        
       </Box>
     </Box>
   );
