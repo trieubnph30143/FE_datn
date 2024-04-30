@@ -6,9 +6,12 @@ import {
   AiOutlineVideoCamera,
 } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import SideBarAdmin from "../SideBarAdmin";
 
 const LayoutAdmin = () => {
-  return <>admin</>;
+  return <>
+  <SideBarAdmin/>
+  </>;
 };
 
 export default LayoutAdmin;
