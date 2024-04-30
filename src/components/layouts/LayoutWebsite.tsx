@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../Header";
 import SideBar from "../SideBar";
 import { Box } from "@mui/material";
+import Footer from "../Footer";
 
 const LayoutWebsite = () => {
   return (
@@ -24,6 +25,7 @@ const LayoutWebsite = () => {
       <Box padding={"120px 0 0 120px"}>
         <Outlet />
       </Box>
+      <Footer />
     </div>
   );
 };

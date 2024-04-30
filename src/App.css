@@ -88,3 +88,39 @@ body::-webkit-scrollbar-thumb {
   background-color: #e6e0e0;
   border: 1px solid #e4dfdf;
 }
+
+
+/* Footer Styles */
+footer {
+  background-color: #1f1e1e;
+  color: #fff;
+  /* padding: 20px 0; */
+}
+
+.row{
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  max-width: 1200px;
+  margin: auto;
+  /* padding: 68px 0 40px  ; */
+}
+.col{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+}
+.col ul {
+  /* margin: 15px 0; */
+  line-height: 37px;
+}
+.col ul li{
+  list-style: none;
+}
+.col ul li a{
+  text-decoration: none;
+  color: #ccc;
+  font-size: 15px;
+  /* line-height: 30px; */
+}
