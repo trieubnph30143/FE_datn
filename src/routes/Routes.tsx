@@ -1,3 +1,4 @@
+import LayoutAdmin from "@/components/layouts/LayoutAdmin";
 import LayoutWebsite from "@/components/layouts/LayoutWebsite";
 import DetailCourseController from "@/pages/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/featured_article/FeaturedArticleController";
@@ -25,6 +26,9 @@ const Router = () => {
           <Route path='setting' element={<SettingProfileController />} />
         </Route>
         <Route path="/learning" element={<LearningController/>} />
+        <Route path="/dashboard" element={<LayoutAdmin/>}>
+
+        </Route>
       </Routes>
     </BrowserRouter>
   );
