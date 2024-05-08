@@ -1,0 +1,91 @@
+import { useQuery } from "react-query";
+import CategoriesView from "./CategoriesView";
+import { getCategories } from "@/service/categories";
+import { useCategoriesMutation } from "@/hooks/useCategoriesMutation";
+import React, { useState } from "react";
+import Loading from "@/components/Loading";
+
+const CategoriesController = () => {
+  const [openModal, setOpenModal] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [action, setAction]: any = useState("CREATE");
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const { data } = useQuery("categories", {
+    queryFn: () => getCategories(),
+  });
+  const { register, handleSubmit, onFinish, errors, reset } =
+    useCategoriesMutation({
+      action: action,
+      onSuccess: () => {
+        reset();
+        setTimeout(() => {
+          handleCloseModal();
+          setLoading(false);
+        }, 1000);
+      },
+    });
+  const handleOpenModal = (type: any, data: any) => {
+    setAction(type);
+    if (type == "CREATE") {
+      reset({ name: "", description: "" });
+      setOpenModal(true);
+    } else {
+      reset(data);
+      setOpenModal(true);
+    }
+  };
+  const handleCloseModal = () => {
+    reset();
+    setOpenModal(false);
+  };
+  const { onRemove } = useCategoriesMutation({
+    action: "DELETE",
+    onSuccess: () => {
+      handleClose();
+    },
+  });
+  const onSubmit = () => {
+    setLoading(true);
+  };
+  const handleDelete = (value: any) => {
+    console.log(value);
+    onRemove(value);
+  };
+  return (
+    <>
+      <CategoriesView
+        register={register}
+        handleSubmit={handleSubmit}
+        onFinish={onFinish}
+        errors={errors}
+        handleOpenModal={handleOpenModal}
+        handleCloseModal={handleCloseModal}
+        openModal={openModal}
+        data={data}
+        onSubmit={onSubmit}
+        handleDelete={handleDelete}
+        handleClick={handleClick}
+        handleClose={handleClose}
+        id={id}
+        anchorEl={anchorEl}
+        open={open}
+        action={action}
+      />
+
+      {loading && <Loading />}
+    </>
+  );
+};
+
+export default CategoriesController;

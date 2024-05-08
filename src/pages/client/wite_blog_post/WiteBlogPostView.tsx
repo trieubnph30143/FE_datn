@@ -4,7 +4,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { materialLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { RiUploadCloudFill } from "react-icons/ri";
-import minhhoa from "../../images/minhhoa.png";
+import minhhoa from "../../../images/minhhoa.png";
 const WiteBlogPostView = () => {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -26,22 +26,21 @@ const WiteBlogPostView = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  
   return (
     <Box>
-      <Stack direction={"row"} justifyContent={"space-between"}  mb={"20px"}>
+      <Stack direction={"row"} justifyContent={"space-between"} mb={"20px"}>
         <Typography width={"50%"} fontWeight={"bold"} fontSize={"23px"}>
           Viết bài Blog
         </Typography>
         <Typography
-        width={"50%"}
-        ml={"50px"}
+          width={"50%"}
+          ml={"50px"}
           fontWeight={"bold"}
           sx={{ display: "flex", alignItems: "end" }}
           fontSize={"18px"}>
           Ảnh minh họa
         </Typography>
-       
       </Stack>
       <Stack direction={"row"} gap={"30px"}>
         <Stack width={"28%"} direction={"column"} gap={"15px"}>
@@ -76,7 +75,7 @@ const WiteBlogPostView = () => {
             </Typography>
           </Box>
         </Stack>
-        <Box sx={{ width: "19.5%"}}>
+        <Box sx={{ width: "19.5%" }}>
           <div
             className='container'
             style={{
@@ -128,7 +127,6 @@ const WiteBlogPostView = () => {
           </div>
         </Box>
         <Box width={"45%"}>
-        
           <img src={minhhoa} width={"100%"} height={263} alt='' />
         </Box>
       </Stack>
@@ -224,6 +222,7 @@ const WiteBlogPostView = () => {
             },
             width: "50%",
             height: "600px",
+            pointerEvents: "none",
           }}>
           <Editor
             apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'

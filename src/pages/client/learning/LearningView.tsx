@@ -5,6 +5,9 @@ import {
   Fade,
   Popover,
   Stack,
+  StepConnector,
+  Tab,
+  Tabs,
   Tooltip,
   TooltipProps,
   Typography,
@@ -15,25 +18,33 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
-import logo from "../../images/f8-icon.18cd71cfcfa33566a22b.png";
-import user from "../../images/user.png";
+import logo from "../../../images/f8-icon.18cd71cfcfa33566a22b.png";
+import user from "../../../images/user.png";
 import {
   RiAddFill,
   RiArrowDownSLine,
   RiArrowLeftSLine,
   RiArrowRightSLine,
+  RiCheckLine,
   RiCloseLine,
   RiFile3Fill,
   RiFlagFill,
   RiHeartFill,
   RiMessengerFill,
   RiMoreFill,
+  RiPlayCircleFill,
   RiQuestionFill,
   RiStickyNoteFill,
   RiSubtractFill,
   RiYoutubeFill,
 } from "react-icons/ri";
+import ReplayIcon from "@mui/icons-material/Replay";
+import MonacoEditor from "@monaco-editor/react";
 import { Editor } from "@tinymce/tinymce-react";
+import js from "../../../images/ja.svg";
+import html from "../../../images/html.svg";
+import css from "../../../images/css.svg";
+import Confetti from "canvas-confetti";
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -51,7 +62,7 @@ const LearningView = () => {
     <Box>
       <Header />
       <Stack direction={"row"}>
-        <ContentLeft />
+        <ContentLeftQuiz />
         <ContentRight />
       </Stack>
       <Footer />
@@ -176,7 +187,7 @@ const Footer = () => {
   );
 };
 
-const ContentLeft = () => {
+const ContentLeftVideo = () => {
   const [playing, setPlaying] = useState(true);
   const [etend, setExtend] = useState(false);
   const [etendDad, setExtendDad] = useState(false);
@@ -1053,6 +1064,555 @@ const ContentDrawer = ({ onClose }: any) => {
           </Stack>
         </Box>
       </Stack>
+    </Box>
+  );
+};
+
+const ContentLeftExercise = () => {
+  const [value, setValue] = React.useState(0);
+  const [valueRight, setValueRight] = React.useState(0);
+  const [exerciseHtml, setexerciseHtml] = React.useState("");
+  const [exerciseCss, setexerciseCss] = React.useState("");
+  const [exercise, setExercise]: any = useState();
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+  const handleChangeRight = (event: React.SyntheticEvent, newValue: number) => {
+    setValueRight(newValue);
+  };
+
+  const handleChangeExercise = (e: any) => {
+    setExercise(e);
+  };
+  const handleChangeExerciseHtml = (e: any) => {
+    setexerciseHtml(e);
+  };
+  const handleChangeExerciseCss = (e: any) => {
+    setexerciseCss(e);
+  };
+  const handleClickSucess = () => {
+    Confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 1 },
+    });
+  };
+  return (
+    <Box width={"75%"}>
+      <Stack direction={"row"}>
+        <Box
+          sx={{
+            ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root": {
+              width: "50%",
+            },
+            ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected": {
+              color: " #ff5117",
+            },
+            ".css-1aquho2-MuiTabs-indicator": {
+              background: "#ff5117",
+            },
+          }}
+          width={"45%"}
+          borderRight={"1px solid #dddddd"}>
+          <Tabs value={value} onChange={handleChange} centered>
+            <Tab
+              label={
+                <>
+                  <Typography
+                    sx={{ display: "flex", alignItems: "center", gap: "5px" }}
+                    fontWeight={600}>
+                    <RiFile3Fill /> Nội dung
+                  </Typography>
+                </>
+              }
+            />
+            <Tab
+              label={
+                <>
+                  <Typography
+                    sx={{ display: "flex", alignItems: "center", gap: "5px" }}
+                    fontWeight={600}>
+                    {" "}
+                    <RiPlayCircleFill size={"19px"} />
+                    Trình duyệt
+                  </Typography>
+                </>
+              }
+            />
+          </Tabs>
+          {value == 0 && (
+            <Box p={"15px"}>
+              <Box
+                sx={{
+                  " .tox-editor-header": {
+                    display: "none !important",
+                  },
+                  ".tox-statusbar": {
+                    display: "none !important",
+                  },
+
+                  height: "600px",
+                  pointerEvents: "none",
+                  ".tox-tinymce": {
+                    border: "none",
+                  },
+                }}>
+                <Editor
+                  apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                  initialValue={`<header class="Instructions_header__v1Y6B"><header class="wrapper">
+<h1 class="Heading_heading__VnWS7">Thực h&agrave;nh sử dụng console.log</h1>
+<p class="Heading_updated__LqCQ8">Cập nhật&nbsp;th&aacute;ng 3 năm 2022</p>
+</header></header>
+<div class="MarkdownParser_wrapper__JYN63">
+<p>Tại&nbsp;<code>main.js</code>&nbsp;c&oacute; sẵn biến&nbsp;<code>language</code>, h&atilde;y sử dụng&nbsp;<code>console.log</code>&nbsp;để in gi&aacute; trị của biến n&agrave;y ra tab&nbsp;<code>Console</code>&nbsp;trong Dev Tool của tr&igrave;nh duyệt.</p>
+</div>`}
+                  init={{
+                    height: "600px",
+                  }}
+                />
+              </Box>
+            </Box>
+          )}
+
+          {value == 1 && (
+            <Box>
+              <iframe
+                title='result'
+                srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
+                style={{
+                  width: "100%",
+                  height: "80vh",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </Box>
+          )}
+        </Box>
+        <Box width={"55%"}>
+          <Stack
+            sx={{
+              ".css-1aquho2-MuiTabs-indicator": {
+                display: "none",
+              },
+              ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root": {
+                minHeight: "0",
+                height: "40px",
+                color: "white",
+              },
+              height: "40px",
+              ".css-heg063-MuiTabs-flexContainer": {
+                mt: "5px",
+                background: "#1e1e1e",
+              },
+              ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected": {
+                color: "#1976d2 !important",
+              },
+            }}
+            bgcolor={"#343434"}
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            width={"99.9%"}>
+            <Tabs
+              value={valueRight}
+              onChange={handleChangeRight}
+              aria-label='basic tabs example'>
+              <Tab
+                label={
+                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                    <img
+                      src={js}
+                      width={17}
+                      height={17}
+                      style={{ borderRadius: "5px" }}
+                      alt=''
+                    />
+                    <Typography
+                      fontSize={"12px"}
+                      sx={{ textTransform: "lowercase" }}>
+                      main.js
+                    </Typography>
+                  </Stack>
+                }
+              />
+              <Tab
+                label={
+                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                    <img
+                      src={html}
+                      width={17}
+                      height={17}
+                      style={{ borderRadius: "5px" }}
+                      alt=''
+                    />
+                    <Typography
+                      fontSize={"12px"}
+                      sx={{ textTransform: "lowercase" }}>
+                      index.html
+                    </Typography>
+                  </Stack>
+                }
+              />
+              <Tab
+                label={
+                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                    <img
+                      src={css}
+                      width={17}
+                      height={17}
+                      style={{ borderRadius: "5px" }}
+                      alt=''
+                    />
+                    <Typography
+                      fontSize={"12px"}
+                      sx={{ textTransform: "lowercase" }}>
+                      style.css
+                    </Typography>
+                  </Stack>
+                }
+              />
+            </Tabs>
+            <Box
+              width={"65px"}
+              height={"40px"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              bgcolor={"#1e1e1e"}>
+              <ReplayIcon sx={{ color: "white" }} />
+            </Box>
+          </Stack>
+          <Box
+            sx={{
+              " .slider-mouseover": {
+                display: "none",
+              },
+            }}>
+            {valueRight == 0 && (
+              <MonacoEditor
+                width={"100%"}
+                height='350px'
+                language='javascript'
+                theme='vs-dark'
+                value={`//Tạo 1 mảng chứa ít nhất 3 phần tử tên Sum`}
+                onChange={(value) => handleChangeExercise(value)}
+              />
+            )}
+            {valueRight == 1 && (
+              <MonacoEditor
+                height='350px'
+                language='html'
+                theme='vs-dark'
+                value={exerciseHtml}
+                onChange={(value) => handleChangeExerciseHtml(value)}
+              />
+            )}
+            {valueRight == 2 && (
+              <MonacoEditor
+                height='350px'
+                language='css'
+                theme='vs-dark'
+                value={exerciseCss}
+                onChange={(value) => handleChangeExerciseCss(value)}
+              />
+            )}
+          </Box>
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            padding={"10px"}
+            borderBottom={"1px solid #dddddd"}>
+            <Typography fontWeight={"600"} fontSize={"14px"}>
+              Bài kiểm tra (0/1)
+            </Typography>
+            <Button
+              onClick={handleClickSucess}
+              sx={{
+                background:
+                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                color: "white",
+                borderRadius: "99px",
+                width: "92px",
+                height: "34px",
+                fontSize: "12px",
+              }}>
+              Kiểm tra
+            </Button>
+          </Stack>
+          <Stack padding={"20px"}>
+            <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
+              <Box>
+                <RiCheckLine color='#5db85c' size={"25px"} />
+              </Box>
+              <Typography fontWeight={"400"} fontSize={"16px"}>
+                Logs biến language ra tab Console
+              </Typography>
+            </Stack>
+          </Stack>
+        </Box>
+      </Stack>
+    </Box>
+  );
+};
+const ContentLeftBlog = () => {
+  return (
+    <Box width={"75%"}>
+      <Box
+        width={"100%"}
+        paddingLeft={"95px"}
+        sx={{
+          " .tox-editor-header": {
+            display: "none !important",
+          },
+          ".tox-statusbar": {
+            display: "none !important",
+          },
+
+          height: "600px",
+
+          ".tox-tinymce": {
+            border: "none",
+          },
+          ".mce-content-body": {
+            padding: "40px",
+          },
+        }}>
+        <Editor
+          apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+          initialValue={`<header class="wrapper">
+<h1 class="Heading_heading__VnWS7">To&aacute;n tử ++ v&agrave; --</h1>
+<p class="Heading_updated__LqCQ8">Cập nhật&nbsp;th&aacute;ng 3 năm 2022</p>
+</header>
+<div class="MarkdownParser_wrapper__JYN63">
+<p>Đ&acirc;y l&agrave; 2 to&aacute;n tử nghe qua th&igrave; rất dễ hiểu, nhưng để hiểu nguy&ecirc;n l&yacute; về c&aacute;ch hoạt động của n&oacute; ch&uacute;ng ta sẽ phải mất th&ecirc;m một ch&uacute;t thời gian đ&oacute;. Để ho&agrave;n th&agrave;nh b&agrave;i học về 2 to&aacute;n tử n&agrave;y, ch&uacute;ng ta sẽ c&ugrave;ng trải qua một số b&agrave;i học sau nh&eacute;.</p>
+<p>Ok, bắt đầu th&ocirc;i!</p>
+<h2 id="toan-tu" data-appended="true">To&aacute;n tử ++</h2>
+<p>To&aacute;n tử&nbsp;<code>++</code>&nbsp;gi&uacute;p tăng gi&aacute; trị của một biến mang gi&aacute; trị số l&ecirc;n 1. C&oacute; 2 c&aacute;ch để sử dụng to&aacute;n tử&nbsp;<code>++</code>&nbsp;l&agrave;:</p>
+<ol>
+<li>D&ugrave;ng l&agrave;m hậu tố:&nbsp;<code>variable++</code>&nbsp;(to&aacute;n tử nằm sau biến)</li>
+<li>D&ugrave;ng l&agrave;m tiền tố:&nbsp;<code>++variable</code>&nbsp;(to&aacute;n tử nằm trước biến)</li>
+</ol>
+<h3>#1 Sử dụng ++ l&agrave;m hậu tố</h3>
+<p>Ở đ&acirc;y, ch&uacute;ng ta sẽ x&eacute;t v&iacute; dụ sử dụng to&aacute;n tử&nbsp;<code>++</code>&nbsp;l&agrave;m hậu tố trước (v&igrave; trong thực tế, ch&uacute;ng ta thường d&ugrave;ng kiểu hậu tố nhiều hơn):</p>
+<div class="code-toolbar">
+<pre class="language-js" tabindex="0"><code>var number = 1;
+
+number++; // d&ugrave;ng l&agrave;m hậu tố, ++ ở ph&iacute;a sau biến
+console.log(number); // 2
+
+number++;
+console.log(number); // 3
+</code></pre>
+<div class="toolbar">
+<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
+</div>
+</div>
+<p>Sau mỗi khi sử dụng to&aacute;n tử&nbsp;<code>++</code>, gi&aacute; trị của biến&nbsp;<code>number</code>&nbsp;được tăng l&ecirc;n 1. C&oacute; vẻ kh&aacute; dễ d&agrave;ng để hiểu c&aacute;ch hoạt động của n&oacute; phải kh&ocirc;ng?</p>
+<p>Tuy nhi&ecirc;n, h&atilde;y xem x&eacute;t th&ecirc;m v&iacute; dụ sau:</p>
+<div class="code-toolbar">
+<pre class="language-js" tabindex="0"><code>var number = 1;
+
+console.log(number++); // 1
+console.log(number); // 2
+
+console.log(number++); // 2
+console.log(number); // 3
+</code></pre>
+<div class="toolbar">
+<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
+</div>
+</div>
+<blockquote>
+<p>👉 To&aacute;n tử&nbsp;<code>++</code>&nbsp;khi d&ugrave;ng l&agrave; hậu tố sẽ&nbsp;<strong>tăng gi&aacute; trị của biến l&ecirc;n 1</strong>&nbsp;v&agrave;&nbsp;<strong>trả về gi&aacute; trị trước khi tăng</strong>.</p>
+</blockquote>
+<h3>#2 Sử dụng ++ l&agrave;m tiền tố</h3>
+<p>Ở v&iacute; dụ n&agrave;y, ch&uacute;ng ta sử dụng&nbsp;<code>++</code>&nbsp;l&agrave;m tiền tố. Tuy nhi&ecirc;n, kết quả tr&ocirc;ng sẽ kh&ocirc;ng kh&aacute;c g&igrave; khi d&ugrave;ng&nbsp;<code>++</code>&nbsp;l&agrave;m hậu tố:</p>
+<div class="code-toolbar">
+<pre class="language-js" tabindex="0"><code>var number = 1;
+
+++number; // d&ugrave;ng l&agrave;m tiền tố, ++ ở ph&iacute;a trước biến
+console.log(number); // 2
+
+++number;
+console.log(number); // 3
+</code></pre>
+<div class="toolbar">
+<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
+</div>
+</div>
+<p>Nhưng khi xem x&eacute;t kỹ hơn, c&aacute;c bạn sẽ nh&igrave;n ra điểm kh&aacute;c:</p>
+<div class="code-toolbar">
+<pre class="language-js" tabindex="0"><code>var number = 1;
+
+console.log(++number); // 2
+console.log(number); // 2
+
+console.log(++number); // 3
+console.log(number); // 3
+</code></pre>
+<div class="toolbar">
+<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
+</div>
+</div>
+<blockquote>
+<p>👉 To&aacute;n tử&nbsp;<code>++</code>&nbsp;khi d&ugrave;ng l&agrave; tiền tố sẽ&nbsp;<strong>tăng gi&aacute; trị của biến l&ecirc;n 1</strong>&nbsp;v&agrave;&nbsp;<strong>trả về gi&aacute; trị sau khi tăng</strong>.</p>
+</blockquote>
+<hr>
+<h2 id="toan-tu" data-appended="true">To&aacute;n tử - -</h2>
+<p>C&aacute;ch hoạt động tương tự như to&aacute;n tử ++, điểm kh&aacute;c biệt l&agrave; thay v&igrave; cộng th&ecirc;m 1, th&igrave; to&aacute;n tử&nbsp;<code>--</code>&nbsp;sẽ trừ đi 1.</p>
+<hr>
+<h2 id="tong-ket" data-appended="true">Tổng kết</h2>
+<ul>
+<li><code>x++</code>&nbsp;tăng gi&aacute; trị biến l&ecirc;n 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>trước</strong>&nbsp;khi tăng</li>
+<li><code>++x</code>&nbsp;tăng gi&aacute; trị biến l&ecirc;n 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>sau</strong>&nbsp;khi tăng</li>
+<li><code>x--</code>&nbsp;giảm gi&aacute; trị biến xuống 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>trước</strong>&nbsp;khi giảm</li>
+<li><code>--x</code>&nbsp;giảm gi&aacute; trị biến xuống 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>sau</strong>&nbsp;khi giảmm</li>
+</ul>
+<blockquote>
+<p>Trong video sau, ch&uacute;ng ta sẽ ph&acirc;n t&iacute;ch một c&aacute;ch chi tiết để hiểu nguy&ecirc;n l&yacute; của c&aacute;ch hoạt động tr&ecirc;n.</p>
+</blockquote>
+</div>`}
+          init={{
+            height: "85vh",
+          }}
+        />
+      </Box>
+    </Box>
+  );
+};
+
+const ContentLeftQuiz = () => {
+  const [total, setTotal]: any = useState(null);
+  const [color, setColor]: any = useState(null);
+  const quiz = [
+    {
+      answer: "Long Bui",
+      result: true,
+    },
+    {
+      answer: "Bui Long",
+      result: false,
+    },
+    {
+      answer: "LongBui",
+      result: false,
+    },
+  ];
+  const handleClickAnswer = (value: any) => {
+    setColor("#0093fc");
+    setTotal(value);
+  };
+  const handleTotal = () => {
+    if (total.result) {
+      setColor("#48bd79");
+      Confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 1 },
+      });
+    } else {
+      setColor("#cc5140");
+    }
+  };
+  return (
+    <Box width={"75%"}>
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        alignItems={"center"}
+        justifyContent={"center"}>
+        <Box
+          width={"80%"}
+          sx={{
+            " .tox-editor-header": {
+              display: "none !important",
+            },
+            ".tox-statusbar": {
+              display: "none !important",
+            },
+
+            ".tox-tinymce": {
+              border: "none",
+            },
+            ".mce-content-body": {
+              padding: "40px",
+            },
+            "iframe code ": {
+              background: "none",
+            },
+          }}>
+          <Editor
+            apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+            initialValue={`<header class="wrapper">
+<h1 class="Heading_heading__VnWS7">&Ocirc;n lại kiến thức về Truthy v&agrave; Falsy</h1>
+<p class="Heading_updated__LqCQ8">Cập nhật&nbsp;th&aacute;ng 6 năm 2022</p>
+</header>
+<div class="desc">
+<div class="MarkdownParser_wrapper__JYN63">
+<div class="code-toolbar">
+<pre class="language-js" tabindex="0"><code>var a = '';
+var b = 0;
+var c = [];
+var d = 1 &gt; 2;
+var e = {};
+var f = '0';
+</code></pre>
+<div class="toolbar">
+<div class="toolbar-item">Những biến n&agrave;o sau đ&acirc;y c&oacute; gi&aacute; trị l&agrave; falsy?</div>
+</div>
+</div>
+</div>
+</div>`}
+          />
+        </Box>
+        <Stack
+          direction={"column"}
+          mt={"-40px"}
+          position={"relative"}
+          zIndex={"1"}
+          gap={"15px"}
+          width={"70%"}>
+          {quiz.map((item) => {
+            let check = false;
+            if (total) {
+              check = total.answer == item.answer;
+            }
+
+            return (
+              <Box
+                onClick={() => handleClickAnswer(item)}
+                border={check ? `2px solid ${color}` : "none"}
+                width={"100%"}
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                borderRadius={"10px"}
+                height={"50px"}
+                bgcolor={"#f6f7f9"}>
+                {item.answer}
+              </Box>
+            );
+          })}
+        </Stack>
+        <Box width={"70%"} mt={"15px"} pb={"50px"}>
+          <Button
+            onClick={handleTotal}
+            sx={{
+              pointerEvents: total ? "auto" : "none",
+              opacity: total ? 1 : 0.3,
+              background: "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+              color: "white",
+              borderRadius: "99px",
+              width: "92px",
+              height: "34px",
+              fontSize: "12px",
+              float: "right",
+            }}>
+            Kiểm tra
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
 };

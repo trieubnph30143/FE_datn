@@ -1,8 +1,8 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import Slider from "react-slick";
-import slider1 from "../../images/slider1.png";
-import slider2 from "../../images/slider2.png";
-import slider3 from "../../images/slider3.png";
+import slider1 from "../../../images/slider1.png";
+import slider2 from "../../../images/slider2.png";
+import slider3 from "../../../images/slider3.png";
 import { useState } from "react";
 import Product from "@/components/Product";
 import ProductList from "@/components/ProductList";
@@ -211,7 +211,7 @@ const HomeView = () => {
           </Box>
         </Slider>
       </Box>
-      <ProductList type="takecharge" title='Khóa học Pro' />
+      <ProductList type='takecharge' title='Khóa học Pro' />
       <ProductList type={"free"} title='Khóa học miễn phí' />
       <ProductList type={"blog"} title='Bài viết nổi bật' />
       <ProductList type={"video"} title='Videos nổi bật' />

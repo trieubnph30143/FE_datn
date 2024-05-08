@@ -1,8 +1,8 @@
 import { Box, Stack, Typography } from "@mui/material";
-import bgprofile from "../../images/bgprofile.png";
-import user from "../../images/user.png";
+import bgprofile from "../../../images/bgprofile.png";
+import user from "../../../images/user.png";
 import { RiGroupFill } from "react-icons/ri";
-import product from "../../images/product.png";
+import product from "../../../images/product.png";
 
 const ProfileView = () => {
   return (
@@ -16,14 +16,13 @@ const ProfileView = () => {
               borderBottomLeftRadius: "20px",
             }}
             width={"100%"}
-            alt=""
+            alt=''
           />
           <Box
             position={"absolute"}
             bottom={"-75px"}
             sx={{ borderRadius: "50%" }}
-            left={"40px"}
-          >
+            left={"40px"}>
             <Box display={"flex"} gap={"10px"} alignItems={"end"}>
               <img
                 src={user}
@@ -34,7 +33,7 @@ const ProfileView = () => {
                   border: "5px solid white",
                   background: "white",
                 }}
-                alt=""
+                alt=''
               />
               <Typography fontWeight={"700"} fontSize={"25px"}>
                 Bùi Văn Toản
@@ -49,8 +48,7 @@ const ProfileView = () => {
                 borderRadius: "8px",
                 padding: "18px",
                 boxShadow: "0 0 5px 0 rgba(0,0,0,.1), 0 0 1px 0 rgba(0,0,0,.1)",
-              }}
-            >
+              }}>
               <Typography fontWeight={"600"} fontSize={"17px"}>
                 Giới thiệu
               </Typography>
@@ -58,8 +56,7 @@ const ProfileView = () => {
                 mt={"10px"}
                 display={"flex"}
                 alignItems={"center"}
-                gap={"10px"}
-              >
+                gap={"10px"}>
                 <RiGroupFill size={24} color={"#666666"} />
                 <Typography fontSize={"14px"}>
                   Thành viên của <b>F8 - Học lập trình để đi làm</b> từ 2 năm
@@ -73,8 +70,7 @@ const ProfileView = () => {
                 padding: "18px",
                 boxShadow: "0 0 5px 0 rgba(0,0,0,.1), 0 0 1px 0 rgba(0,0,0,.1)",
                 mt: "25px",
-              }}
-            >
+              }}>
               <Typography fontWeight={"600"} fontSize={"17px"}>
                 Hoạt động gần đây
               </Typography>
@@ -91,21 +87,25 @@ const ProfileView = () => {
               boxShadow: "0 0 5px 0 rgba(0,0,0,.1), 0 0 1px 0 rgba(0,0,0,.1)",
               borderRadius: "8px",
               padding: "18px",
-            }}
-          >
+            }}>
             <Typography fontWeight={"600"} fontSize={"17px"}>
               Các khóa học đã tham gia
             </Typography>
             <Stack mt={"15px"} direction={"column"} gap={"15px"}>
-                {[1,2,3].map((_,index)=>{
-                    return   <Stack borderTop={index==0?"none":"1px solid rgba(0,0,0,.1)"} pt={"15px"} direction={"row"} gap={"15px"}>
+              {[1, 2, 3].map((_, index) => {
+                return (
+                  <Stack
+                    borderTop={index == 0 ? "none" : "1px solid rgba(0,0,0,.1)"}
+                    pt={"15px"}
+                    direction={"row"}
+                    gap={"15px"}>
                     <Box>
                       <img
                         src={product}
                         width={228}
                         height={128}
                         style={{ borderRadius: "12px" }}
-                        alt=""
+                        alt=''
                       />
                     </Box>
                     <Box>
@@ -113,16 +113,16 @@ const ProfileView = () => {
                         Lập trình C++ cơ bản, nâng cao
                       </Typography>
                       <Typography fontSize={"14px"}>
-                        Khóa học lập trình C++ từ cơ bản tới nâng cao dành cho người
-                        mới bắt đầu. Mục tiêu của khóa học này nhằm giúp các bạn nắm
-                        được các khái niệm căn cơ của lập trình, giúp các bạn có nền
-                        tảng vững chắc để chinh phục con đường trở thành một lập
-                        trình viên.
+                        Khóa học lập trình C++ từ cơ bản tới nâng cao dành cho
+                        người mới bắt đầu. Mục tiêu của khóa học này nhằm giúp
+                        các bạn nắm được các khái niệm căn cơ của lập trình,
+                        giúp các bạn có nền tảng vững chắc để chinh phục con
+                        đường trở thành một lập trình viên.
                       </Typography>
                     </Box>
                   </Stack>
-                })}
-             
+                );
+              })}
             </Stack>
           </Box>
         </Stack>

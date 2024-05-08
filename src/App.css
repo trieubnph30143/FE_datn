@@ -7,15 +7,12 @@
 }
 body {
   margin: 0px;
-  
 }
 
 body::-webkit-scrollbar-track {
   border: 1px solid #a8a8a8;
   padding: 2px 0;
   background-color: #d1d1d1;
-  
-  
 }
 
 body::-webkit-scrollbar {
@@ -45,7 +42,7 @@ body::-webkit-scrollbar-thumb {
   border: 1px solid #e4dfdf;
 }
 .comment-tab::-webkit-scrollbar-track {
-   border: 1px solid #a8a8a8;
+  border: 1px solid #a8a8a8;
 }
 
 .comment-tab::-webkit-scrollbar {
@@ -60,7 +57,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .list-learning::-webkit-scrollbar-track {
-    padding: 2px 0;
+  padding: 2px 0;
 }
 
 .list-learning::-webkit-scrollbar {
@@ -75,7 +72,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .see-more::-webkit-scrollbar-track {
-    background-color: #d1d1d1;
+  background-color: #d1d1d1;
 }
 
 .see-more::-webkit-scrollbar {
@@ -89,7 +86,6 @@ body::-webkit-scrollbar-thumb {
   border: 1px solid #e4dfdf;
 }
 
-
 /* Footer Styles */
 footer {
   background-color: #1f1e1e;
@@ -97,7 +93,7 @@ footer {
   /* padding: 20px 0; */
 }
 
-.row{
+.row {
   display: flex;
   align-items: center;
   gap: 60px;
@@ -105,20 +101,19 @@ footer {
   margin: auto;
   /* padding: 68px 0 40px  ; */
 }
-.col{
+.col {
   display: flex;
   flex-direction: column;
   justify-content: center;
-
 }
 .col ul {
   /* margin: 15px 0; */
   line-height: 37px;
 }
-.col ul li{
+.col ul li {
   list-style: none;
 }
-.col ul li a{
+.col ul li a {
   text-decoration: none;
   color: #ccc;
   font-size: 15px;

@@ -1,7 +1,7 @@
 import { Box, Popover, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { RiFlagFill, RiMoreFill } from "react-icons/ri";
-import demo from "../../images/demo_learning.png"
+import demo from "../../../images/demo_learning.png";
 
 const MyArticleView = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);

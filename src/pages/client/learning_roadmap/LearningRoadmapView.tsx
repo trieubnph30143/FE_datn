@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import learning1 from "../../images/learning1.png";
-import learning2 from "../../images/learning2.png";
-import bg from "../../images/demo_learning.png";
+import learning1 from "../../../images/learning1.png";
+import learning2 from "../../../images/learning2.png";
+import bg from "../../../images/demo_learning.png";
 const LearningRoadmapView = () => {
   return (
     <Box position={"relative"}>

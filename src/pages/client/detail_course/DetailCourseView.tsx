@@ -14,7 +14,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useState } from "react";
-import product from "../../images/7.png";
+import product from "../../../images/7.png";
 
 const DetailCourseView = () => {
   let arr = [1, 2];
