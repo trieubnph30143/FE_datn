@@ -62,7 +62,7 @@ const LearningView = () => {
     <Box>
       <Header />
       <Stack direction={"row"}>
-        <ContentLeftQuiz />
+        <ContentLeftExercise />
         <ContentRight />
       </Stack>
       <Footer />

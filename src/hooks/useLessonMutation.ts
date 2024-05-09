@@ -7,6 +7,7 @@ type useLessonMutationProps = {
   action: "CREATE" | "UPDATE" | "DELETE";
   defaultValues?: any;
   onSuccess?: () => void;
+  coursesOld?:any
   
 };
 const schema = yup.object({
@@ -19,6 +20,7 @@ export const useLessonMutation = ({
   action,
   defaultValues = { name: "" },
   onSuccess,
+  coursesOld
   
 }: useLessonMutationProps) => {
   const queryClient = useQueryClient();
@@ -39,7 +41,7 @@ export const useLessonMutation = ({
         case "UPDATE":
           return await updateLesson(lesson);
         case "DELETE":
-          return await deleteLesson(lesson._id);
+          return await deleteLesson(lesson._id,lesson.courses_id[0]._id);
         default:
           return null;
       }
@@ -56,7 +58,12 @@ export const useLessonMutation = ({
     if(action=="CREATE"){
       mutate({...values,courses_id:[values.courses_id], sub_lesson:[]})
     }else{
-      mutate({...values,courses_id:[values.courses_id]})
+      if(coursesOld===values.courses_id){
+        mutate({...values,courses_id:[values.courses_id],changeCourses:false})
+      }else{
+        mutate({...values,courses_id:[values.courses_id],changeCourses:true,coursesOld})
+      }
+      
     }
    
   

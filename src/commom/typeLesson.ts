@@ -5,4 +5,5 @@ type typeLesson = {
   duration: number;
   sub_lesson?: string[];
   courses_id: any;
+  changeCourses?:boolean
 };

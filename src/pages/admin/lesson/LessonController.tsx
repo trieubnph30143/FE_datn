@@ -12,6 +12,7 @@ const LessonController = () => {
   const [loading, setLoading] = useState(false);
   const [deleteLesson, setDeleteLesson] = useState(null);
   const [openModal, setOpenModal] = React.useState(false);
+  const [coursesOld, setCoursesOld] = React.useState(null);
   const [valueCourses, setValueCourses] = useState("");
   const handleCloseModal = () => setOpenModal(false);
   const [action, setAction]: any = useState("CREATE");
@@ -34,6 +35,7 @@ const LessonController = () => {
   const { register, handleSubmit, onFinish, errors, reset } =
     useLessonMutation({
       action: action,
+      coursesOld,
       onSuccess: () => {
         reset();
         setTimeout(() => {
@@ -59,6 +61,7 @@ const LessonController = () => {
       });
       setOpenModal(true);
     } else {
+      setCoursesOld(data.courses_id[0]._id)
       setValueCourses(data.courses_id[0]._id);
       reset({ ...data, courses_id: data.courses_id[0]._id });
       setOpenModal(true);

@@ -31,7 +31,6 @@ const CoursesController = () => {
   const { data } = useQuery("courses", {
     queryFn: () => getCourses(),
   });
-
   const { data: category } = useQuery("categories", {
     queryFn: () => getCategories(),
   });
