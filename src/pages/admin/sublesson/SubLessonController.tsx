@@ -10,10 +10,11 @@ const SubLessonController = () => {
     null
   );
   const [loading, setLoading] = useState(false);
+  const [typeExersice, setTypeExersice] = useState("html");
   const [deleteLesson, setDeleteLesson] = useState(null);
   const [openModal, setOpenModal] = React.useState(false);
   const [valueCourses, setValueCourses] = useState("");
-  const handleCloseModal = () => setOpenModal(false);
+
   const [action, setAction]: any = useState("CREATE");
   const [value, setValue] = React.useState(0);
   const [content, setContent] = React.useState("");
@@ -24,13 +25,15 @@ const SubLessonController = () => {
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
-  console.log(valueRight);
+  const handleCloseModal = () => setOpenModal(false);
   const handleChangeRight = (event: React.SyntheticEvent, newValue: number) => {
     setValueRight(newValue);
   };
-
   const handleChangeExercise = (e: any) => {
     setExercise(e);
+  };
+  const handleChangeTypeExercise = (e: any) => {
+    setTypeExersice(e.target.value);
   };
   const handleChangeExerciseHtml = (e: any) => {
     setexerciseHtml(e);
@@ -49,16 +52,19 @@ const SubLessonController = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const { data:lesson } = useQuery("lesson", {
+  const { data: lesson } = useQuery("lesson", {
     queryFn: () => getLesson(),
   });
 
-  
   const { register, handleSubmit, onFinish, errors, reset } =
     useSubLessonMutation({
       action: action,
-      type:value,
+      type: value,
       content,
+      typeExersice,
+      exerciseHtml,
+      exerciseCss,
+      exercise,
       onSuccess: () => {
         reset();
         setTimeout(() => {
@@ -73,23 +79,14 @@ const SubLessonController = () => {
   };
 
   const handleOpenModal = (type: any, data: any) => {
-    setAction(type)
+    setAction(type);
     setOpenModal(true);
-    // if (type == "CREATE") {
-    //   setValueCourses("");
-    //   reset({
-    //     title: "",
-    //     duration: 0,
-    //     description: "",
-        
-    //   });
-      
-    // } else {
-    //   setCoursesOld(data.courses_id[0]._id)
-    //   setValueCourses(data.courses_id[0]._id);
-    //   reset({ ...data, courses_id: data.courses_id[0]._id });
-    //   setOpenModal(true);
-    // }
+    if (type == "CREATE") {
+    } else {
+      setValueCourses(data.courses_id[0]._id);
+      reset({ ...data, courses_id: data.courses_id[0]._id });
+      setOpenModal(true);
+    }
   };
   const { onRemove } = useLessonMutation({
     action: "DELETE",
@@ -103,45 +100,47 @@ const SubLessonController = () => {
   };
   const handleDelete = async (value: any) => {
     setLoading(true);
-        onRemove(value);
-  
+    onRemove(value);
   };
 
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
   return (
     <>
-      <SubLessonView 
-      register={register}
-      handleSubmit={handleSubmit}
-      onFinish={onFinish}
-      errors={errors}
-      handleOpenModal={handleOpenModal}
-      handleCloseModal={handleCloseModal}
-      openModal={openModal}
-      data={[]}
-      lesson={lesson}
-      onSubmit={onSubmit}
-      handleDelete={handleDelete}
-      handleClick={handleClick}
-      handleClose={handleClose}
-      id={id}
-      anchorEl={anchorEl}
-      open={open}
-      action={action}
-      deleteLesson={deleteLesson}
-      valueCourses={valueCourses}
-      setValueCourses={setValueCourses}
-      handleEditorChange={handleEditorChange}
-      value={value}
-      handleChangeType={handleChangeType}
-
-      handleChangeRight={handleChangeRight}
-      handleChangeExercise={handleChangeExercise}
-      handleChangeExerciseHtml={handleChangeExerciseHtml}
-      handleChangeExerciseCss={handleChangeExerciseCss}
-      valueRight={valueRight}
-      
+      <SubLessonView
+        register={register}
+        handleSubmit={handleSubmit}
+        onFinish={onFinish}
+        errors={errors}
+        handleOpenModal={handleOpenModal}
+        handleCloseModal={handleCloseModal}
+        openModal={openModal}
+        data={[]}
+        lesson={lesson}
+        onSubmit={onSubmit}
+        handleDelete={handleDelete}
+        handleClick={handleClick}
+        handleClose={handleClose}
+        id={id}
+        anchorEl={anchorEl}
+        open={open}
+        action={action}
+        deleteLesson={deleteLesson}
+        valueCourses={valueCourses}
+        setValueCourses={setValueCourses}
+        handleEditorChange={handleEditorChange}
+        value={value}
+        handleChangeType={handleChangeType}
+        handleChangeRight={handleChangeRight}
+        handleChangeExercise={handleChangeExercise}
+        handleChangeExerciseHtml={handleChangeExerciseHtml}
+        handleChangeExerciseCss={handleChangeExerciseCss}
+        valueRight={valueRight}
+        handleChangeTypeExercise={handleChangeTypeExercise}
+        typeExersice={typeExersice}
+        exerciseHtml={exerciseHtml}
+        exerciseCss={exerciseCss}
+        exercise={exercise}
       />
     </>
   );

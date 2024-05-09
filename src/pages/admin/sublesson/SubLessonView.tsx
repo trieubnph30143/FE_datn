@@ -60,7 +60,12 @@ type typeProps = {
   handleChangeExerciseHtml: any;
   handleChangeExerciseCss: any;
   valueRight: any;
-  lesson:any
+  lesson: any;
+  handleChangeTypeExercise: any;
+  typeExersice: any;
+  exerciseHtml: any;
+  exerciseCss: any;
+  exercise: any;
 };
 const SubLessonView = ({
   data,
@@ -90,25 +95,30 @@ const SubLessonView = ({
   handleChangeExerciseHtml,
   handleChangeExerciseCss,
   valueRight,
-  lesson
+  lesson,
+  handleChangeTypeExercise,
+  typeExersice,
+  exerciseHtml,
+  exerciseCss,
+  exercise,
 }: typeProps) => {
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Lesson</Typography>
-        <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
+        <Typography variant='h5'>Lesson</Typography>
+        <Button onClick={() => handleOpenModal("CREATE")} variant='contained'>
           Add Lesson
         </Button>
       </Stack>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
           <TableHead>
             <TableRow>
-              <TableCell align="left">Title</TableCell>
-              <TableCell align="left">Description</TableCell>
-              <TableCell align="left">Duration</TableCell>
+              <TableCell align='left'>Title</TableCell>
+              <TableCell align='left'>Description</TableCell>
+              <TableCell align='left'>Duration</TableCell>
 
-              <TableCell align="left">Action</TableCell>
+              <TableCell align='left'>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -117,24 +127,22 @@ const SubLessonView = ({
               data.map((row) => (
                 <TableRow
                   key={row.title}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell align="left">{row.title}</TableCell>
-                  <TableCell component="th" scope="row">
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                  <TableCell align='left'>{row.title}</TableCell>
+                  <TableCell component='th' scope='row'>
                     {row.description}
                   </TableCell>
 
-                  <TableCell align="left">{row.duration}</TableCell>
+                  <TableCell align='left'>{row.duration}</TableCell>
 
-                  <TableCell align="left">
+                  <TableCell align='left'>
                     <Button onClick={() => handleOpenModal("UPDATE", row)}>
                       Edit
                     </Button>
                     <Button
                       aria-describedby={id}
                       onClick={(e) => handleClick(e, row)}
-                      sx={{ color: "red" }}
-                    >
+                      sx={{ color: "red" }}>
                       Delete
                     </Button>
                   </TableCell>
@@ -155,16 +163,14 @@ const SubLessonView = ({
         transformOrigin={{
           vertical: "top",
           horizontal: "right",
-        }}
-      >
+        }}>
         <Box padding={"10px"}>
           <Typography>Bạn có muốn xóa không?</Typography>
           <Stack direction={"row"} mt={"15px"} justifyContent={"end"}>
             <Button onClick={handleClose}>Hủy</Button>
             <Button
               onClick={() => handleDelete(deleteLesson)}
-              sx={{ color: "red" }}
-            >
+              sx={{ color: "red" }}>
               Xóa
             </Button>
           </Stack>
@@ -190,6 +196,11 @@ const SubLessonView = ({
         handleChangeExerciseCss={handleChangeExerciseCss}
         valueRight={valueRight}
         lesson={lesson}
+        handleChangeTypeExercise={handleChangeTypeExercise}
+        typeExersice={typeExersice}
+        exerciseHtml={exerciseHtml}
+        exerciseCss={exerciseCss}
+        exercise={exercise}
       />
     </>
   );
@@ -207,14 +218,14 @@ const style = {
   p: 4,
 };
 const ModalForm = (props: any) => {
+  console.log(props.valueRight);
   return (
     <Modal
       open={props.open}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+      aria-labelledby='modal-modal-title'
+      aria-describedby='modal-modal-description'>
       <Box sx={style}>
-        <Typography variant="h5" textAlign={"center"}>
+        <Typography variant='h5' textAlign={"center"}>
           Add SubLesson
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
@@ -223,45 +234,59 @@ const ModalForm = (props: any) => {
             mt={"20px"}
             gap={"15px"}
             direction={"row"}
-            flexWrap={"wrap"}
-          >
-            <Box width={"32%"}>
+            flexWrap={"wrap"}>
+            <Box width={"24%"}>
               <TextField
                 fullWidth
                 {...props.register("title")}
-                id="outlined-basic"
-                label="Title"
-                variant="outlined"
-                size="small"
+                id='outlined-basic'
+                label='Title'
+                variant='outlined'
+                size='small'
               />
             </Box>
-            <Box width={"32%"}>
+            <Box width={"24%"}>
               <TextField
                 {...props.register("duration")}
-                type="number"
+                type='number'
                 fullWidth
-                id="outlined-basic"
-                label="Duration"
-                variant="outlined"
-                size="small"
+                id='outlined-basic'
+                label='Duration'
+                variant='outlined'
+                size='small'
               />
             </Box>
-            <Box width={"32%"}>
+            <Box width={"24%"}>
               <TextField
                 {...props.register("description")}
                 fullWidth
-                id="outlined-basic"
-                label="Description"
-                variant="outlined"
-                size="small"
+                id='outlined-basic'
+                label='Description'
+                variant='outlined'
+                size='small'
               />
+            </Box>
+            <Box width={"24%"}>
+              <FormControl fullWidth size='small'>
+                <InputLabel id='demo-simple-select-label'>Lesson</InputLabel>
+                <Select
+                  {...props.register("lesson_id")}
+                  labelId='demo-simple-select-label'
+                  id='demo-simple-select'
+                  label='Lesson'>
+                  {props.lesson &&
+                    props.lesson.length &&
+                    props.lesson.map((item: any) => {
+                      return <MenuItem value={item._id}>{item.title}</MenuItem>;
+                    })}
+                </Select>
+              </FormControl>
             </Box>
             <Box width={"100%"}>
               <Tabs
                 value={props.value}
                 onChange={props.handleChangeType}
-                aria-label="basic tabs example"
-              >
+                aria-label='basic tabs example'>
                 <Tab
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"5px"}>
@@ -301,10 +326,10 @@ const ModalForm = (props: any) => {
                     <TextField
                       {...props.register("video_id")}
                       fullWidth
-                      id="outlined-basic"
-                      label="VideoId"
-                      variant="outlined"
-                      size="small"
+                      id='outlined-basic'
+                      label='VideoId'
+                      variant='outlined'
+                      size='small'
                     />
                   </Box>
                 </Box>
@@ -318,10 +343,9 @@ const ModalForm = (props: any) => {
                           display: "none !important",
                         },
                         width: "50%",
-                      }}
-                    >
+                      }}>
                       <Editor
-                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
                         onEditorChange={props.handleEditorChange}
                         init={{
                           plugins:
@@ -410,31 +434,29 @@ const ModalForm = (props: any) => {
                       width={"50%"}
                       display={"flex"}
                       flexDirection={"column"}
-                      gap={"15px"}
-                    >
+                      gap={"15px"}>
                       <Box display={"flex"} gap={"10px"}>
                         <Box width={"69%"}>
                           <TextField
                             {...props.register("answerOne")}
                             fullWidth
-                            id="outlined-basic"
-                            label="AnswerOne"
-                            variant="outlined"
-                            size="small"
+                            id='outlined-basic'
+                            label='AnswerOne'
+                            variant='outlined'
+                            size='small'
                           />
                         </Box>
 
                         <Box width={"29%"}>
-                          <FormControl fullWidth size="small">
-                            <InputLabel id="demo-simple-select-label">
+                          <FormControl fullWidth size='small'>
+                            <InputLabel id='demo-simple-select-label'>
                               Correct
                             </InputLabel>
                             <Select
                               {...props.register("correctOne")}
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              label="Correct"
-                            >
+                              labelId='demo-simple-select-label'
+                              id='demo-simple-select'
+                              label='Correct'>
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
                             </Select>
@@ -446,24 +468,23 @@ const ModalForm = (props: any) => {
                           <TextField
                             {...props.register("answerTwo")}
                             fullWidth
-                            id="outlined-basic"
-                            label="AnswerTwo"
-                            variant="outlined"
-                            size="small"
+                            id='outlined-basic'
+                            label='AnswerTwo'
+                            variant='outlined'
+                            size='small'
                           />
                         </Box>
 
                         <Box width={"29%"}>
-                          <FormControl fullWidth size="small">
-                            <InputLabel id="demo-simple-select-label">
+                          <FormControl fullWidth size='small'>
+                            <InputLabel id='demo-simple-select-label'>
                               Correct
                             </InputLabel>
                             <Select
                               {...props.register("correctTwo")}
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              label="Correct"
-                            >
+                              labelId='demo-simple-select-label'
+                              id='demo-simple-select'
+                              label='Correct'>
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
                             </Select>
@@ -475,24 +496,23 @@ const ModalForm = (props: any) => {
                           <TextField
                             {...props.register("answerThree")}
                             fullWidth
-                            id="outlined-basic"
-                            label="AnswerThree"
-                            variant="outlined"
-                            size="small"
+                            id='outlined-basic'
+                            label='AnswerThree'
+                            variant='outlined'
+                            size='small'
                           />
                         </Box>
 
                         <Box width={"29%"}>
-                          <FormControl fullWidth size="small">
-                            <InputLabel id="demo-simple-select-label">
+                          <FormControl fullWidth size='small'>
+                            <InputLabel id='demo-simple-select-label'>
                               Correct
                             </InputLabel>
                             <Select
                               {...props.register("correctThree")}
-                              labelId="demo-simple-select-label"
-                              id="demo-simple-select"
-                              label="Correct"
-                            >
+                              labelId='demo-simple-select-label'
+                              id='demo-simple-select'
+                              label='Correct'>
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
                             </Select>
@@ -512,10 +532,9 @@ const ModalForm = (props: any) => {
                           display: "none !important",
                         },
                         width: "99.5%",
-                      }}
-                    >
+                      }}>
                       <Editor
-                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
                         onEditorChange={props.handleEditorChange}
                         init={{
                           plugins:
@@ -606,69 +625,48 @@ const ModalForm = (props: any) => {
               {props.value == 3 && (
                 <Box>
                   <Box mt={"10px"} display={"flex"} gap={"15px"}>
-                    <Box width={"33%"}>
+                    <Box width={"49%"}>
                       <TextField
                         {...props.register("solution_key")}
                         fullWidth
-                        id="outlined-basic"
-                        label="Solution Key"
-                        variant="outlined"
-                        size="small"
+                        id='outlined-basic'
+                        label='Solution Key'
+                        variant='outlined'
+                        size='small'
                       />
                     </Box>
-                    <Box width={"33%"}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel id="demo-simple-select-label">
+                    <Box width={"49%"}>
+                      <FormControl fullWidth size='small'>
+                        <InputLabel id='demo-simple-select-label'>
                           Type Exercise
                         </InputLabel>
                         <Select
                           {...props.register("type_exercise")}
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          label="Type Exercise"
-                        >
+                          labelId='demo-simple-select-label'
+                          id='demo-simple-select'
+                          onChange={props.handleChangeTypeExercise}
+                          label='Type Exercise'>
                           <MenuItem value={`html`}>Html</MenuItem>
                           <MenuItem value={`html-css`}>Html-Css</MenuItem>
                           <MenuItem value={`javascript`}>JavaScript</MenuItem>
                         </Select>
                       </FormControl>
                     </Box>
-                    <Box width={"33%"}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Lesson</InputLabel>
-              <Select
-               {...props.register("courses_id")}
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                label='Lesson'
-               
-              >
-                 {props.lesson &&
-                    props.lesson.length &&
-                    props.lesson.map((item: any) => {
-                      return <MenuItem value={item._id}>{item.title}</MenuItem>;
-                    })}
-                
-              </Select>
-            </FormControl>
-          </Box>
                   </Box>
                   <Box
                     width={"98.5%"}
                     mt={"15px"}
                     display={"flex"}
-                    gap={"20px"}
-                  >
+                    gap={"20px"}>
                     <Box
                       sx={{
                         ".tox-statusbar": {
                           display: "none !important",
                         },
                         width: "50%",
-                      }}
-                    >
+                      }}>
                       <Editor
-                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
                         onEditorChange={props.handleEditorChange}
                         init={{
                           plugins:
@@ -757,138 +755,206 @@ const ModalForm = (props: any) => {
                       width={"50%"}
                       borderRadius={"10px"}
                       overflow={"hidden"}
-                      height={"290px"}
-                    >
-                     <Stack
-            sx={{
-              ".css-1aquho2-MuiTabs-indicator": {
-                display: "none",
-              },
-              ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root": {
-                minHeight: "0",
-                height: "40px",
-                color: "white",
-              },
-              height: "40px",
-              ".css-heg063-MuiTabs-flexContainer": {
-                mt: "5px",
-                background: "#1e1e1e",
-              },
-              ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected": {
-                color: "#1976d2 !important",
-              },
-            }}
-            bgcolor={"#343434"}
-            
-            direction={"row"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            width={"99.9%"}>
-            <Tabs
-              value={props.valueRight}
-              onChange={props.handleChangeRight}
-              aria-label='basic tabs example'>
-              <Tab
-                label={
-                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
-                    <img
-                      src={js}
-                      width={17}
-                      height={17}
-                      style={{ borderRadius: "5px" }}
-                      alt=''
-                    />
-                    <Typography
-                      fontSize={"12px"}
-                      sx={{ textTransform: "lowercase"}}>
-                      main.js
-                    </Typography>
-                  </Stack>
-                }
-              />
-              <Tab
-                label={
-                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
-                    <img
-                      src={html}
-                      width={17}
-                      height={17}
-                      style={{ borderRadius: "5px" }}
-                      alt=''
-                    />
-                    <Typography
-                      
-                      fontSize={"12px"}
-                      sx={{ textTransform: "lowercase"}}>
-                      index.html
-                    </Typography>
-                  </Stack>
-                }
-              />
-              <Tab
-                label={
-                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
-                    <img
-                      src={css}
-                      width={17}
-                      height={17}
-                      style={{ borderRadius: "5px" }}
-                      alt=''
-                    />
-                    <Typography
-                      fontSize={"12px"}
-                      sx={{ textTransform: "lowercase" }}>
-                      style.css
-                    </Typography>
-                  </Stack>
-                }
-              />
-            </Tabs>
-            <Box
-              width={"65px"}
-              height={"40px"}
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent={"center"}
-              bgcolor={"#1e1e1e"}>
-              <ReplayIcon sx={{ color: "white" }} />
-            </Box>
-          </Stack>
-          <Box
-            sx={{
-              " .slider-mouseover": {
-                display: "none",
-              },
-            }}>
-            {props.valueRight == 0 && (
-              <MonacoEditor
-                width={"100%"}
-                height='250px'
-                language='javascript'
-                theme='vs-dark'
-                value={`//Tạo 1 mảng chứa ít nhất 3 phần tử tên Sum`}
-                onChange={(value) => props.handleChangeExercise(value)}
-              />
-            )}
-            {props.valueRight == 1 && (
-              <MonacoEditor
-                height='250px'
-                language='html'
-                theme='vs-dark'
-                value={props.exerciseHtml}
-                onChange={(value) => props.handleChangeExerciseHtml(value)}
-              />
-            )}
-            {props.valueRight == 2 && (
-              <MonacoEditor
-                height='250px'
-                language='css'
-                theme='vs-dark'
-                value={props.exerciseCss}
-                onChange={(value) => props.handleChangeExerciseCss(value)}
-              />
-            )}
-          </Box>
+                      height={"290px"}>
+                      <Stack
+                        sx={{
+                          ".css-1aquho2-MuiTabs-indicator": {
+                            display: "none",
+                          },
+                          ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root": {
+                            minHeight: "0",
+                            height: "40px",
+                            color: "white",
+                          },
+                          height: "40px",
+                          ".css-heg063-MuiTabs-flexContainer": {
+                            mt: "5px",
+                            background: "#1e1e1e",
+                          },
+                          ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected":
+                            {
+                              color: "#1976d2 !important",
+                            },
+                        }}
+                        bgcolor={"#343434"}
+                        direction={"row"}
+                        justifyContent={"space-between"}
+                        alignItems={"center"}
+                        width={"99.9%"}>
+                        {props.typeExersice == "html" && (
+                          <Tabs
+                            value={props.valueRight}
+                            onChange={props.handleChangeRight}
+                            aria-label='basic tabs example'>
+                            <Tab
+                              label={
+                                <Stack
+                                  direction={"row"}
+                                  alignItems={"center"}
+                                  gap={"4px"}>
+                                  <img
+                                    src={html}
+                                    width={17}
+                                    height={17}
+                                    style={{ borderRadius: "5px" }}
+                                    alt=''
+                                  />
+                                  <Typography
+                                    fontSize={"12px"}
+                                    sx={{ textTransform: "lowercase" }}>
+                                    index.html
+                                  </Typography>
+                                </Stack>
+                              }
+                            />
+                          </Tabs>
+                        )}
+                        {props.typeExersice == "javascript" && (
+                          <Tabs
+                            value={props.valueRight}
+                            onChange={props.handleChangeRight}
+                            aria-label='basic tabs example'>
+                            <Tab
+                              label={
+                                <Stack
+                                  direction={"row"}
+                                  alignItems={"center"}
+                                  gap={"4px"}>
+                                  <img
+                                    src={js}
+                                    width={17}
+                                    height={17}
+                                    style={{ borderRadius: "5px" }}
+                                    alt=''
+                                  />
+                                  <Typography
+                                    fontSize={"12px"}
+                                    sx={{ textTransform: "lowercase" }}>
+                                    main.js
+                                  </Typography>
+                                </Stack>
+                              }
+                            />
+                          </Tabs>
+                        )}
+                        {props.typeExersice == "html-css" && (
+                          <>
+                            <Tabs
+                              value={props.valueRight}
+                              onChange={props.handleChangeRight}
+                              aria-label='basic tabs example'>
+                              <Tab
+                                label={
+                                  <Stack
+                                    direction={"row"}
+                                    alignItems={"center"}
+                                    gap={"4px"}>
+                                    <img
+                                      src={html}
+                                      width={17}
+                                      height={17}
+                                      style={{ borderRadius: "5px" }}
+                                      alt=''
+                                    />
+                                    <Typography
+                                      fontSize={"12px"}
+                                      sx={{ textTransform: "lowercase" }}>
+                                      index.html
+                                    </Typography>
+                                  </Stack>
+                                }
+                              />
+                              <Tab
+                                label={
+                                  <Stack
+                                    direction={"row"}
+                                    alignItems={"center"}
+                                    gap={"4px"}>
+                                    <img
+                                      src={css}
+                                      width={17}
+                                      height={17}
+                                      style={{ borderRadius: "5px" }}
+                                      alt=''
+                                    />
+                                    <Typography
+                                      fontSize={"12px"}
+                                      sx={{ textTransform: "lowercase" }}>
+                                      style.css
+                                    </Typography>
+                                  </Stack>
+                                }
+                              />
+                            </Tabs>
+                          </>
+                        )}
+
+                        <Box
+                          width={"65px"}
+                          height={"40px"}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"center"}
+                          bgcolor={"#1e1e1e"}>
+                          <ReplayIcon sx={{ color: "white" }} />
+                        </Box>
+                      </Stack>
+                      <Box
+                        sx={{
+                          " .slider-mouseover": {
+                            display: "none",
+                          },
+                        }}>
+                        {props.typeExersice == "javascript" && (
+                          <MonacoEditor
+                            width={"100%"}
+                            height='250px'
+                            language='javascript'
+                            theme='vs-dark'
+                            value={props.exercise}
+                            onChange={(value) =>
+                              props.handleChangeExercise(value)
+                            }
+                          />
+                        )}
+                        {props.typeExersice == "html" && (
+                          <MonacoEditor
+                            height='250px'
+                            language='html'
+                            theme='vs-dark'
+                            value={props.exerciseHtml}
+                            onChange={(value) =>
+                              props.handleChangeExerciseHtml(value)
+                            }
+                          />
+                        )}
+                        {props.typeExersice == "html-css" && (
+                          <>
+                            {props.valueRight == 0 && (
+                              <MonacoEditor
+                                height='250px'
+                                language='html'
+                                theme='vs-dark'
+                                value={props.exerciseHtml}
+                                onChange={(value) =>
+                                  props.handleChangeExerciseHtml(value)
+                                }
+                              />
+                            )}
+                            {props.valueRight == 1 && (
+                              <MonacoEditor
+                                height='250px'
+                                language='css'
+                                theme='vs-dark'
+                                value={props.exerciseCss}
+                                onChange={(value) =>
+                                  props.handleChangeExerciseCss(value)
+                                }
+                              />
+                            )}
+                          </>
+                        )}
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -899,8 +965,7 @@ const ModalForm = (props: any) => {
               width={"100%"}
               display={"flex"}
               justifyContent={"end"}
-              gap={"10px"}
-            >
+              gap={"10px"}>
               <Button
                 onClick={props.handleClose}
                 sx={{
@@ -909,12 +974,11 @@ const ModalForm = (props: any) => {
                   width: "82px",
                   height: "34px",
                   border: "1px solid #333",
-                }}
-              >
+                }}>
                 Close
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 sx={{
                   background:
                     "linear-gradient(to right bottom, #ff8f26, #ff5117)",
@@ -922,8 +986,7 @@ const ModalForm = (props: any) => {
                   borderRadius: "99px",
                   width: "92px",
                   height: "34px",
-                }}
-              >
+                }}>
                 Add
               </Button>
             </Box>

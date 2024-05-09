@@ -1,4 +1,5 @@
 import { addLesson, deleteLesson, updateLesson } from "@/service/lesson";
+import { addSubLesson } from "@/service/sub_lesson";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
@@ -9,6 +10,10 @@ type useSubLessonMutationProps = {
   onSuccess?: () => void;
   type?: any;
   content?: any;
+  typeExersice?: any;
+  exerciseHtml?: any;
+  exerciseCss?: any;
+  exercise?: any;
 };
 
 export const useSubLessonMutation = ({
@@ -17,6 +22,10 @@ export const useSubLessonMutation = ({
   onSuccess,
   type,
   content,
+  typeExersice,
+  exercise,
+  exerciseCss,
+  exerciseHtml,
 }: useSubLessonMutationProps) => {
   const queryClient = useQueryClient();
 
@@ -29,8 +38,8 @@ export const useSubLessonMutation = ({
   const { mutate, ...rest } = useMutation({
     mutationFn: async (sub_lesson: any) => {
       switch (action) {
-        // case "CREATE":
-        //   return await addsub_lesson({ ...sub_lesson });
+        case "CREATE":
+          return await addSubLesson({ ...sub_lesson });
         // case "UPDATE":
         //   return await updatesub_lesson(sub_lesson);
         // case "DELETE":
@@ -48,7 +57,14 @@ export const useSubLessonMutation = ({
   });
   const onFinish = async (values: any) => {
     if (type == 0) {
-      console.log({ ...values, type: "video" });
+      mutate({
+        description: values.description,
+        duration: values.duration,
+        title: values.title,
+        type: "video",
+        lesson: [values.lesson_id],
+        video_id: values.video_id,
+      });
       // video
     } else if (type == 1) {
       let question = [
@@ -65,35 +81,49 @@ export const useSubLessonMutation = ({
           correctThree: values.correctThree,
         },
       ];
-      console.log({
+      mutate({
         description: values.description,
         duration: values.duration,
         title: values.title,
         type: "quiz",
         content_quizz: content,
-        question: JSON.stringify(question),
+        questions: JSON.stringify(question),
+        lesson: [values.lesson_id],
       });
       // quizz
     } else if (type == 2) {
       // blog
-      console.log({
+      mutate({
         description: values.description,
         duration: values.duration,
         title: values.title,
         type: "blog",
         content_blog: content,
+        lesson: [values.lesson_id],
       });
     } else {
-      console.log({
+      let body: any = {
         description: values.description,
         duration: values.duration,
         title: values.title,
         type: "code",
         content_code: content,
-        type_exercise:values.type_exercise,
-        solution_key:values.solution_key
-      });
-      // code
+        solution_key: values.solution_key,
+        lesson: [values.lesson_id],
+      };
+      if (typeExersice == "html") {
+        body.type_exercise = JSON.stringify({ html: exerciseHtml });
+      } else if (typeExersice == "html-css") {
+        body.type_exercise = JSON.stringify({
+          html: exerciseHtml,
+          css: exerciseCss,
+        });
+      } else if (typeExersice == "javascript") {
+        body.type_exercise = JSON.stringify({
+          javascript: exercise,
+        });
+      }
+      mutate(body);
     }
   };
   const onRemove = (sub_lesson: any) => {
