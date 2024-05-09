@@ -33,6 +33,7 @@ type typeProps = {
   anchorEl: any;
   open: any;
   action: string;
+  deleteCategory:any;
 };
 const CategoriesView = ({
   data,
@@ -51,6 +52,7 @@ const CategoriesView = ({
   anchorEl,
   open,
   action,
+  deleteCategory
 }: typeProps) => {
   return (
     <>
@@ -90,45 +92,42 @@ const CategoriesView = ({
                     </Button>
                     <Button
                       aria-describedby={id}
-                      onClick={handleClick}
+                      onClick={(e) => handleClick(e, row)}
                       sx={{ color: "red" }}>
                       Delete
                     </Button>
                   </TableCell>
-                  <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}>
-                    <Box padding={"10px"}>
-                      <Typography>Bạn có muốn xóa không?</Typography>
-                      <Stack
-                        direction={"row"}
-                        mt={"15px"}
-                        justifyContent={"end"}>
-                        <Button onClick={handleClose}>Hủy</Button>
-                        <Button
-                          onClick={() => handleDelete(row)}
-                          sx={{ color: "red" }}>
-                          Xóa
-                        </Button>
-                      </Stack>
-                    </Box>
-                  </Popover>
+                 
                 </TableRow>
               ))}
           </TableBody>
         </Table>
       </TableContainer>
-
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}>
+        <Box padding={"10px"}>
+          <Typography>Bạn có muốn xóa không?</Typography>
+          <Stack direction={"row"} mt={"15px"} justifyContent={"end"}>
+            <Button onClick={handleClose}>Hủy</Button>
+            <Button
+              onClick={() => handleDelete(deleteCategory)}
+              sx={{ color: "red" }}>
+              Xóa
+            </Button>
+          </Stack>
+        </Box>
+      </Popover>
       <ModalForm
         open={openModal}
         register={register}

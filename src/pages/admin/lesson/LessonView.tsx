@@ -22,79 +22,98 @@ import {
 } from "@mui/material";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import { RiCloseFill, RiUploadCloudFill } from "react-icons/ri";
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
-const LessonView = () => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+type typeProps = {
+  data: typeLesson[];
+  register: any;
+  handleSubmit: any;
+  onFinish: any;
+  errors: any;
+  handleOpenModal: any;
+  handleCloseModal: any;
+  openModal: boolean;
+  onSubmit: any;
+  handleDelete: any;
+  handleClick: any;
+  handleClose: any;
+  id: any;
+  anchorEl: any;
+  open: any;
+  action: string;
+  courses: typeCourses[];
+  deleteLesson: any;
+  valueCourses: any;
+  setValueCourses: any;
+};
+const LessonView = ({
+  data,
+  register,
+  handleSubmit,
+  errors,
+  onFinish,
+  handleCloseModal,
+  handleOpenModal,
+  openModal,
+  onSubmit,
+  handleDelete,
+  handleClick,
+  handleClose,
+  id,
+  anchorEl,
+  open,
+  action,
+  deleteLesson,
+  valueCourses,
+  setValueCourses,
+  courses,
+}: typeProps) => {
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant='h5'>Lesson</Typography>
-        <Button onClick={handleOpenModal} variant='contained'>
+        <Typography variant="h5">Lesson</Typography>
+        <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
           Add Lesson
         </Button>
       </Stack>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell align='right'>Duration</TableCell>
+              <TableCell align="left">Title</TableCell>
+              <TableCell align="left">Description</TableCell>
+              <TableCell align="left">Duration</TableCell>
 
-              <TableCell align='right'>Action</TableCell>
+              <TableCell align="left">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                <TableCell component='th' scope='row'>
-                  {row.name}
-                </TableCell>
-                <TableCell align='right'>{row.calories}</TableCell>
+            {data &&
+              data.length &&
+              data.map((row) => (
+                <TableRow
+                  key={row.title}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell align="left">{row.title}</TableCell>
+                  <TableCell component="th" scope="row">
+                    {row.description}
+                  </TableCell>
 
-                <TableCell align='right'>
-                  <Button>Edit</Button>
-                  <Button
-                    aria-describedby={id}
-                    onClick={handleClick}
-                    sx={{ color: "red" }}>
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  <TableCell align="left">{row.duration}</TableCell>
+
+                  <TableCell align="left">
+                    <Button onClick={() => handleOpenModal("UPDATE", row)}>
+                      Edit
+                    </Button>
+                    <Button
+                      aria-describedby={id}
+                      onClick={(e) => handleClick(e, row)}
+                      sx={{ color: "red" }}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -110,16 +129,34 @@ const LessonView = () => {
         transformOrigin={{
           vertical: "top",
           horizontal: "right",
-        }}>
+        }}
+      >
         <Box padding={"10px"}>
           <Typography>Bạn có muốn xóa không?</Typography>
           <Stack direction={"row"} mt={"15px"} justifyContent={"end"}>
             <Button onClick={handleClose}>Hủy</Button>
-            <Button sx={{ color: "red" }}>Xóa</Button>
+            <Button
+              onClick={() => handleDelete(deleteLesson)}
+              sx={{ color: "red" }}
+            >
+              Xóa
+            </Button>
           </Stack>
         </Box>
       </Popover>
-      <ModalForm open={openModal} handleClose={handleCloseModal} />
+      <ModalForm
+        open={openModal}
+        register={register}
+        handleSubmit={handleSubmit}
+        onFinish={onFinish}
+        errors={errors}
+        handleClose={handleCloseModal}
+        onSubmit={onSubmit}
+        action={action}
+        valueCourses={valueCourses}
+        setValueCourses={setValueCourses}
+        courses={courses}
+      />
     </>
   );
 };
@@ -137,67 +174,85 @@ const ModalForm = (props: any) => {
     boxShadow: 24,
     p: 4,
   };
-  const [age, setAge] = React.useState("");
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value as string);
-  };
 
   return (
     <Modal
       open={props.open}
-      aria-labelledby='modal-modal-title'
-      aria-describedby='modal-modal-description'>
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
       <Box sx={style}>
-        <Typography variant='h5' textAlign={"center"}>
+        <Typography variant="h5" textAlign={"center"}>
           Add Lesson
         </Typography>
+        <form onSubmit={props.handleSubmit(props.onFinish)}>
         <Stack
           width={"100%"}
           mt={"20px"}
           gap={"15px"}
           direction={"row"}
-          flexWrap={"wrap"}>
+          flexWrap={"wrap"}
+        >
           <Box width={"48%"}>
             <TextField
+             {...props.register("title")}
               fullWidth
-              id='outlined-basic'
-              label='Title'
-              variant='outlined'
-              size='small'
+              id="outlined-basic"
+              label="Title"
+              variant="outlined"
+              size="small"
             />
           </Box>
           <Box width={"48%"}>
             <TextField
-              type='number'
+             {...props.register("duration")}
+              type="number"
               fullWidth
-              id='outlined-basic'
-              label='Duration'
-              variant='outlined'
-              size='small'
+              id="outlined-basic"
+              label="Duration"
+              variant="outlined"
+              size="small"
             />
           </Box>
           <Box width={"98%"}>
-            <FormControl fullWidth size='small'>
-              <InputLabel id='demo-simple-select-label'>Courses</InputLabel>
+            <FormControl fullWidth size="small">
+              <InputLabel id="demo-simple-select-label">Courses</InputLabel>
               <Select
-                labelId='demo-simple-select-label'
-                id='demo-simple-select'
-                value={age}
+               {...props.register("courses_id")}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={props.valueCourses}
                 label='Courses'
-                onChange={handleChange}>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                onChange={(e) => props.setValueCourses(e.target.value)}
+               
+              >
+                 {props.courses &&
+                    props.courses.length &&
+                    props.courses.map((item: any) => {
+                      return <MenuItem value={item._id}>{item.title}</MenuItem>;
+                    })}
+                
               </Select>
             </FormControl>
           </Box>
+          <Box width={"98%"}>
+              <TextField
+                {...props.register("description")}
+                id='outlined-multiline-static'
+                label='Description'
+                multiline
+                rows={9.5}
+                fullWidth
+              />
+            </Box>
 
           <Box
             width={"100%"}
             display={"flex"}
             justifyContent={"end"}
-            gap={"10px"}>
+            gap={"10px"}
+          >
             <Button
               onClick={props.handleClose}
               sx={{
@@ -206,10 +261,13 @@ const ModalForm = (props: any) => {
                 width: "82px",
                 height: "34px",
                 border: "1px solid #333",
-              }}>
+              }}
+            >
               Close
             </Button>
             <Button
+             onClick={props.onSubmit}
+             type='submit'
               sx={{
                 background:
                   "linear-gradient(to right bottom, #ff8f26, #ff5117)",
@@ -217,11 +275,13 @@ const ModalForm = (props: any) => {
                 borderRadius: "99px",
                 width: "92px",
                 height: "34px",
-              }}>
+              }}
+            >
               Add
             </Button>
           </Box>
         </Stack>
+        </form>
       </Box>
     </Modal>
   );

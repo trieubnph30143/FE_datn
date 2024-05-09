@@ -103,7 +103,7 @@ const CoursesView = ({
                   <TableCell component='th' scope='row'>
                     <img src={row.image.url} width={50} height={50} alt='' />
                   </TableCell>
-                  <TableCell align='left'>{row.category_id[0].name}</TableCell>
+                  <TableCell align='left'>{row.category_id.length&& row.category_id[0].name}</TableCell>
                   <TableCell align='left'>{row.price}</TableCell>
                   <TableCell align='left'>{row.description}</TableCell>
                   <TableCell align='left'>

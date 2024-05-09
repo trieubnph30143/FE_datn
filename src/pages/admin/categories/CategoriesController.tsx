@@ -9,10 +9,15 @@ const CategoriesController = () => {
   const [openModal, setOpenModal] = React.useState(false);
   const [loading, setLoading] = useState(false);
   const [action, setAction]: any = useState("CREATE");
+  const [deleteCategory, setDeleteCategory] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    dataDelete: any
+  ) => {
+    setDeleteCategory(dataDelete);
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -81,6 +86,7 @@ const CategoriesController = () => {
         anchorEl={anchorEl}
         open={open}
         action={action}
+        deleteCategory={deleteCategory}
       />
 
       {loading && <Loading />}
