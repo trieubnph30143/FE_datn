@@ -1,12 +1,15 @@
 import {
   Box,
   Button,
+  Drawer,
   FormControl,
   InputLabel,
   MenuItem,
   Modal,
+  OutlinedInput,
   Popover,
   Select,
+  SelectChangeEvent,
   Stack,
   Tab,
   Tabs,
@@ -26,14 +29,20 @@ import { Editor } from "@tinymce/tinymce-react";
 import js from "../../../images/ja.svg";
 import html from "../../../images/html.svg";
 import css from "../../../images/css.svg";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   RiFileTextLine,
   RiPencilFill,
   RiPlayCircleFill,
   RiQuestionFill,
 } from "react-icons/ri";
+import React from "react";
 type typeProps = {
-  data: typeLesson[];
+  data: any;
   register: any;
   handleSubmit: any;
   onFinish: any;
@@ -50,8 +59,8 @@ type typeProps = {
   open: any;
   action: string;
   deleteLesson: any;
-  valueCourses: any;
-  setValueCourses: any;
+  valueLesson: any;
+  setValueLesson: any;
   handleEditorChange: any;
   value: any;
   handleChangeType: any;
@@ -66,6 +75,15 @@ type typeProps = {
   exerciseHtml: any;
   exerciseCss: any;
   exercise: any;
+  dataEdit: any;
+  content: any;
+  setQuestionCorrect: any;
+  questionCorrect: any;
+  courses: typeCourses[];
+  handleArrange: any;
+  toggleDrawer: any;
+  openDrawer: any;
+  arrange: any;
 };
 const SubLessonView = ({
   data,
@@ -85,8 +103,8 @@ const SubLessonView = ({
   open,
   action,
   deleteLesson,
-  valueCourses,
-  setValueCourses,
+  valueLesson,
+  setValueLesson,
   handleChangeType,
   handleEditorChange,
   value,
@@ -101,56 +119,172 @@ const SubLessonView = ({
   exerciseHtml,
   exerciseCss,
   exercise,
+  dataEdit,
+  content,
+  setQuestionCorrect,
+  questionCorrect,
+  courses,
+  handleArrange,
+  toggleDrawer,
+  openDrawer,
+  arrange,
 }: typeProps) => {
+  const [expanded, setExpanded] = React.useState<string | false>(false);
+
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
+
   return (
     <>
+      <Drawer
+        anchor={"right"}
+        open={openDrawer}
+        onClose={() => toggleDrawer(false)}
+      >
+        <Box width={"500px"} padding={"40px"}>
+          <Typography fontSize={"25px"}>Sắp xếp thứ tự bài học</Typography>
+          <Typography fontSize={"14px"} color={"#333"}>
+            Chọn select để sắp xếp thứ tự sắp xếp được hiển thị bên dưói select
+          </Typography>
+          <MultipleSelect handleArrange={handleArrange} arrange={arrange} />
+        </Box>
+      </Drawer>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant='h5'>Lesson</Typography>
-        <Button onClick={() => handleOpenModal("CREATE")} variant='contained'>
-          Add Lesson
-        </Button>
+        <Typography variant="h5">SubLesson</Typography>
+        
       </Stack>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-          <TableHead>
-            <TableRow>
-              <TableCell align='left'>Title</TableCell>
-              <TableCell align='left'>Description</TableCell>
-              <TableCell align='left'>Duration</TableCell>
+      {courses &&
+        courses.length &&
+        courses.map((item_courses: any) => {
+          return (
+            <Accordion
+              expanded={expanded === item_courses._id}
+              onChange={handleChange(item_courses._id)}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+              >
+                <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                  {item_courses.title}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+              <Button  onClick={() => handleOpenModal("CREATE",undefined,item_courses.lesson)} variant="contained">
+                   Add SubLesson
+              </Button>
+                {item_courses.lesson &&
+                  item_courses.lesson.length &&
+                  item_courses.lesson.map((item: any) => {
+                    return (
+                      <Box mt={"20px"} key={item._id}>
+                        <Box display={"flex"} justifyContent={"space-between"}>
+                          <Typography sx={{ my: "20px" }} fontWeight={"bold"}>
+                            {item.title}
+                          </Typography>
+                          {item.sub_lesson.length > 1 && (
+                            <Button
+                              onClick={() =>
+                                toggleDrawer(true, item.sub_lesson)
+                              }
+                              sx={{ height: "40px" }}
+                            >
+                              Sắp sếp lại bài học
+                            </Button>
+                          )}
+                        </Box>
+                        <TableContainer key={item._id} component={Paper}>
+                          <Table
+                            sx={{ minWidth: 650 }}
+                            aria-label="simple table"
+                          >
+                            <TableHead>
+                              <TableRow>
+                                <TableCell align="left">Title</TableCell>
+                                <TableCell align="left">Description</TableCell>
+                                <TableCell align="left">Duration</TableCell>
+                                <TableCell align="left">Type</TableCell>
+                                <TableCell align="left">Action</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {item.sub_lesson[0] ? (
+                                <>
+                                  {item.sub_lesson &&
+                                    item.sub_lesson.length &&
+                                    item.sub_lesson.map((row: any) => {
+                                      let check = item._id == row.lesson[0];
 
-              <TableCell align='left'>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data &&
-              data.length &&
-              data.map((row) => (
-                <TableRow
-                  key={row.title}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell align='left'>{row.title}</TableCell>
-                  <TableCell component='th' scope='row'>
-                    {row.description}
-                  </TableCell>
+                                      if (check) {
+                                        return (
+                                          <TableRow
+                                            sx={{
+                                              "&:last-child td, &:last-child th":
+                                                {
+                                                  border: 0,
+                                                },
+                                            }}
+                                          >
+                                            <TableCell align="left">
+                                              {row.title}
+                                            </TableCell>
+                                            <TableCell
+                                              component="th"
+                                              scope="row"
+                                            >
+                                              {row.description}
+                                            </TableCell>
 
-                  <TableCell align='left'>{row.duration}</TableCell>
+                                            <TableCell align="left">
+                                              {row.duration}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                              {row.type}
+                                            </TableCell>
 
-                  <TableCell align='left'>
-                    <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                      Edit
-                    </Button>
-                    <Button
-                      aria-describedby={id}
-                      onClick={(e) => handleClick(e, row)}
-                      sx={{ color: "red" }}>
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                                            <TableCell align="left">
+                                              <Button
+                                                onClick={() =>
+                                                  handleOpenModal("UPDATE", row)
+                                                }
+                                              >
+                                                Edit
+                                              </Button>
+                                              <Button
+                                                aria-describedby={id}
+                                                onClick={(e) =>
+                                                  handleClick(e, row)
+                                                }
+                                                sx={{ color: "red" }}
+                                              >
+                                                Delete
+                                              </Button>
+                                            </TableCell>
+                                          </TableRow>
+                                        );
+                                      }
+                                    })}
+                                </>
+                              ) : (
+                                <TableRow>
+                                  {" "}
+                                  <TableCell>Not Found Data</TableCell>
+                                </TableRow>
+                              )}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </Box>
+                    );
+                  })}
+              </AccordionDetails>
+            </Accordion>
+          );
+        })}
+
       <Popover
         id={id}
         open={open}
@@ -163,14 +297,16 @@ const SubLessonView = ({
         transformOrigin={{
           vertical: "top",
           horizontal: "right",
-        }}>
+        }}
+      >
         <Box padding={"10px"}>
           <Typography>Bạn có muốn xóa không?</Typography>
           <Stack direction={"row"} mt={"15px"} justifyContent={"end"}>
             <Button onClick={handleClose}>Hủy</Button>
             <Button
               onClick={() => handleDelete(deleteLesson)}
-              sx={{ color: "red" }}>
+              sx={{ color: "red" }}
+            >
               Xóa
             </Button>
           </Stack>
@@ -185,8 +321,8 @@ const SubLessonView = ({
         handleClose={handleCloseModal}
         onSubmit={onSubmit}
         action={action}
-        valueCourses={valueCourses}
-        setValueCourses={setValueCourses}
+        valueLesson={valueLesson}
+        setValueLesson={setValueLesson}
         handleChangeType={handleChangeType}
         handleEditorChange={handleEditorChange}
         value={value}
@@ -201,6 +337,10 @@ const SubLessonView = ({
         exerciseHtml={exerciseHtml}
         exerciseCss={exerciseCss}
         exercise={exercise}
+        dataEdit={dataEdit}
+        content={content}
+        setQuestionCorrect={setQuestionCorrect}
+        questionCorrect={questionCorrect}
       />
     </>
   );
@@ -218,15 +358,15 @@ const style = {
   p: 4,
 };
 const ModalForm = (props: any) => {
-  console.log(props.valueRight);
   return (
     <Modal
       open={props.open}
-      aria-labelledby='modal-modal-title'
-      aria-describedby='modal-modal-description'>
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
       <Box sx={style}>
-        <Typography variant='h5' textAlign={"center"}>
-          Add SubLesson
+        <Typography variant="h5" textAlign={"center"}>
+          {props.action == "CREATE" ? "Add SubLesson" : "Update SubLesson"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -234,46 +374,50 @@ const ModalForm = (props: any) => {
             mt={"20px"}
             gap={"15px"}
             direction={"row"}
-            flexWrap={"wrap"}>
+            flexWrap={"wrap"}
+          >
             <Box width={"24%"}>
               <TextField
                 fullWidth
                 {...props.register("title")}
-                id='outlined-basic'
-                label='Title'
-                variant='outlined'
-                size='small'
+                id="outlined-basic"
+                label="Title"
+                variant="outlined"
+                size="small"
               />
             </Box>
             <Box width={"24%"}>
               <TextField
                 {...props.register("duration")}
-                type='number'
+                type="number"
                 fullWidth
-                id='outlined-basic'
-                label='Duration'
-                variant='outlined'
-                size='small'
+                id="outlined-basic"
+                label="Duration"
+                variant="outlined"
+                size="small"
               />
             </Box>
             <Box width={"24%"}>
               <TextField
                 {...props.register("description")}
                 fullWidth
-                id='outlined-basic'
-                label='Description'
-                variant='outlined'
-                size='small'
+                id="outlined-basic"
+                label="Description"
+                variant="outlined"
+                size="small"
               />
             </Box>
             <Box width={"24%"}>
-              <FormControl fullWidth size='small'>
-                <InputLabel id='demo-simple-select-label'>Lesson</InputLabel>
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Lesson</InputLabel>
                 <Select
                   {...props.register("lesson_id")}
-                  labelId='demo-simple-select-label'
-                  id='demo-simple-select'
-                  label='Lesson'>
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={props.valueLesson}
+                  onChange={(e) => props.setValueLesson(e.target.value)}
+                  label="Lesson"
+                >
                   {props.lesson &&
                     props.lesson.length &&
                     props.lesson.map((item: any) => {
@@ -286,7 +430,8 @@ const ModalForm = (props: any) => {
               <Tabs
                 value={props.value}
                 onChange={props.handleChangeType}
-                aria-label='basic tabs example'>
+                aria-label="basic tabs example"
+              >
                 <Tab
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"5px"}>
@@ -326,10 +471,10 @@ const ModalForm = (props: any) => {
                     <TextField
                       {...props.register("video_id")}
                       fullWidth
-                      id='outlined-basic'
-                      label='VideoId'
-                      variant='outlined'
-                      size='small'
+                      id="outlined-basic"
+                      label="VideoId"
+                      variant="outlined"
+                      size="small"
                     />
                   </Box>
                 </Box>
@@ -343,10 +488,12 @@ const ModalForm = (props: any) => {
                           display: "none !important",
                         },
                         width: "50%",
-                      }}>
+                      }}
+                    >
                       <Editor
-                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                         onEditorChange={props.handleEditorChange}
+                        value={props.content}
                         init={{
                           plugins:
                             "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -434,29 +581,38 @@ const ModalForm = (props: any) => {
                       width={"50%"}
                       display={"flex"}
                       flexDirection={"column"}
-                      gap={"15px"}>
+                      gap={"15px"}
+                    >
                       <Box display={"flex"} gap={"10px"}>
                         <Box width={"69%"}>
                           <TextField
                             {...props.register("answerOne")}
                             fullWidth
-                            id='outlined-basic'
-                            label='AnswerOne'
-                            variant='outlined'
-                            size='small'
+                            id="outlined-basic"
+                            label="AnswerOne"
+                            variant="outlined"
+                            size="small"
                           />
                         </Box>
 
                         <Box width={"29%"}>
-                          <FormControl fullWidth size='small'>
-                            <InputLabel id='demo-simple-select-label'>
+                          <FormControl fullWidth size="small">
+                            <InputLabel id="demo-simple-select-label">
                               Correct
                             </InputLabel>
                             <Select
                               {...props.register("correctOne")}
-                              labelId='demo-simple-select-label'
-                              id='demo-simple-select'
-                              label='Correct'>
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              value={props.questionCorrect.correctOne}
+                              onChange={(e) =>
+                                props.setQuestionCorrect({
+                                  ...props.questionCorrect,
+                                  correctOne: e.target.value,
+                                })
+                              }
+                              label="Correct"
+                            >
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
                             </Select>
@@ -468,23 +624,31 @@ const ModalForm = (props: any) => {
                           <TextField
                             {...props.register("answerTwo")}
                             fullWidth
-                            id='outlined-basic'
-                            label='AnswerTwo'
-                            variant='outlined'
-                            size='small'
+                            id="outlined-basic"
+                            label="AnswerTwo"
+                            variant="outlined"
+                            size="small"
                           />
                         </Box>
 
                         <Box width={"29%"}>
-                          <FormControl fullWidth size='small'>
-                            <InputLabel id='demo-simple-select-label'>
+                          <FormControl fullWidth size="small">
+                            <InputLabel id="demo-simple-select-label">
                               Correct
                             </InputLabel>
                             <Select
                               {...props.register("correctTwo")}
-                              labelId='demo-simple-select-label'
-                              id='demo-simple-select'
-                              label='Correct'>
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              label="Correct"
+                              value={props.questionCorrect.correctTwo}
+                              onChange={(e) =>
+                                props.setQuestionCorrect({
+                                  ...props.questionCorrect,
+                                  correctTwo: e.target.value,
+                                })
+                              }
+                            >
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
                             </Select>
@@ -496,23 +660,31 @@ const ModalForm = (props: any) => {
                           <TextField
                             {...props.register("answerThree")}
                             fullWidth
-                            id='outlined-basic'
-                            label='AnswerThree'
-                            variant='outlined'
-                            size='small'
+                            id="outlined-basic"
+                            label="AnswerThree"
+                            variant="outlined"
+                            size="small"
                           />
                         </Box>
 
                         <Box width={"29%"}>
-                          <FormControl fullWidth size='small'>
-                            <InputLabel id='demo-simple-select-label'>
+                          <FormControl fullWidth size="small">
+                            <InputLabel id="demo-simple-select-label">
                               Correct
                             </InputLabel>
                             <Select
                               {...props.register("correctThree")}
-                              labelId='demo-simple-select-label'
-                              id='demo-simple-select'
-                              label='Correct'>
+                              labelId="demo-simple-select-label"
+                              id="demo-simple-select"
+                              label="Correct"
+                              value={props.questionCorrect.correctThree}
+                              onChange={(e) =>
+                                props.setQuestionCorrect({
+                                  ...props.questionCorrect,
+                                  correctThree: e.target.value,
+                                })
+                              }
+                            >
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
                             </Select>
@@ -532,10 +704,12 @@ const ModalForm = (props: any) => {
                           display: "none !important",
                         },
                         width: "99.5%",
-                      }}>
+                      }}
+                    >
                       <Editor
-                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                         onEditorChange={props.handleEditorChange}
+                        value={props.content}
                         init={{
                           plugins:
                             "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -629,23 +803,25 @@ const ModalForm = (props: any) => {
                       <TextField
                         {...props.register("solution_key")}
                         fullWidth
-                        id='outlined-basic'
-                        label='Solution Key'
-                        variant='outlined'
-                        size='small'
+                        id="outlined-basic"
+                        label="Solution Key"
+                        variant="outlined"
+                        size="small"
                       />
                     </Box>
                     <Box width={"49%"}>
-                      <FormControl fullWidth size='small'>
-                        <InputLabel id='demo-simple-select-label'>
+                      <FormControl fullWidth size="small">
+                        <InputLabel id="demo-simple-select-label">
                           Type Exercise
                         </InputLabel>
                         <Select
                           {...props.register("type_exercise")}
-                          labelId='demo-simple-select-label'
-                          id='demo-simple-select'
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
                           onChange={props.handleChangeTypeExercise}
-                          label='Type Exercise'>
+                          label="Type Exercise"
+                          value={props.typeExersice}
+                        >
                           <MenuItem value={`html`}>Html</MenuItem>
                           <MenuItem value={`html-css`}>Html-Css</MenuItem>
                           <MenuItem value={`javascript`}>JavaScript</MenuItem>
@@ -657,17 +833,20 @@ const ModalForm = (props: any) => {
                     width={"98.5%"}
                     mt={"15px"}
                     display={"flex"}
-                    gap={"20px"}>
+                    gap={"20px"}
+                  >
                     <Box
                       sx={{
                         ".tox-statusbar": {
                           display: "none !important",
                         },
                         width: "50%",
-                      }}>
+                      }}
+                    >
                       <Editor
-                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                         onEditorChange={props.handleEditorChange}
+                        value={props.content}
                         init={{
                           plugins:
                             "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -755,7 +934,8 @@ const ModalForm = (props: any) => {
                       width={"50%"}
                       borderRadius={"10px"}
                       overflow={"hidden"}
-                      height={"290px"}>
+                      height={"290px"}
+                    >
                       <Stack
                         sx={{
                           ".css-1aquho2-MuiTabs-indicator": {
@@ -780,28 +960,32 @@ const ModalForm = (props: any) => {
                         direction={"row"}
                         justifyContent={"space-between"}
                         alignItems={"center"}
-                        width={"99.9%"}>
+                        width={"99.9%"}
+                      >
                         {props.typeExersice == "html" && (
                           <Tabs
                             value={props.valueRight}
                             onChange={props.handleChangeRight}
-                            aria-label='basic tabs example'>
+                            aria-label="basic tabs example"
+                          >
                             <Tab
                               label={
                                 <Stack
                                   direction={"row"}
                                   alignItems={"center"}
-                                  gap={"4px"}>
+                                  gap={"4px"}
+                                >
                                   <img
                                     src={html}
                                     width={17}
                                     height={17}
                                     style={{ borderRadius: "5px" }}
-                                    alt=''
+                                    alt=""
                                   />
                                   <Typography
                                     fontSize={"12px"}
-                                    sx={{ textTransform: "lowercase" }}>
+                                    sx={{ textTransform: "lowercase" }}
+                                  >
                                     index.html
                                   </Typography>
                                 </Stack>
@@ -813,23 +997,26 @@ const ModalForm = (props: any) => {
                           <Tabs
                             value={props.valueRight}
                             onChange={props.handleChangeRight}
-                            aria-label='basic tabs example'>
+                            aria-label="basic tabs example"
+                          >
                             <Tab
                               label={
                                 <Stack
                                   direction={"row"}
                                   alignItems={"center"}
-                                  gap={"4px"}>
+                                  gap={"4px"}
+                                >
                                   <img
                                     src={js}
                                     width={17}
                                     height={17}
                                     style={{ borderRadius: "5px" }}
-                                    alt=''
+                                    alt=""
                                   />
                                   <Typography
                                     fontSize={"12px"}
-                                    sx={{ textTransform: "lowercase" }}>
+                                    sx={{ textTransform: "lowercase" }}
+                                  >
                                     main.js
                                   </Typography>
                                 </Stack>
@@ -842,23 +1029,26 @@ const ModalForm = (props: any) => {
                             <Tabs
                               value={props.valueRight}
                               onChange={props.handleChangeRight}
-                              aria-label='basic tabs example'>
+                              aria-label="basic tabs example"
+                            >
                               <Tab
                                 label={
                                   <Stack
                                     direction={"row"}
                                     alignItems={"center"}
-                                    gap={"4px"}>
+                                    gap={"4px"}
+                                  >
                                     <img
                                       src={html}
                                       width={17}
                                       height={17}
                                       style={{ borderRadius: "5px" }}
-                                      alt=''
+                                      alt=""
                                     />
                                     <Typography
                                       fontSize={"12px"}
-                                      sx={{ textTransform: "lowercase" }}>
+                                      sx={{ textTransform: "lowercase" }}
+                                    >
                                       index.html
                                     </Typography>
                                   </Stack>
@@ -869,17 +1059,19 @@ const ModalForm = (props: any) => {
                                   <Stack
                                     direction={"row"}
                                     alignItems={"center"}
-                                    gap={"4px"}>
+                                    gap={"4px"}
+                                  >
                                     <img
                                       src={css}
                                       width={17}
                                       height={17}
                                       style={{ borderRadius: "5px" }}
-                                      alt=''
+                                      alt=""
                                     />
                                     <Typography
                                       fontSize={"12px"}
-                                      sx={{ textTransform: "lowercase" }}>
+                                      sx={{ textTransform: "lowercase" }}
+                                    >
                                       style.css
                                     </Typography>
                                   </Stack>
@@ -895,7 +1087,8 @@ const ModalForm = (props: any) => {
                           display={"flex"}
                           alignItems={"center"}
                           justifyContent={"center"}
-                          bgcolor={"#1e1e1e"}>
+                          bgcolor={"#1e1e1e"}
+                        >
                           <ReplayIcon sx={{ color: "white" }} />
                         </Box>
                       </Stack>
@@ -904,13 +1097,14 @@ const ModalForm = (props: any) => {
                           " .slider-mouseover": {
                             display: "none",
                           },
-                        }}>
+                        }}
+                      >
                         {props.typeExersice == "javascript" && (
                           <MonacoEditor
                             width={"100%"}
-                            height='250px'
-                            language='javascript'
-                            theme='vs-dark'
+                            height="250px"
+                            language="javascript"
+                            theme="vs-dark"
                             value={props.exercise}
                             onChange={(value) =>
                               props.handleChangeExercise(value)
@@ -919,9 +1113,9 @@ const ModalForm = (props: any) => {
                         )}
                         {props.typeExersice == "html" && (
                           <MonacoEditor
-                            height='250px'
-                            language='html'
-                            theme='vs-dark'
+                            height="250px"
+                            language="html"
+                            theme="vs-dark"
                             value={props.exerciseHtml}
                             onChange={(value) =>
                               props.handleChangeExerciseHtml(value)
@@ -932,9 +1126,9 @@ const ModalForm = (props: any) => {
                           <>
                             {props.valueRight == 0 && (
                               <MonacoEditor
-                                height='250px'
-                                language='html'
-                                theme='vs-dark'
+                                height="250px"
+                                language="html"
+                                theme="vs-dark"
                                 value={props.exerciseHtml}
                                 onChange={(value) =>
                                   props.handleChangeExerciseHtml(value)
@@ -943,9 +1137,9 @@ const ModalForm = (props: any) => {
                             )}
                             {props.valueRight == 1 && (
                               <MonacoEditor
-                                height='250px'
-                                language='css'
-                                theme='vs-dark'
+                                height="250px"
+                                language="css"
+                                theme="vs-dark"
                                 value={props.exerciseCss}
                                 onChange={(value) =>
                                   props.handleChangeExerciseCss(value)
@@ -965,7 +1159,8 @@ const ModalForm = (props: any) => {
               width={"100%"}
               display={"flex"}
               justifyContent={"end"}
-              gap={"10px"}>
+              gap={"10px"}
+            >
               <Button
                 onClick={props.handleClose}
                 sx={{
@@ -974,11 +1169,12 @@ const ModalForm = (props: any) => {
                   width: "82px",
                   height: "34px",
                   border: "1px solid #333",
-                }}>
+                }}
+              >
                 Close
               </Button>
               <Button
-                type='submit'
+                type="submit"
                 sx={{
                   background:
                     "linear-gradient(to right bottom, #ff8f26, #ff5117)",
@@ -986,7 +1182,8 @@ const ModalForm = (props: any) => {
                   borderRadius: "99px",
                   width: "92px",
                   height: "34px",
-                }}>
+                }}
+              >
                 Add
               </Button>
             </Box>
@@ -996,3 +1193,71 @@ const ModalForm = (props: any) => {
     </Modal>
   );
 };
+
+function MultipleSelect({ arrange, handleArrange }: any) {
+  const [personName, setPersonName]: any = React.useState([]);
+
+  const handleChange = (event: SelectChangeEvent<typeof personName>) => {
+    const {
+      target: { value },
+    } = event;
+    setPersonName(typeof value === "string" ? value.split(",") : value);
+  };
+
+  const sortedData = personName.map((id: any) => {
+    return arrange.find((item: any) => item._id === id);
+  });
+
+  return (
+    <div>
+      <FormControl sx={{ mt: "30px", width: "100%" }}>
+        <InputLabel id="demo-multiple-name-label">Select</InputLabel>
+        <Select
+          labelId="demo-multiple-name-label"
+          id="demo-multiple-name"
+          multiple
+          value={personName}
+          onChange={handleChange}
+          input={<OutlinedInput label="Name" />}
+        >
+          {arrange.map((name: any) => (
+            <MenuItem value={name._id}>{name.title}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Typography my={"20px"} fontSize={"14px"} color={"#333"}>
+        Thư tự bài học hiển thị
+      </Typography>
+      {sortedData &&
+        sortedData.map((item: any, index: number) => {
+          return (
+            <Paper
+              sx={{ width: "100%", padding: "10px", mt: "10px" }}
+              elevation={3}
+            >
+              <Box display={"flex"} gap={"10px"}>
+                <Typography>Bài {index + 1}</Typography> :{" "}
+                <Typography>{item.title}</Typography>
+              </Box>
+            </Paper>
+          );
+        })}
+
+      <Button
+        disabled={sortedData.length == arrange.length ? false : true}
+        onClick={() => handleArrange(sortedData)}
+        sx={{
+          background: "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+          color: "white",
+          borderRadius: "10px",
+          width: "92px",
+          height: "34px",
+          mt: "30px",
+          opacity: sortedData.length == arrange.length ? 1 : 0.5,
+        }}
+      >
+        Submit
+      </Button>
+    </div>
+  );
+}

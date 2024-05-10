@@ -30,6 +30,14 @@ export const updateCourses = async (value: typeCourses) => {
     console.log(`update_Courses`, error);
   }
 };
+export const updateArrangeCourses = async (value: any) => {
+  try {
+    const response = await axios.put(`/courses/arrange/${value._id}`, value.lesson);
+    return response;
+  } catch (error) {
+    console.log(`update_Lesson`, error);
+  }
+};
 export const deleteCourses = async (id?: string) => {
   try {
     const response = await axios.delete(`/courses/${id}`);

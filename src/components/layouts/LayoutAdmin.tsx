@@ -26,19 +26,31 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import {
+  RiArticleLine,
   RiCloseCircleFill,
+  RiFileListFill,
+  RiGitBranchFill,
   RiInboxFill,
   RiMailAddFill,
   RiMenuFill,
+  RiMessage3Fill,
   RiNotification2Fill,
+  RiOrganizationChart,
+  RiPencilFill,
   RiSearch2Fill,
+  RiShuffleFill,
+  RiSlideshow4Fill,
+  RiTeamFill,
+  RiUserAddFill,
+  
+  
 } from "react-icons/ri";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../../App.css";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -102,7 +114,7 @@ const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
 }));
 
 const LayoutAdmin = () => {
-  const theme = useTheme();
+  const theme:any = useTheme();
   const [open, setOpen] = React.useState(true);
   const [selectedItem, setSelectedItem] = useState("");
 
@@ -247,7 +259,7 @@ const LayoutAdmin = () => {
               </Badge>
 
               <IconButton>
-                <Avatar
+                {/* <Avatar
                   alt='Nguyễn Ngọc Diệp'
                   src='/static/images/avatar/1.jpg'
                   sx={{ width: "35px", height: "35px" }}
@@ -256,7 +268,7 @@ const LayoutAdmin = () => {
                   // ariaHasPopup="true"
                   // ariaExpande={openned ? "true" : undefined}
                   onClick={handleClick}
-                />
+                /> */}
               </IconButton>
             </Box>
 
@@ -300,41 +312,175 @@ const LayoutAdmin = () => {
           <Divider />
 
           <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem key={text} disablePadding>
+              <Typography ml={"5px"}>Courses</Typography>
+              <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
                 <CustomListItemButton
-                  selected={selectedItem === text}
-                  onClick={() => handleListItemClick(text)}
-                  sx={{
-                    borderRadius: "5px",
-                    margin: "3px 12px",
-                  }}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <RiInboxFill /> : <RiMailAddFill />}
+                  >
+                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiSlideshow4Fill />
                   </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText primary={"Courses"} />
                 </CustomListItemButton>
+                
+                </Link>
               </ListItem>
-            ))}
+              <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/lesson"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiFileListFill />
+                  </ListItemIcon>
+                  <ListItemText primary={"Lesson"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+              <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/sublesson"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiOrganizationChart />
+                  </ListItemIcon>
+                  <ListItemText primary={"Sub Lesson"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+           
           </List>
           <Divider />
           <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem key={text} disablePadding>
+          <Typography ml={"5px"}>Category</Typography>
+          <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
                 <CustomListItemButton
-                  selected={selectedItem === text}
-                  onClick={() => handleListItemClick(text)}
-                  sx={{
-                    borderRadius: "5px",
-                    margin: "3px 12px",
-                  }}>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <RiInboxFill /> : <RiMailAddFill />}
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiGitBranchFill />
                   </ListItemIcon>
-                  <ListItemText primary={text} />
+                  <ListItemText primary={"Category"} />
                 </CustomListItemButton>
+                
+                </Link>
               </ListItem>
-            ))}
+          </List>
+          <Divider />
+          <List>
+            
+          <Typography ml={"5px"}>Post</Typography>
+          <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiArticleLine />
+                  </ListItemIcon>
+                  <ListItemText primary={"Blog"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+          </List>
+          <Divider />
+          <List>
+          <Typography ml={"5px"}>Comment</Typography>
+          <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiMessage3Fill />
+                  </ListItemIcon>
+                  <ListItemText primary={"Comment"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+          </List>
+          <Divider />
+          <List>
+          <Typography ml={"5px"}>User</Typography>
+          <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiUserAddFill />
+                  </ListItemIcon>
+                  <ListItemText primary={"User"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+              <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiTeamFill />
+                  </ListItemIcon>
+                  <ListItemText primary={"Permission"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+              <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiPencilFill />
+                  </ListItemIcon>
+                  <ListItemText primary={"Role"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+              <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/courses"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiShuffleFill />
+                  </ListItemIcon>
+                  <ListItemText primary={"Role Permission"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
           </List>
         </Drawer>
         <Main open={open}>

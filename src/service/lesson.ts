@@ -33,6 +33,14 @@ export const updateLesson = async (value: any) => {
     console.log(`update_Lesson`, error);
   }
 };
+export const updateArrangeLesson = async (value: any) => {
+  try {
+    const response = await axios.put(`/lesson/arrange/${value._id}`, value.sub_lesson);
+    return response;
+  } catch (error) {
+    console.log(`update_Lesson`, error);
+  }
+};
 export const deleteLesson = async (id?: string,idCourses?:string) => {
   try {
     const response = await axios.delete(`/lesson/${id}/${idCourses}`);

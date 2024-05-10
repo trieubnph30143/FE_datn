@@ -17,25 +17,16 @@ export const addSubLesson = async (value: any) => {
 };
 export const updateSubLesson = async (value: any) => {
   try {
-    const response = await axios.put(`/sublesson/${value._id}`, {
-      lesson: {
-        title: value.title,
-        description: value.description,
-        duration: value.duration,
-        courses_id: value.courses_id,
-        sub_lesson: value.sub_lesson,
-      },
-      changeCourses: value.changeCourses,
-      coursesOld: value.coursesOld,
-    });
+    
+    const response = await axios.put(`/sublesson/${value.body._id}`,value);
     return response.data;
   } catch (error) {
     console.log(`update_Lesson`, error);
   }
 };
-export const deleteSubLesson = async (id?: string, idCourses?: string) => {
+export const deleteSubLesson = async (id?: string, idLesson?: string) => {
   try {
-    const response = await axios.delete(`/sublesson/${id}`);
+    const response = await axios.delete(`/sublesson/${id}/${idLesson}`);
     return response.data;
   } catch (error) {
     console.log(`delete_Lesson`, error);
