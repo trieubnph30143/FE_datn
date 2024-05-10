@@ -124,3 +124,15 @@ footer {
   font-size: 15px;
   /* line-height: 30px; */
 }
+.not-found{
+  font-size: 150px;
+  font-weight: 900;
+  background: linear-gradient(to top , #aa39fa, #fa39b3, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+/* .back:hover { 
+  background-color: orange;
+  transition:  0.3s ease; 
+} */
