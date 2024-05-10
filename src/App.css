@@ -85,7 +85,14 @@ body::-webkit-scrollbar-thumb {
   background-color: #e6e0e0;
   border: 1px solid #e4dfdf;
 }
+.not-found{
+  font-size: 150px;
+  font-weight: 900;
+  background: linear-gradient(to top , #aa39fa, #fa39b3, #ff9800);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 
+}
 /* Footer Styles */
 footer {
   background-color: #1f1e1e;

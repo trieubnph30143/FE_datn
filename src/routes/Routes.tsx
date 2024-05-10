@@ -10,6 +10,7 @@ import HomeController from "@/pages/client/home/HomeController";
 import LearningController from "@/pages/client/learning/LearningController";
 import LearningRoadmapController from "@/pages/client/learning_roadmap/LearningRoadmapController";
 import MyArticleController from "@/pages/client/my_article/MyArticleController";
+import PageNotFound from "@/pages/client/page_not_found/PageNotFound";
 import ProfileController from "@/pages/client/profile/ProfileController";
 import SettingProfileController from "@/pages/client/setting_profile/SettingProfileController";
 import WiteBlogPostController from "@/pages/client/wite_blog_post/WiteBlogPostController";
@@ -39,6 +40,7 @@ const Router = () => {
           <Route path='sublesson' element={<SubLessonController />} />
           <Route path='categories' element={<CategoriesController />} />
         </Route>
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );
