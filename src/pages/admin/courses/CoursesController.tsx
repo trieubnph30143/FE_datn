@@ -19,7 +19,18 @@ const CoursesController = () => {
   const [valueCategory, setValueCategory] = useState("");
   const handleCloseModal = () => setOpenModal(false);
   const [action, setAction]: any = useState("CREATE");
+  const [resultCourses, setResultCourses]: any = useState([]);
+  const [resultCoursesEdit, setResultCoursesEdit]: any = useState(null);
+  const [textResultCourses, setTextResultCourses]: any = useState("");
   const [imageUrl, setImageUrl] = React.useState("");
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const [coursesRequirements, setCoursesRequirements]: any = useState([]);
+  const [CoursesRequirementsEdit, setCoursesRequirementsEdit]: any =
+    useState(null);
+  const [textCoursesRequirements, setTextCoursesRequirements]: any =
+    useState("");
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     dataDelete: any
@@ -39,9 +50,12 @@ const CoursesController = () => {
     useCoursesMutation({
       file,
       action: action,
+      resultCourses,
+      coursesRequirements,
       onSuccess: () => {
         reset();
         setTimeout(() => {
+          setResultCourses([]);
           handleCloseModal();
           setLoading(false);
           setFile(null);
@@ -57,6 +71,8 @@ const CoursesController = () => {
   const handleOpenModal = (type: any, data: any) => {
     setAction(type);
     if (type == "CREATE") {
+      setResultCourses([]);
+      setCoursesRequirements([]);
       setValueCategory("");
       reset({
         title: "",
@@ -68,6 +84,8 @@ const CoursesController = () => {
       setImageUrl("");
       setOpenModal(true);
     } else {
+      setCoursesRequirements(data.courses_requirements);
+      setResultCourses(data.result_courses);
       setImageUrl(data.image.url);
       setValueCategory(data.category_id[0]._id);
 
@@ -97,8 +115,52 @@ const CoursesController = () => {
     }
   };
 
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const handleResultCourses = () => {
+    if (resultCoursesEdit !== null) {
+      let arr = resultCourses.map((item: any, index: number) =>
+        index == resultCoursesEdit ? textResultCourses : item
+      );
+
+      setResultCourses(arr);
+      setTextResultCourses("");
+      setResultCoursesEdit(null);
+    } else {
+      setResultCourses([...resultCourses, textResultCourses]);
+      setTextResultCourses("");
+    }
+  };
+  const handleDeleteResultCourses = (index: number) => {
+    setResultCourses(resultCourses.filter((item: any, i: any) => i !== index));
+  };
+  const handleEditResultCourses = (index: number) => {
+    setResultCoursesEdit(index);
+    setTextResultCourses(resultCourses[index]);
+  };
+
+  const handleCoursesRequirements = () => {
+    if (CoursesRequirementsEdit !== null) {
+      let arr = coursesRequirements.map((item: any, index: number) =>
+        index == CoursesRequirementsEdit ? textCoursesRequirements : item
+      );
+      
+      setCoursesRequirements(arr);
+      setTextCoursesRequirements("");
+      setCoursesRequirementsEdit(null);
+    } else {
+      setCoursesRequirements([...coursesRequirements, textCoursesRequirements]);
+      setTextCoursesRequirements("");
+    }
+  };
+  const handleDeleteCoursesRequirements = (index: number) => {
+    setCoursesRequirements(
+      coursesRequirements.filter((item: any, i: any) => i !== index)
+    );
+  };
+  const handleEditCoursesRequirements = (index: number) => {
+    setCoursesRequirementsEdit(index);
+    setTextCoursesRequirements(coursesRequirements[index]);
+  };
+
   return (
     <>
       <CoursesView
@@ -125,6 +187,20 @@ const CoursesController = () => {
         setImageUrl={setImageUrl}
         imageUrl={imageUrl}
         setValueCategory={setValueCategory}
+        setTextResultCourses={setTextResultCourses}
+        textResultCourses={textResultCourses}
+        handleResultCourses={handleResultCourses}
+        resultCourses={resultCourses}
+        handleDeleteResultCourses={handleDeleteResultCourses}
+        handleEditResultCourses={handleEditResultCourses}
+        resultCoursesEdit={resultCoursesEdit}
+        setTextCoursesRequirements={setTextCoursesRequirements}
+        textCoursesRequirements={textCoursesRequirements}
+        handleCoursesRequirements={handleCoursesRequirements}
+        coursesRequirements={coursesRequirements}
+        handleDeleteCoursesRequirements={handleDeleteCoursesRequirements}
+        handleEditCoursesRequirements={handleEditCoursesRequirements}
+        CoursesRequirementsEdit={CoursesRequirementsEdit}
       />
       {loading && <Loading />}
     </>

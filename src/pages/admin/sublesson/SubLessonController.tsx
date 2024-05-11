@@ -6,6 +6,7 @@ import SubLessonView from "./SubLessonView";
 import { useSubLessonMutation } from "@/hooks/useSubLessonMutation";
 import { getSubLesson } from "@/service/sub_lesson";
 import { getCourses } from "@/service/courses";
+import Loading from "@/components/Loading";
 
 const SubLessonController = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -13,8 +14,8 @@ const SubLessonController = () => {
   );
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
-  const [typeOld, setTypeOld]:any = useState(null);
-  const [typeOldLesson, setTypeOldLesson]:any = useState(null);
+  const [typeOld, setTypeOld]: any = useState(null);
+  const [typeOldLesson, setTypeOldLesson]: any = useState(null);
   const [typeExersice, setTypeExersice] = useState("html");
   const [deleteLesson, setDeleteLesson] = useState(null);
   const [openModal, setOpenModal] = React.useState(false);
@@ -28,10 +29,9 @@ const SubLessonController = () => {
   const [exerciseCss, setexerciseCss] = React.useState("");
   const [exercise, setExercise]: any = useState();
   const [questionCorrect, setQuestionCorrect]: any = useState({
-    correctOne:"",
-    correctTwo:"",
-    correctThree:"",
-
+    correctOne: "",
+    correctTwo: "",
+    correctThree: "",
   });
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
@@ -82,103 +82,114 @@ const SubLessonController = () => {
   const { data } = useQuery("sublesson", {
     queryFn: () => getSubLesson(),
   });
-  const { data:courses } = useQuery("courses", {
+  const { data: courses } = useQuery("courses", {
     queryFn: () => getCourses(),
   });
 
-  const { register, handleSubmit, onFinish, errors, reset,setValue:setValueForm } =
-    useSubLessonMutation({
-      action: action,
-      type: value,
-      content,
-      typeExersice,
-      exerciseHtml,
-      exerciseCss,
-      exercise,
-      typeOld,
-      typeOldLesson,
-      onSuccess: () => {
-        reset();
-        setTimeout(() => {
-          handleCloseModal();
-          setLoading(false);
-          queryClient.invalidateQueries({
-            queryKey: ["courses"],
-          });
-          if (action == "UPDATE") {
-            setDataEdit(null);
-          }
-        }, 1000);
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    onFinish,
+    errors,
+    reset,
+    setValue: setValueForm,
+  } = useSubLessonMutation({
+    action: action,
+    type: value,
+    content,
+    typeExersice,
+    exerciseHtml,
+    exerciseCss,
+    exercise,
+    typeOld,
+    typeOldLesson,
+    onSuccess: () => {
+      reset();
+      setTimeout(() => {
+        handleCloseModal();
+        setLoading(false);
+        queryClient.invalidateQueries({
+          queryKey: ["courses"],
+        });
+        if (action == "UPDATE") {
+          setDataEdit(null);
+        }
+      }, 1000);
+    },
+  });
   const handleClose = () => {
     setDeleteLesson(null);
     setAnchorEl(null);
   };
 
-  const handleOpenModal = (type: any, data: any,lesson:any) => {
-   
+  const handleOpenModal = (type: any, data: any, lesson: any) => {
     setAction(type);
     if (type == "CREATE") {
-      setLesson(lesson)
-      setValue(0)
-      setValueLesson("")
-      setContent("")
+      setLesson(lesson);
+      setValue(0);
+      setValueLesson("");
+      setContent("");
       setQuestionCorrect({
-        correctOne:"",
-        correctTwo:"",
-        correctThree:"",
-      })
-      setTypeExersice("html")
-      setExercise("")
-      setexerciseCss("")
-      setexerciseHtml("")
-      reset({title:"",duration:'',description:""})
+        correctOne: "",
+        correctTwo: "",
+        correctThree: "",
+      });
+      setTypeExersice("html");
+      setExercise("");
+      setexerciseCss("");
+      setexerciseHtml("");
+      reset({ title: "", duration: "", description: "" });
       setOpenModal(true);
     } else {
-      setLesson(lessonEdit)
-      setTypeOldLesson(data.lesson[0])
+      setLesson(lessonEdit);
+      setTypeOldLesson(data.lesson[0]);
       if (data.type == "video") {
         setValue(0);
-        setTypeOld(0)
+        setTypeOld(0);
         reset({ ...data, lesson_id: data.lesson[0] });
       } else if (data.type == "quiz") {
-        setContent(data.content_quizz)
-        let question = JSON.parse(data.questions)
+        setContent(data.content_quizz);
+        let question = JSON.parse(data.questions);
         setQuestionCorrect({
-          correctOne:question[0].correctOne,
-          correctTwo:question[1].correctTwo,
-          correctThree:question[2].correctThree,
-        })
-        reset({ ...data, lesson_id: data.lesson[0],answerOne:question[0].answerOne,answerTwo:question[1].answerTwo,answerThree:question[2].answerThree, });
+          correctOne: question[0].correctOne,
+          correctTwo: question[1].correctTwo,
+          correctThree: question[2].correctThree,
+        });
+        reset({
+          ...data,
+          lesson_id: data.lesson[0],
+          answerOne: question[0].answerOne,
+          answerTwo: question[1].answerTwo,
+          answerThree: question[2].answerThree,
+        });
         setValue(1);
-        setTypeOld(1)
+        setTypeOld(1);
       } else if (data.type == "blog") {
-        setTypeOld(2)
+        setTypeOld(2);
         setValue(2);
-        setContent(data.content_blog)
+        setContent(data.content_blog);
         reset({ ...data, lesson_id: data.lesson[0] });
       } else if (data.type == "code") {
-        setTypeOld(3)
+        setTypeOld(3);
         setValue(3);
-        setContent(data.content_code)
-        
-        if(Object.keys(JSON.parse(data.type_exercise)).length==2){
-          setTypeExersice("html-css")
+        setContent(data.content_code);
+
+        if (Object.keys(JSON.parse(data.type_exercise)).length == 2) {
+          setTypeExersice("html-css");
           for (let key in JSON.parse(data.type_exercise)) {
-            if(key=="html"){
-              setexerciseHtml(JSON.parse(data.type_exercise).html)
-            }else{
-              setexerciseCss(JSON.parse(data.type_exercise).css)
+            if (key == "html") {
+              setexerciseHtml(JSON.parse(data.type_exercise).html);
+            } else {
+              setexerciseCss(JSON.parse(data.type_exercise).css);
             }
           }
-        }else{
+        } else {
           for (let key in JSON.parse(data.type_exercise)) {
-            setTypeExersice(key)
-            if(key=="html"){
-              setexerciseHtml(JSON.parse(data.type_exercise).html)
-            }else{
-              setExercise(JSON.parse(data.type_exercise).javascript)
+            setTypeExersice(key);
+            if (key == "html") {
+              setexerciseHtml(JSON.parse(data.type_exercise).html);
+            } else {
+              setExercise(JSON.parse(data.type_exercise).javascript);
             }
           }
         }
@@ -206,13 +217,16 @@ const SubLessonController = () => {
     setLoading(true);
     onRemove(value);
   };
-  const handleArrange =async (dataArrange:any) => {
+  const handleArrange = async (dataArrange: any) => {
     try {
-      let newArr = dataArrange.map((item:any)=> item._id)
-      let data = await updateArrangeLesson({_id:dataArrange[0].lesson[0],sub_lesson:newArr})
-      if(data?.status==0){
-        setOpenDrawer(false)
-       
+      let newArr = dataArrange.map((item: any) => item._id);
+      let data = await updateArrangeLesson({
+        _id: dataArrange[0].lesson[0],
+        sub_lesson: newArr,
+      });
+      if (data?.status == 0) {
+        setOpenDrawer(false);
+
         queryClient.invalidateQueries({
           queryKey: ["courses"],
         });
@@ -220,12 +234,11 @@ const SubLessonController = () => {
     } catch (error) {
       console.log(error);
     }
-    
-  }
+  };
 
-  
   return (
     <>
+      {loading && <Loading />}
       <SubLessonView
         register={register}
         handleSubmit={handleSubmit}
@@ -269,7 +282,6 @@ const SubLessonController = () => {
         toggleDrawer={toggleDrawer}
         openDrawer={openDrawer}
         arrange={arrange}
-        
       />
     </>
   );

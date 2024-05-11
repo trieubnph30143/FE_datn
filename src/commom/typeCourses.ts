@@ -9,4 +9,6 @@ type typeCourses = {
   students: any;
   lesson: any;
   rating: number;
+  result_courses: string[];
+  courses_requirements: string[];
 };

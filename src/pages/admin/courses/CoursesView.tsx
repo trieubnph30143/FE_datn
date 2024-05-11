@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Modal,
@@ -21,6 +22,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import { RiUploadCloudFill } from "react-icons/ri";
+import AddIcon from "@mui/icons-material/Add";
+import ClearIcon from "@mui/icons-material/Clear";
+import EditIcon from "@mui/icons-material/Edit";
+import { limitDescription } from "@/utils/utils";
 type typeProps = {
   data: typeCourses[];
   register: any;
@@ -45,6 +50,20 @@ type typeProps = {
   setImageUrl: any;
   imageUrl: any;
   setValueCategory: any;
+  setTextResultCourses: any;
+  textResultCourses: any;
+  handleResultCourses: any;
+  resultCourses: any;
+  handleDeleteResultCourses: any;
+  handleEditResultCourses: any;
+  resultCoursesEdit: any;
+  setTextCoursesRequirements: any;
+  textCoursesRequirements: any;
+  handleCoursesRequirements: any;
+  coursesRequirements: any;
+  handleDeleteCoursesRequirements: any;
+  handleEditCoursesRequirements: any;
+  CoursesRequirementsEdit: any;
 };
 
 const CoursesView = ({
@@ -71,6 +90,20 @@ const CoursesView = ({
   setImageUrl,
   imageUrl,
   setValueCategory,
+  textResultCourses,
+  setTextResultCourses,
+  handleResultCourses,
+  resultCourses,
+  handleDeleteResultCourses,
+  handleEditResultCourses,
+  resultCoursesEdit,
+  setTextCoursesRequirements,
+  textCoursesRequirements,
+  handleCoursesRequirements,
+  coursesRequirements,
+  handleDeleteCoursesRequirements,
+  handleEditCoursesRequirements,
+  CoursesRequirementsEdit,
 }: typeProps) => {
   return (
     <>
@@ -93,32 +126,50 @@ const CoursesView = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data &&
-              data.length &&
-              data.map((row) => (
-                <TableRow
-                  key={row.title}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  <TableCell align='left'>{row.title}</TableCell>
-                  <TableCell component='th' scope='row'>
-                    <img src={row.image.url} width={50} height={50} alt='' />
-                  </TableCell>
-                  <TableCell align='left'>{row.category_id.length&& row.category_id[0].name}</TableCell>
-                  <TableCell align='left'>{row.price}</TableCell>
-                  <TableCell align='left'>{row.description}</TableCell>
-                  <TableCell align='left'>
-                    <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                      Edit
-                    </Button>
-                    <Button
-                      aria-describedby={id}
-                      onClick={(e) => handleClick(e, row)}
-                      sx={{ color: "red" }}>
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+            {data && data[0] ? (
+              <>
+                {data &&
+                  data.length &&
+                  data.map((row) => (
+                    <TableRow
+                      key={row.title}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}>
+                      <TableCell align='left'>{row.title}</TableCell>
+                      <TableCell component='th' scope='row'>
+                        <img
+                          src={row.image.url}
+                          width={50}
+                          height={50}
+                          alt=''
+                        />
+                      </TableCell>
+                      <TableCell align='left'>
+                        {row.category_id.length && row.category_id[0].name}
+                      </TableCell>
+                      <TableCell align='left'>{row.price}</TableCell>
+                      <TableCell align='left'>{row.description}</TableCell>
+                      <TableCell align='left'>
+                        <Button onClick={() => handleOpenModal("UPDATE", row)}>
+                          Edit
+                        </Button>
+                        <Button
+                          aria-describedby={id}
+                          onClick={(e) => handleClick(e, row)}
+                          sx={{ color: "red" }}>
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </>
+            ) : (
+              <TableRow>
+                {" "}
+                <TableCell>Not Found Data</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -162,6 +213,20 @@ const CoursesView = ({
         setImageUrl={setImageUrl}
         imageUrl={imageUrl}
         setValueCategory={setValueCategory}
+        setTextResultCourses={setTextResultCourses}
+        textResultCourses={textResultCourses}
+        handleResultCourses={handleResultCourses}
+        resultCourses={resultCourses}
+        handleDeleteResultCourses={handleDeleteResultCourses}
+        handleEditResultCourses={handleEditResultCourses}
+        resultCoursesEdit={resultCoursesEdit}
+        setTextCoursesRequirements={setTextCoursesRequirements}
+        textCoursesRequirements={textCoursesRequirements}
+        handleCoursesRequirements={handleCoursesRequirements}
+        coursesRequirements={coursesRequirements}
+        handleDeleteCoursesRequirements={handleDeleteCoursesRequirements}
+        handleEditCoursesRequirements={handleEditCoursesRequirements}
+        CoursesRequirementsEdit={CoursesRequirementsEdit}
       />
     </>
   );
@@ -262,7 +327,7 @@ const ModalForm = (props: any) => {
                 </Select>
               </FormControl>
             </Box>
-            <Box width={"32%"}>
+            <Box width={"24%"}>
               <div
                 className='container'
                 style={{
@@ -315,7 +380,7 @@ const ModalForm = (props: any) => {
                 />
               </div>
             </Box>
-            <Box width={"66.3%"}>
+            <Box width={"24%"}>
               <TextField
                 {...props.register("description")}
                 id='outlined-multiline-static'
@@ -324,6 +389,166 @@ const ModalForm = (props: any) => {
                 rows={9.5}
                 fullWidth
               />
+            </Box>
+            <Box width={"24%"}>
+              <TextField
+                id='outlined-multiline-static'
+                label='Result Courses'
+                fullWidth
+                size='small'
+                value={props.textResultCourses}
+                onChange={(e) => props.setTextResultCourses(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <Box
+                        onClick={props.handleResultCourses}
+                        width={30}
+                        sx={{
+                          background:
+                            "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                        }}
+                        height={30}
+                        display={"flex"}
+                        justifyContent={"center"}
+                        alignItems={"center"}>
+                        {props.resultCoursesEdit !== null ? (
+                          <EditIcon sx={{ color: "white" }} />
+                        ) : (
+                          <AddIcon sx={{ color: "white" }} />
+                        )}
+                      </Box>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Box
+                mt={"10px"}
+                className='resultCourses'
+                height={"190px"}
+                sx={{ overflowY: "scroll" }}>
+                {props.resultCourses &&
+                  props.resultCourses.map((item: any, index: any) => {
+                    return (
+                      <Paper
+                        sx={{ width: "100%", padding: "9px", mt: "8px" }}
+                        elevation={1}>
+                        <Box
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          gap={"10px"}>
+                          <Typography>{limitDescription(item, 23)}</Typography>
+                          <Stack
+                            sx={{ cursor: "pointer" }}
+                            direction={"row"}
+                            gap={"10px"}
+                            alignItems={"center"}>
+                            <Box
+                              onClick={() =>
+                                props.handleEditResultCourses(index)
+                              }>
+                              <EditIcon
+                                sx={{ fontSize: "16px", color: "green" }}
+                              />
+                            </Box>
+                            <Box
+                              onClick={() =>
+                                props.handleDeleteResultCourses(index)
+                              }>
+                              <ClearIcon
+                                sx={{ fontSize: "20px", color: "red" }}
+                              />
+                            </Box>
+                          </Stack>
+                        </Box>
+                      </Paper>
+                    );
+                  })}
+              </Box>
+            </Box>
+            <Box width={"24%"}>
+              <TextField
+                id='outlined-multiline-static'
+                label='Courses Requirements'
+                fullWidth
+                size='small'
+                value={props.textCoursesRequirements}
+                onChange={(e) =>
+                  props.setTextCoursesRequirements(e.target.value)
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <Box
+                        onClick={props.handleCoursesRequirements}
+                        width={30}
+                        sx={{
+                          background:
+                            "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                        }}
+                        height={30}
+                        display={"flex"}
+                        justifyContent={"center"}
+                        alignItems={"center"}>
+                        {props.CoursesRequirementsEdit !== null ? (
+                          <EditIcon sx={{ color: "white" }} />
+                        ) : (
+                          <AddIcon sx={{ color: "white" }} />
+                        )}
+                      </Box>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Box
+                mt={"10px"}
+                className='resultCourses'
+                height={"190px"}
+                sx={{ overflowY: "scroll" }}>
+                {props.coursesRequirements &&
+                  props.coursesRequirements.map((item: any, index: any) => {
+                    return (
+                      <Paper
+                        sx={{ width: "100%", padding: "9px", mt: "8px" }}
+                        elevation={1}>
+                        <Box
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"space-between"}
+                          gap={"10px"}>
+                          <Typography>{limitDescription(item, 23)}</Typography>
+                          <Stack
+                            sx={{ cursor: "pointer" }}
+                            direction={"row"}
+                            gap={"10px"}
+                            alignItems={"center"}>
+                            <Box
+                              onClick={() =>
+                                props.handleEditCoursesRequirements(index)
+                              }>
+                              <EditIcon
+                                sx={{ fontSize: "16px", color: "green" }}
+                              />
+                            </Box>
+                            <Box
+                              onClick={() =>
+                                props.handleDeleteCoursesRequirements(index)
+                              }>
+                              <ClearIcon
+                                sx={{ fontSize: "20px", color: "red" }}
+                              />
+                            </Box>
+                          </Stack>
+                        </Box>
+                      </Paper>
+                    );
+                  })}
+              </Box>
             </Box>
             <Box
               width={"100%"}

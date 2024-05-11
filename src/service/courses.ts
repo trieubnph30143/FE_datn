@@ -24,6 +24,8 @@ export const updateCourses = async (value: typeCourses) => {
       image: value.image,
       instructor: value.instructor,
       category_id: value.category_id,
+      result_courses: value.result_courses,
+      courses_requirements: value.courses_requirements,
     });
     return response.data;
   } catch (error) {
@@ -32,7 +34,10 @@ export const updateCourses = async (value: typeCourses) => {
 };
 export const updateArrangeCourses = async (value: any) => {
   try {
-    const response = await axios.put(`/courses/arrange/${value._id}`, value.lesson);
+    const response = await axios.put(
+      `/courses/arrange/${value._id}`,
+      value.lesson
+    );
     return response;
   } catch (error) {
     console.log(`update_Lesson`, error);

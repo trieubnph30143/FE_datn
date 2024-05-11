@@ -9,6 +9,8 @@ type useCoursesMutationProps = {
   defaultValues?: any;
   onSuccess?: () => void;
   file?: any;
+  resultCourses?: any;
+  coursesRequirements?: any;
 };
 const schema = yup.object({
   title: yup.string().required(),
@@ -22,6 +24,8 @@ export const useCoursesMutation = ({
   defaultValues = { name: "" },
   onSuccess,
   file,
+  resultCourses,
+  coursesRequirements,
 }: useCoursesMutationProps) => {
   const queryClient = useQueryClient();
 
@@ -69,11 +73,18 @@ export const useCoursesMutation = ({
           students: [],
           lesson: [],
           rating: 0,
+          result_courses: resultCourses,
+          courses_requirements: coursesRequirements,
         });
       }
     } else {
       if (file === null) {
-        mutate({ ...values, category_id: [values.category_id] });
+        mutate({
+          ...values,
+          category_id: [values.category_id],
+          result_courses: resultCourses,
+          courses_requirements: coursesRequirements,
+        });
       } else {
         let image: any = await deleteImage(values.image.public_id);
         if (image.imageUrl.result == "ok") {
@@ -88,6 +99,8 @@ export const useCoursesMutation = ({
                 url: upload.imageUrl.secure_url,
                 public_id: upload.imageUrl.public_id,
               },
+              result_courses: resultCourses,
+              courses_requirements: coursesRequirements,
             });
           }
         }

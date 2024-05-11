@@ -70,6 +70,20 @@ body::-webkit-scrollbar-thumb {
   background-color: #e6e0e0;
   border: 1px solid #e4dfdf;
 }
+.resultCourses::-webkit-scrollbar-track {
+  padding: 2px 0;
+}
+
+.resultCourses::-webkit-scrollbar {
+  width: 10px;
+}
+
+.resultCourses::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(255, 240, 240, 0.3);
+  background-color: #e6e0e0;
+  border: 1px solid #e4dfdf;
+}
 
 .see-more::-webkit-scrollbar-track {
   background-color: #d1d1d1;
@@ -85,13 +99,12 @@ body::-webkit-scrollbar-thumb {
   background-color: #e6e0e0;
   border: 1px solid #e4dfdf;
 }
-.not-found{
+.not-found {
   font-size: 150px;
   font-weight: 900;
-  background: linear-gradient(to top , #aa39fa, #fa39b3, #ff9800);
+  background: linear-gradient(to top, #aa39fa, #fa39b3, #ff9800);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
 }
 /* Footer Styles */
 footer {
