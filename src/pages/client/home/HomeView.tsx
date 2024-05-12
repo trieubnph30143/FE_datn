@@ -6,7 +6,11 @@ import slider3 from "../../../images/slider3.png";
 import { useState } from "react";
 import Product from "@/components/Product";
 import ProductList from "@/components/ProductList";
-const HomeView = () => {
+type Props = {
+  courses:typeCourses[];
+};
+
+const HomeView = ({courses}:Props) => {
   const settings = {
     customPaging: function (i: any) {
       return (
@@ -212,7 +216,7 @@ const HomeView = () => {
         </Slider>
       </Box>
       <ProductList type='takecharge' title='Khóa học Pro' />
-      <ProductList type={"free"} title='Khóa học miễn phí' />
+      <ProductList type={"free"} data={courses} title='Khóa học miễn phí' />
       <ProductList type={"blog"} title='Bài viết nổi bật' />
       <ProductList type={"video"} title='Videos nổi bật' />
     </>

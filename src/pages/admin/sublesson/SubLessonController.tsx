@@ -151,16 +151,16 @@ const SubLessonController = () => {
         setContent(data.content_quizz);
         let question = JSON.parse(data.questions);
         setQuestionCorrect({
-          correctOne: question[0].correctOne,
-          correctTwo: question[1].correctTwo,
-          correctThree: question[2].correctThree,
+          correctOne: question[0].result,
+          correctTwo: question[1].result,
+          correctThree: question[2].result,
         });
         reset({
           ...data,
           lesson_id: data.lesson[0],
-          answerOne: question[0].answerOne,
-          answerTwo: question[1].answerTwo,
-          answerThree: question[2].answerThree,
+          answerOne: question[0].answer,
+          answerTwo: question[1].answer,
+          answerThree: question[2].answer,
         });
         setValue(1);
         setTypeOld(1);

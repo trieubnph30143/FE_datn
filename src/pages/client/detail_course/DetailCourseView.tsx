@@ -1,87 +1,66 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   RiAddFill,
+  RiArticleLine,
   RiBatteryChargeFill,
   RiCheckFill,
   RiDashboard3Fill,
   RiMovie2Fill,
+  RiPencilFill,
+  RiQuestionFill,
   RiSubtractFill,
   RiTimeFill,
   RiYoutubeFill,
 } from "react-icons/ri";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import { useState } from "react";
-import product from "../../../images/7.png";
-
-const DetailCourseView = () => {
-  let arr = [1, 2];
-  const [expanded, setExpanded] = useState([
-    true,
-    ...Array(arr.length - 1).fill(false),
-  ]);
-  const [toggle, setToggle] = useState(true);
-
-  const handleTongle = (index: number) => {
-    setExpanded((prevExpanded) =>
-      prevExpanded.map((item, idx) => (idx === index ? !item : item))
-    );
-  };
-  const handleTongleAll = () => {
-    if (toggle) {
-      setExpanded(Array(arr.length).fill(true));
-      setToggle(false);
-    } else {
-      setExpanded(Array(arr.length).fill(false));
-      setToggle(true);
-    }
-  };
-
+type Props = {
+  courses: typeCourses;
+  expanded: any;
+  handleTongle: any;
+  handleTongleAll: any;
+  toggle: any;
+  totalLesson: number;
+  navigate: any;
+  handleProgress:any;
+};
+const DetailCourseView = ({
+  courses,
+  expanded,
+  handleTongle,
+  handleTongleAll,
+  toggle,
+  totalLesson,
+  navigate,
+  handleProgress,
+}: Props) => {
   return (
     <Box>
       <Stack direction={"row"}>
         <Box width={"55%"}>
           <Typography fontSize={"28px"} fontWeight={"bold"}>
-            Kiến Thức Nhập Môn IT
+            {courses && courses.title}
           </Typography>
           <Typography my={"20px"} color={"#333"} fontSize={"14px"}>
-            Để có cái nhìn tổng quan về ngành IT - Lập trình web các bạn nên xem
-            các videos tại khóa này trước nhé.
+            {courses && courses.description}
           </Typography>
           <Typography fontSize={"18px"} m={"20px 0 15px"} fontWeight={"bold"}>
             Bạn sẽ học được gì?
           </Typography>
-          <Stack direction={"row"} gap={"18%"}>
-            <Stack direction={"column"} gap={"10px"}>
-              <Stack direction={"row"} alignItems={"center"} gap={"8px"}>
-                <RiCheckFill color={"#f05123"} />
-                <Typography color={"#333"} fontSize={"14px"}>
-                  Các kiến thức cơ bản, nền móng của ngành IT
-                </Typography>
-              </Stack>
-              <Stack direction={"row"} alignItems={"center"} gap={"8px"}>
-                <RiCheckFill color={"#f05123"} />
-                <Typography color={"#333"} fontSize={"14px"}>
-                  Các khái niệm, thuật ngữ cốt lõi khi triển khai ứng dụng
-                </Typography>
-              </Stack>
-            </Stack>
-            <Stack direction={"column"} gap={"10px"}>
-              <Stack direction={"row"} alignItems={"center"} gap={"8px"}>
-                <RiCheckFill color={"#f05123"} />
-                <Typography color={"#333"} fontSize={"14px"}>
-                  Các mô hình, kiến trúc cơ bản khi triển khai ứng dụng
-                </Typography>
-              </Stack>
-              <Stack direction={"row"} alignItems={"center"} gap={"8px"}>
-                <RiCheckFill color={"#f05123"} />
-                <Typography color={"#333"} fontSize={"14px"}>
-                  Hiểu hơn về cách internet và máy vi tính hoạt động
-                </Typography>
-              </Stack>
-            </Stack>
+          <Stack direction={"row"} flexWrap={"wrap"} gap={"10px"}>
+            {courses &&
+              courses.result_courses.map((item: any) => {
+                return (
+                  <Stack
+                    direction={"row"}
+                    mt={"10px"}
+                    width={"45%"}
+                    gap={"8px"}>
+                    <RiCheckFill color={"#f05123"} />
+                    <Typography color={"#333"} fontSize={"14px"}>
+                      {item}
+                    </Typography>
+                  </Stack>
+                );
+              })}
           </Stack>
           <Typography fontSize={"18px"} m={"30px 0 15px"} fontWeight={"bold"}>
             Nội dung khóa học
@@ -90,7 +69,8 @@ const DetailCourseView = () => {
             <Typography
               fontSize={"15px"}
               sx={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <b>4</b> chương <b style={{ fontSize: "20px" }}>•</b> 12 bài học{" "}
+              <b>{courses && courses.lesson.length}</b> chương{" "}
+              <b style={{ fontSize: "20px" }}>•</b> {totalLesson} bài học{" "}
               <b style={{ fontSize: "20px" }}>•</b> Thời lượng{" "}
               <b>03 giờ 26 phút</b>
             </Typography>
@@ -106,8 +86,24 @@ const DetailCourseView = () => {
           <ListAccordion
             handleTongle={handleTongle}
             expanded={expanded}
-            arr={arr}
+            arr={courses && courses.lesson}
           />
+          <Typography fontSize={"18px"} m={"40px 0 15px"} fontWeight={"bold"}>
+            Yêu cầu
+          </Typography>
+          <Stack direction={"column"} flexWrap={"wrap"} gap={"10px"}>
+            {courses &&
+              courses.courses_requirements.map((item: any) => {
+                return (
+                  <Stack direction={"row"} mt={"10px"} gap={"8px"}>
+                    <RiCheckFill color={"#f05123"} />
+                    <Typography color={"#333"} fontSize={"14px"}>
+                      {item}
+                    </Typography>
+                  </Stack>
+                );
+              })}
+          </Stack>
         </Box>
         <Box
           width={"45%"}
@@ -125,7 +121,7 @@ const DetailCourseView = () => {
               width={"100%"}
               height={"100%"}
               style={{ borderRadius: "20px" }}
-              src={product}
+              src={courses && courses.image.url}
             />
             <Box
               sx={{
@@ -163,6 +159,7 @@ const DetailCourseView = () => {
             Miễn phí
           </Typography>
           <Button
+            onClick={handleProgress}
             sx={{
               width: "180px",
               height: "40px",
@@ -184,7 +181,7 @@ const DetailCourseView = () => {
               <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
                 <RiMovie2Fill size={"17px"} />{" "}
                 <Typography fontSize={"14px"} color={"#333"}>
-                  Tổng số <b>12</b> bài học
+                  Tổng số <b>{totalLesson}</b> bài học
                 </Typography>
               </Stack>
               <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
@@ -212,63 +209,78 @@ export default DetailCourseView;
 const ListAccordion = (props: any) => {
   return (
     <>
-      {props.arr.map((item: any, index: any) => {
-        return (
-          <Box
-            onClick={() => props.handleTongle(index)}
-            mt={"15px"}
-            maxHeight={props.expanded[index] ? "500px" : "47px"}
-            overflow={"hidden"}
-            sx={{ transition: ".7s" }}>
-            <Box>
-              <Stack
-                direction={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                padding={"10px 20px"}
-                bgcolor={"#f5f5f5"}
-                borderRadius={"6px"}
-                border={"1px solid #ebebeb"}>
-                <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-                  {props.expanded[index] ? (
-                    <RiSubtractFill size={"25px"} color={"#f05123"} />
-                  ) : (
-                    <RiAddFill size={"25px"} color={"#f05123"} />
-                  )}
+      {props.arr &&
+        props.arr.map((item: any, index: any) => {
+          return (
+            <Box
+              onClick={() => props.handleTongle(index)}
+              mt={"15px"}
+              maxHeight={props.expanded[index] ? "500px" : "47px"}
+              overflow={"hidden"}
+              sx={{ transition: ".7s" }}>
+              <Box>
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  padding={"10px 20px"}
+                  bgcolor={"#f5f5f5"}
+                  borderRadius={"6px"}
+                  border={"1px solid #ebebeb"}>
+                  <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+                    {props.expanded[index] ? (
+                      <RiSubtractFill size={"25px"} color={"#f05123"} />
+                    ) : (
+                      <RiAddFill size={"25px"} color={"#f05123"} />
+                    )}
 
-                  <Typography fontWeight={"bold"}>
-                    1.Khái niệm kỹ thuật cần biết
+                    <Typography fontWeight={"bold"}>{item.title}</Typography>
+                  </Stack>
+                  <Typography fontSize={"12px"}>
+                    {item.sub_lesson.length}
                   </Typography>
                 </Stack>
-                <Typography fontSize={"12px"}>3 bài học</Typography>
-              </Stack>
-              {props.arr.map((item: any, index2: any) => {
-                return (
-                  <Box>
-                    <Stack
-                      direction={"row"}
-                      borderTop={index2 == 0 ? "none" : "1px solid #dddddd"}
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
-                      padding={"15px 20px"}>
+                {item.sub_lesson.map((itemchild: any, index2: any) => {
+                  return (
+                    <Box>
                       <Stack
                         direction={"row"}
+                        borderTop={index2 == 0 ? "none" : "1px solid #dddddd"}
                         alignItems={"center"}
-                        gap={"7px"}>
-                        <RiYoutubeFill size={"20px"} color={"#f05123"} />
-                        <Typography color={"#333"} fontSize={"14px"}>
-                          1.Mô hình Client-server là gì
+                        justifyContent={"space-between"}
+                        padding={"15px 20px"}>
+                        <Stack
+                          direction={"row"}
+                          alignItems={"center"}
+                          gap={"7px"}>
+                          {itemchild.type == "video" && (
+                            <RiYoutubeFill size={"20px"} color={"#f05123"} />
+                          )}
+
+                          {itemchild.type == "blog" && (
+                            <RiArticleLine size={"20px"} color={"#f05123"} />
+                          )}
+                          {itemchild.type == "code" && (
+                            <RiPencilFill size={"20px"} color={"#f05123"} />
+                          )}
+                          {itemchild.type == "quiz" && (
+                            <RiQuestionFill size={"20px"} color={"#f05123"} />
+                          )}
+                          <Typography color={"#333"} fontSize={"14px"}>
+                            {itemchild.title}
+                          </Typography>
+                        </Stack>
+                        <Typography fontSize={"12px"}>
+                          {itemchild.duration}
                         </Typography>
                       </Stack>
-                      <Typography fontSize={"12px"}>11:37</Typography>
-                    </Stack>
-                  </Box>
-                );
-              })}
+                    </Box>
+                  );
+                })}
+              </Box>
             </Box>
-          </Box>
-        );
-      })}
+          );
+        })}
     </>
   );
 };

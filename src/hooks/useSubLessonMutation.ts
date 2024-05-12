@@ -1,5 +1,9 @@
 import { addLesson, deleteLesson, updateLesson } from "@/service/lesson";
-import { addSubLesson, deleteSubLesson, updateSubLesson } from "@/service/sub_lesson";
+import {
+  addSubLesson,
+  deleteSubLesson,
+  updateSubLesson,
+} from "@/service/sub_lesson";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
@@ -14,8 +18,8 @@ type useSubLessonMutationProps = {
   exerciseHtml?: any;
   exerciseCss?: any;
   exercise?: any;
-  typeOld?:any
-  typeOldLesson?:any
+  typeOld?: any;
+  typeOldLesson?: any;
 };
 
 export const useSubLessonMutation = ({
@@ -29,7 +33,7 @@ export const useSubLessonMutation = ({
   exerciseCss,
   exerciseHtml,
   typeOld,
-  typeOldLesson
+  typeOldLesson,
 }: useSubLessonMutationProps) => {
   const queryClient = useQueryClient();
 
@@ -38,7 +42,7 @@ export const useSubLessonMutation = ({
     handleSubmit,
     formState: { errors },
     reset,
-    setValue
+    setValue,
   } = useForm();
   const { mutate, ...rest } = useMutation({
     mutationFn: async (sub_lesson: any) => {
@@ -48,7 +52,7 @@ export const useSubLessonMutation = ({
         case "UPDATE":
           return await updateSubLesson(sub_lesson);
         case "DELETE":
-          return await deleteSubLesson(sub_lesson._id,sub_lesson.lesson[0]);
+          return await deleteSubLesson(sub_lesson._id, sub_lesson.lesson[0]);
         default:
           return null;
       }
@@ -61,7 +65,7 @@ export const useSubLessonMutation = ({
     },
   });
   const onFinish = async (values: any) => {
-    if(action=="CREATE"){
+    if (action == "CREATE") {
       if (type == 0) {
         mutate({
           description: values.description,
@@ -75,16 +79,16 @@ export const useSubLessonMutation = ({
       } else if (type == 1) {
         let question = [
           {
-            answerOne: values.answerOne,
-            correctOne: values.correctOne,
+            answer: values.answerOne,
+            result: values.correctOne,
           },
           {
-            answerTwo: values.answerTwo,
-            correctTwo: values.correctTwo,
+            answer: values.answerTwo,
+            result: values.correctTwo,
           },
           {
-            answerThree: values.answerThree,
-            correctThree: values.correctThree,
+            answer: values.answerThree,
+            result: values.correctThree,
           },
         ];
         mutate({
@@ -131,12 +135,12 @@ export const useSubLessonMutation = ({
         }
         mutate(body);
       }
-    }else{
-      let changeType = type !==typeOld
-      let changeTypeLesson = typeOldLesson !==values.lesson_id
-      let body:any 
+    } else {
+      let changeType = type !== typeOld;
+      let changeTypeLesson = typeOldLesson !== values.lesson_id;
+      let body: any;
       if (type == 0) {
-         body= {
+        body = {
           description: values.description,
           duration: values.duration,
           title: values.title,
@@ -144,24 +148,24 @@ export const useSubLessonMutation = ({
           lesson: [values.lesson_id],
           video_id: values.video_id,
         };
-        
+
         // video
       } else if (type == 1) {
         let question = [
           {
-            answerOne: values.answerOne,
-            correctOne: values.correctOne,
+            answer: values.answerOne,
+            result: values.correctOne,
           },
           {
-            answerTwo: values.answerTwo,
-            correctTwo: values.correctTwo,
+            answer: values.answerTwo,
+            result: values.correctTwo,
           },
           {
-            answerThree: values.answerThree,
-            correctThree: values.correctThree,
+            answer: values.answerThree,
+            result: values.correctThree,
           },
         ];
-         body = {
+        body = {
           description: values.description,
           duration: values.duration,
           title: values.title,
@@ -170,11 +174,11 @@ export const useSubLessonMutation = ({
           questions: JSON.stringify(question),
           lesson: [values.lesson_id],
         };
-        
+
         // quizz
       } else if (type == 2) {
         // blog
-         body ={
+        body = {
           description: values.description,
           duration: values.duration,
           title: values.title,
@@ -182,9 +186,8 @@ export const useSubLessonMutation = ({
           content_blog: content,
           lesson: [values.lesson_id],
         };
-        
       } else {
-         body = {
+        body = {
           description: values.description,
           duration: values.duration,
           title: values.title,
@@ -205,27 +208,32 @@ export const useSubLessonMutation = ({
             javascript: exercise,
           });
         }
-        
-        
       }
-      body._id = values._id
-     
-      if(changeType){
-        if(changeTypeLesson){
-          mutate({body,change:true,changeLesson:true,lessonIdOld:typeOldLesson})
-        }else{
-          mutate({body,change:true,changeLesson:false})
+      body._id = values._id;
+
+      if (changeType) {
+        if (changeTypeLesson) {
+          mutate({
+            body,
+            change: true,
+            changeLesson: true,
+            lessonIdOld: typeOldLesson,
+          });
+        } else {
+          mutate({ body, change: true, changeLesson: false });
         }
-        
-      }else{
-        if(changeTypeLesson){
-          mutate({body,change:false,changeLesson:true,lessonIdOld:typeOldLesson})
-        }else{
-          mutate({body,change:false,changeLesson:false})
+      } else {
+        if (changeTypeLesson) {
+          mutate({
+            body,
+            change: false,
+            changeLesson: true,
+            lessonIdOld: typeOldLesson,
+          });
+        } else {
+          mutate({ body, change: false, changeLesson: false });
         }
       }
-      
-      
     }
   };
   const onRemove = (sub_lesson: any) => {
@@ -238,6 +246,6 @@ export const useSubLessonMutation = ({
     handleSubmit,
     errors,
     reset,
-    setValue
+    setValue,
   };
 };

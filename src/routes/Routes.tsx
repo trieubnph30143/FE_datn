@@ -22,7 +22,7 @@ const Router = () => {
       <Routes>
         <Route path='/' element={<LayoutWebsite />}>
           <Route path='' element={<HomeController />} />
-          <Route path='courses' element={<DetailCourseController />} />
+          <Route path='courses/:id' element={<DetailCourseController />} />
           <Route
             path='learning_roadmap'
             element={<LearningRoadmapController />}
@@ -33,14 +33,14 @@ const Router = () => {
           <Route path='my_article' element={<MyArticleController />} />
           <Route path='setting' element={<SettingProfileController />} />
         </Route>
-        <Route path='/learning' element={<LearningController />} />
+        <Route path='/learning/:id' element={<LearningController />} />
         <Route path='/dashboard' element={<LayoutAdmin />}>
           <Route path='courses' element={<CoursesController />} />
           <Route path='lesson' element={<LessonController />} />
           <Route path='sublesson' element={<SubLessonController />} />
           <Route path='categories' element={<CategoriesController />} />
         </Route>
-        <Route path="*" element={<PageNotFound />} />
+        <Route path='*' element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );

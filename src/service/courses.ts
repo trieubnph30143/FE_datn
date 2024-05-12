@@ -7,6 +7,15 @@ export const getCourses = async () => {
     console.log(`get_Courses`, error);
   }
 };
+export const getOneCourses = async (id: any) => {
+  try {
+    console.log(id);
+    const response = await axios.get(`/courses/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(`get_Courses`, error);
+  }
+};
 export const addCourses = async (value: typeCourses) => {
   try {
     const response = await axios.post(`/courses`, value);

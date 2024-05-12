@@ -25,13 +25,17 @@ import {
   RiArrowDownSLine,
   RiArrowLeftSLine,
   RiArrowRightSLine,
+  RiArticleLine,
+  RiCheckboxCircleFill,
   RiCheckLine,
   RiCloseLine,
   RiFile3Fill,
   RiFlagFill,
   RiHeartFill,
+  RiLock2Fill,
   RiMessengerFill,
   RiMoreFill,
+  RiPencilFill,
   RiPlayCircleFill,
   RiQuestionFill,
   RiStickyNoteFill,
@@ -57,14 +61,97 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
     padding: "4px 15px",
   },
 }));
-const LearningView = () => {
+
+type Props = {
+  courses: typeCourses;
+  expanded: any;
+  handleTongle: any;
+  handleTongleAll: any;
+  toggle: any;
+  totalLesson: number;
+  navigate: any;
+  activeLesson: any;
+  handleActiveLesson: any;
+  dataLesson: any;
+  typeCode: any;
+  progress: any;
+  handleVideoEnd: any;
+  setCurrentTime: any;
+  playerRef: any;
+  toggleDrawer: any;
+  open: any;
+};
+const LearningView = ({
+  courses,
+  expanded,
+  handleTongle,
+  handleTongleAll,
+  toggle,
+  totalLesson,
+  navigate,
+  activeLesson,
+  handleActiveLesson,
+  dataLesson,
+  typeCode,
+  progress,
+  handleVideoEnd,
+  setCurrentTime,
+  playerRef,
+  toggleDrawer,
+  open,
+}: Props) => {
   return (
     <Box>
       <Header />
       <Stack direction={"row"}>
-        <ContentLeftExercise />
-        <ContentRight />
+        {dataLesson && dataLesson.type == "video" && (
+          <ContentLeftVideo
+            handleVideoEnd={handleVideoEnd}
+            setCurrentTime={setCurrentTime}
+            playerRef={playerRef}
+            data={dataLesson}
+          />
+        )}
+        {dataLesson && dataLesson.type == "blog" && (
+          <ContentLeftBlog data={dataLesson} />
+        )}
+        {dataLesson && dataLesson.type == "quiz" && (
+          <ContentLeftQuiz data={dataLesson} />
+        )}
+        {dataLesson && dataLesson.type == "code" && (
+          <ContentLeftExercise typeCode={typeCode} data={dataLesson} />
+        )}
+
+        <ContentRight
+          courses={courses}
+          expanded={expanded}
+          handleTongle={handleTongle}
+          handleTongleAll={handleTongleAll}
+          toggle={toggle}
+          activeLesson={activeLesson}
+          handleActiveLesson={handleActiveLesson}
+          progress={progress}
+        />
+        <Drawer open={open} anchor='right' onClose={toggleDrawer(false)}>
+          <ContentDrawer onClose={toggleDrawer} />
+        </Drawer>
       </Stack>
+      <Box sx={{ position: "fixed", right: "30%", bottom: "10%" }}>
+        <Button
+          onClick={toggleDrawer(true)}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            color: "#ff5117",
+            background: "white",
+            fontWeight: "700",
+            borderRadius: "30px",
+            boxShadow: "0 0px 6px grey",
+          }}>
+          <RiMessengerFill size={20} /> Hỏi đáp
+        </Button>
+      </Box>
       <Footer />
     </Box>
   );
@@ -187,7 +274,7 @@ const Footer = () => {
   );
 };
 
-const ContentLeftVideo = () => {
+const ContentLeftVideo = (props: any) => {
   const [playing, setPlaying] = useState(true);
   const [etend, setExtend] = useState(false);
   const [etendDad, setExtendDad] = useState(false);
@@ -211,30 +298,7 @@ const ContentLeftVideo = () => {
     console.log("end");
     setPlaying(false);
   };
-  const [open, setOpen] = useState(false);
 
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpen(newOpen);
-  };
-  const [content, setContent] = useState("");
-  const handleEditorChange = (e: any, editor: any) => {
-    setContent(editor.getContent());
-  };
-
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const openPopover = Boolean(anchorEl);
-  const id = openPopover ? "simple-popover" : undefined;
   return (
     <Box
       width={"75%"}
@@ -257,7 +321,7 @@ const ContentLeftVideo = () => {
               className='react-player'
               width='80%'
               height='100%'
-              url={"https://www.youtube.com/watch?v=oUFJJNQGwhk"}
+              url={`https://www.youtube.com/watch?v=${props.data.video_id}`}
               playing={playing}
               controls
               played={played}
@@ -302,108 +366,143 @@ const ContentLeftVideo = () => {
           Made with <RiHeartFill size={20} color={"#ff5117"} />· Powered by F8
         </Typography>
       </Box>
-      <Box sx={{ position: "fixed", right: "30%", bottom: "10%" }}>
-        <Button
-          onClick={toggleDrawer(true)}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            color: "#ff5117",
-            background: "white",
-            fontWeight: "700",
-            borderRadius: "30px",
-            boxShadow: "0 0px 6px grey",
-          }}>
-          <RiMessengerFill size={20} /> Hỏi đáp
-        </Button>
-      </Box>
-      <Drawer open={open} anchor='right' onClose={toggleDrawer(false)}>
-        <ContentDrawer onClose={toggleDrawer} />
-      </Drawer>
     </Box>
   );
 };
 
-const ContentRight = () => {
-  let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const [expanded, setExpanded] = useState([
-    true,
-    ...Array(arr.length - 1).fill(false),
-  ]);
-  const [toggle, setToggle] = useState(true);
-
-  const handleTongle = (index: number) => {
-    setExpanded((prevExpanded) =>
-      prevExpanded.map((item, idx) => (idx === index ? !item : item))
-    );
-  };
+const ContentRight = (props: any) => {
   return (
     <Box
       width={"25%"}
       className='list-learning'
       padding={"15px"}
+      paddingBottom={"65px"}
       sx={{ overflowY: "scroll", height: "93vh" }}>
       <Typography fontWeight={"700"} fontSize={"16px"}>
         Nội dung khóa học
       </Typography>
-      {arr.map((item: any, index: any) => {
-        return (
-          <Box
-            mt={"10px"}
-            maxHeight={expanded[index] ? "500px" : "47px"}
-            overflow={"hidden"}
-            sx={{ transition: ".7s" }}>
-            <Box>
-              <Stack
-                direction={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                onClick={() => handleTongle(index)}
-                padding={"10px 20px"}
-                bgcolor={"#f5f5f5"}
-                borderRadius={"6px"}
-                border={"1px solid #ebebeb"}>
-                <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-                  {expanded[index] ? (
-                    <RiSubtractFill size={"25px"} color={"#f05123"} />
-                  ) : (
-                    <RiAddFill size={"25px"} color={"#f05123"} />
-                  )}
+      {props.courses &&
+        props.courses.lesson &&
+        props.courses.lesson.map((item: any, index: any) => {
+          return (
+            <Box
+              mt={"15px"}
+              maxHeight={props.expanded[index] ? "1000px" : "47px"}
+              overflow={"hidden"}
+              sx={{ transition: ".4s" }}>
+              <Box>
+                <Stack
+                  direction={"row"}
+                  onClick={() => props.handleTongle(index)}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  padding={"10px 20px"}
+                  bgcolor={"#f5f5f5"}
+                  borderRadius={"6px"}
+                  border={"1px solid #ebebeb"}>
+                  <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
+                    {props.expanded[index] ? (
+                      <RiSubtractFill size={"25px"} color={"#f05123"} />
+                    ) : (
+                      <RiAddFill size={"25px"} color={"#f05123"} />
+                    )}
 
-                  <Typography fontWeight={"bold"}>
-                    1.Khái niệm kỹ thuật cần biết
+                    <Typography fontWeight={"bold"}>{item.title}</Typography>
+                  </Stack>
+                  <Typography fontSize={"12px"}>
+                    {item.sub_lesson.length}
                   </Typography>
                 </Stack>
-                <Typography fontSize={"12px"}>3 bài học</Typography>
-              </Stack>
-              {arr.map((item: any, index2: any) => {
-                return (
-                  <Box>
-                    <Stack
-                      direction={"row"}
-                      borderTop={index2 == 0 ? "none" : "1px solid #dddddd"}
-                      alignItems={"center"}
-                      justifyContent={"space-between"}
-                      padding={"15px 20px"}>
+                {item.sub_lesson.map((itemchild: any, index2: any) => {
+                  let check =
+                    props.progress[0] &&
+                    props.progress[0].lesson_progress[index].sub_lesson[index2]
+                      .result &&
+                    props.progress[0] &&
+                    props.progress[0].lesson_progress[index].sub_lesson[index2]
+                      .completed == false;
+                  let checkSuccess =
+                    props.progress[0] &&
+                    props.progress[0].lesson_progress[index].sub_lesson[index2]
+                      .completed == true;
+                  let active = props.activeLesson == itemchild._id;
+                  return (
+                    <Box
+                      sx={{
+                        pointerEvents:
+                          !checkSuccess && !check ? "none" : "auto",
+                      }}
+                      onClick={() => props.handleActiveLesson(itemchild)}>
                       <Stack
                         direction={"row"}
+                        borderTop={index2 == 0 ? "none" : "1px solid #dddddd"}
                         alignItems={"center"}
-                        gap={"7px"}>
-                        <RiYoutubeFill size={"20px"} color={"#f05123"} />
-                        <Typography color={"#333"} fontSize={"14px"}>
-                          1.Mô hình Client-server là gì
+                        sx={{
+                          background: active
+                            ? "rgba(240, 81, 35, .2)"
+                            : !checkSuccess && !check
+                            ? "#e6e6e6"
+                            : undefined,
+                          opacity: !checkSuccess && !check ? ".5" : "1",
+                        }}
+                        justifyContent={"space-between"}
+                        padding={"15px 20px"}>
+                        <Stack
+                          direction={"row"}
+                          alignItems={"center"}
+                          gap={"7px"}>
+                          <Typography color={"#333"} fontSize={"14px"}>
+                            {index2 + 1}.{itemchild.title}
+                            <Stack direction={"row"} mt={"5px"} gap={"10px"}>
+                              {itemchild.type == "video" && (
+                                <RiYoutubeFill
+                                  size={"20px"}
+                                  color={"#f05123"}
+                                />
+                              )}
+                              {itemchild.type == "blog" && (
+                                <RiArticleLine
+                                  size={"20px"}
+                                  color={"#f05123"}
+                                />
+                              )}
+                              {itemchild.type == "code" && (
+                                <RiPencilFill size={"20px"} color={"#f05123"} />
+                              )}
+                              {itemchild.type == "quiz" && (
+                                <RiQuestionFill
+                                  size={"20px"}
+                                  color={"#f05123"}
+                                />
+                              )}{" "}
+                              {itemchild.duration}
+                            </Stack>
+                          </Typography>
+                        </Stack>
+                        <Typography fontSize={"12px"}>
+                          {check ? (
+                            ""
+                          ) : (
+                            <>
+                              {checkSuccess && (
+                                <RiCheckboxCircleFill
+                                  color='green'
+                                  size={"20px"}
+                                />
+                              )}
+
+                              {!checkSuccess && <RiLock2Fill size={"20px"} />}
+                            </>
+                          )}
                         </Typography>
                       </Stack>
-                      <Typography fontSize={"12px"}>11:37</Typography>
-                    </Stack>
-                  </Box>
-                );
-              })}
+                    </Box>
+                  );
+                })}
+              </Box>
             </Box>
-          </Box>
-        );
-      })}
+          );
+        })}
     </Box>
   );
 };
@@ -1068,12 +1167,18 @@ const ContentDrawer = ({ onClose }: any) => {
   );
 };
 
-const ContentLeftExercise = () => {
+const ContentLeftExercise = (props: any) => {
   const [value, setValue] = React.useState(0);
   const [valueRight, setValueRight] = React.useState(0);
-  const [exerciseHtml, setexerciseHtml] = React.useState("");
-  const [exerciseCss, setexerciseCss] = React.useState("");
-  const [exercise, setExercise]: any = useState();
+  const [exerciseHtml, setexerciseHtml] = React.useState(
+    JSON.parse(props.data.type_exercise).html
+  );
+  const [exerciseCss, setexerciseCss] = React.useState(
+    JSON.parse(props.data.type_exercise).css
+  );
+  const [exercise, setExercise]: any = useState(
+    JSON.parse(props.data.type_exercise).javascript
+  );
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -1097,6 +1202,7 @@ const ContentLeftExercise = () => {
       origin: { y: 1 },
     });
   };
+  console.log(JSON.parse(props.data.type_exercise).html);
   return (
     <Box width={"75%"}>
       <Stack direction={"row"}>
@@ -1151,23 +1257,17 @@ const ContentLeftExercise = () => {
                     display: "none !important",
                   },
 
-                  height: "600px",
-                  pointerEvents: "none",
+                  height: "500px",
+                  // pointerEvents: "none",
                   ".tox-tinymce": {
                     border: "none",
                   },
                 }}>
                 <Editor
                   apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
-                  initialValue={`<header class="Instructions_header__v1Y6B"><header class="wrapper">
-<h1 class="Heading_heading__VnWS7">Thực h&agrave;nh sử dụng console.log</h1>
-<p class="Heading_updated__LqCQ8">Cập nhật&nbsp;th&aacute;ng 3 năm 2022</p>
-</header></header>
-<div class="MarkdownParser_wrapper__JYN63">
-<p>Tại&nbsp;<code>main.js</code>&nbsp;c&oacute; sẵn biến&nbsp;<code>language</code>, h&atilde;y sử dụng&nbsp;<code>console.log</code>&nbsp;để in gi&aacute; trị của biến n&agrave;y ra tab&nbsp;<code>Console</code>&nbsp;trong Dev Tool của tr&igrave;nh duyệt.</p>
-</div>`}
+                  initialValue={props.data.content_code}
                   init={{
-                    height: "600px",
+                    height: "550px",
                   }}
                 />
               </Box>
@@ -1213,65 +1313,107 @@ const ContentLeftExercise = () => {
             justifyContent={"space-between"}
             alignItems={"center"}
             width={"99.9%"}>
-            <Tabs
-              value={valueRight}
-              onChange={handleChangeRight}
-              aria-label='basic tabs example'>
-              <Tab
-                label={
-                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
-                    <img
-                      src={js}
-                      width={17}
-                      height={17}
-                      style={{ borderRadius: "5px" }}
-                      alt=''
-                    />
-                    <Typography
-                      fontSize={"12px"}
-                      sx={{ textTransform: "lowercase" }}>
-                      main.js
-                    </Typography>
-                  </Stack>
-                }
-              />
-              <Tab
-                label={
-                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
-                    <img
-                      src={html}
-                      width={17}
-                      height={17}
-                      style={{ borderRadius: "5px" }}
-                      alt=''
-                    />
-                    <Typography
-                      fontSize={"12px"}
-                      sx={{ textTransform: "lowercase" }}>
-                      index.html
-                    </Typography>
-                  </Stack>
-                }
-              />
-              <Tab
-                label={
-                  <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
-                    <img
-                      src={css}
-                      width={17}
-                      height={17}
-                      style={{ borderRadius: "5px" }}
-                      alt=''
-                    />
-                    <Typography
-                      fontSize={"12px"}
-                      sx={{ textTransform: "lowercase" }}>
-                      style.css
-                    </Typography>
-                  </Stack>
-                }
-              />
-            </Tabs>
+            {props.typeCode == "html" && (
+              <Tabs
+                value={valueRight}
+                onChange={handleChangeRight}
+                aria-label='basic tabs example'>
+                <Tab
+                  label={
+                    <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                      <img
+                        src={html}
+                        width={17}
+                        height={17}
+                        style={{ borderRadius: "5px" }}
+                        alt=''
+                      />
+                      <Typography
+                        fontSize={"12px"}
+                        sx={{ textTransform: "lowercase" }}>
+                        index.html
+                      </Typography>
+                    </Stack>
+                  }
+                />
+              </Tabs>
+            )}
+            {props.typeCode == "javascript" && (
+              <Tabs
+                value={valueRight}
+                onChange={handleChangeRight}
+                aria-label='basic tabs example'>
+                <Tab
+                  label={
+                    <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                      <img
+                        src={js}
+                        width={17}
+                        height={17}
+                        style={{ borderRadius: "5px" }}
+                        alt=''
+                      />
+                      <Typography
+                        fontSize={"12px"}
+                        sx={{ textTransform: "lowercase" }}>
+                        main.js
+                      </Typography>
+                    </Stack>
+                  }
+                />
+              </Tabs>
+            )}
+            {props.typeCode == "html-css" && (
+              <>
+                <Tabs
+                  value={valueRight}
+                  onChange={handleChangeRight}
+                  aria-label='basic tabs example'>
+                  <Tab
+                    label={
+                      <Stack
+                        direction={"row"}
+                        alignItems={"center"}
+                        gap={"4px"}>
+                        <img
+                          src={html}
+                          width={17}
+                          height={17}
+                          style={{ borderRadius: "5px" }}
+                          alt=''
+                        />
+                        <Typography
+                          fontSize={"12px"}
+                          sx={{ textTransform: "lowercase" }}>
+                          index.html
+                        </Typography>
+                      </Stack>
+                    }
+                  />
+                  <Tab
+                    label={
+                      <Stack
+                        direction={"row"}
+                        alignItems={"center"}
+                        gap={"4px"}>
+                        <img
+                          src={css}
+                          width={17}
+                          height={17}
+                          style={{ borderRadius: "5px" }}
+                          alt=''
+                        />
+                        <Typography
+                          fontSize={"12px"}
+                          sx={{ textTransform: "lowercase" }}>
+                          style.css
+                        </Typography>
+                      </Stack>
+                    }
+                  />
+                </Tabs>
+              </>
+            )}
             <Box
               width={"65px"}
               height={"40px"}
@@ -1288,17 +1430,17 @@ const ContentLeftExercise = () => {
                 display: "none",
               },
             }}>
-            {valueRight == 0 && (
+            {props.typeCode == "javascript" && (
               <MonacoEditor
                 width={"100%"}
                 height='350px'
                 language='javascript'
                 theme='vs-dark'
-                value={`//Tạo 1 mảng chứa ít nhất 3 phần tử tên Sum`}
+                value={exercise}
                 onChange={(value) => handleChangeExercise(value)}
               />
             )}
-            {valueRight == 1 && (
+            {props.typeCode == "html" && (
               <MonacoEditor
                 height='350px'
                 language='html'
@@ -1307,14 +1449,27 @@ const ContentLeftExercise = () => {
                 onChange={(value) => handleChangeExerciseHtml(value)}
               />
             )}
-            {valueRight == 2 && (
-              <MonacoEditor
-                height='350px'
-                language='css'
-                theme='vs-dark'
-                value={exerciseCss}
-                onChange={(value) => handleChangeExerciseCss(value)}
-              />
+            {props.typeCode == "html-css" && (
+              <>
+                {valueRight == 0 && (
+                  <MonacoEditor
+                    height='350px'
+                    language='html'
+                    theme='vs-dark'
+                    value={exerciseHtml}
+                    onChange={(value) => handleChangeExerciseHtml(value)}
+                  />
+                )}
+                {valueRight == 1 && (
+                  <MonacoEditor
+                    height='350px'
+                    language='css'
+                    theme='vs-dark'
+                    value={exerciseCss}
+                    onChange={(value) => handleChangeExerciseCss(value)}
+                  />
+                )}
+              </>
             )}
           </Box>
           <Stack
@@ -1355,7 +1510,7 @@ const ContentLeftExercise = () => {
     </Box>
   );
 };
-const ContentLeftBlog = () => {
+const ContentLeftBlog = (props: any) => {
   return (
     <Box width={"75%"}>
       <Box
@@ -1380,99 +1535,7 @@ const ContentLeftBlog = () => {
         }}>
         <Editor
           apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
-          initialValue={`<header class="wrapper">
-<h1 class="Heading_heading__VnWS7">To&aacute;n tử ++ v&agrave; --</h1>
-<p class="Heading_updated__LqCQ8">Cập nhật&nbsp;th&aacute;ng 3 năm 2022</p>
-</header>
-<div class="MarkdownParser_wrapper__JYN63">
-<p>Đ&acirc;y l&agrave; 2 to&aacute;n tử nghe qua th&igrave; rất dễ hiểu, nhưng để hiểu nguy&ecirc;n l&yacute; về c&aacute;ch hoạt động của n&oacute; ch&uacute;ng ta sẽ phải mất th&ecirc;m một ch&uacute;t thời gian đ&oacute;. Để ho&agrave;n th&agrave;nh b&agrave;i học về 2 to&aacute;n tử n&agrave;y, ch&uacute;ng ta sẽ c&ugrave;ng trải qua một số b&agrave;i học sau nh&eacute;.</p>
-<p>Ok, bắt đầu th&ocirc;i!</p>
-<h2 id="toan-tu" data-appended="true">To&aacute;n tử ++</h2>
-<p>To&aacute;n tử&nbsp;<code>++</code>&nbsp;gi&uacute;p tăng gi&aacute; trị của một biến mang gi&aacute; trị số l&ecirc;n 1. C&oacute; 2 c&aacute;ch để sử dụng to&aacute;n tử&nbsp;<code>++</code>&nbsp;l&agrave;:</p>
-<ol>
-<li>D&ugrave;ng l&agrave;m hậu tố:&nbsp;<code>variable++</code>&nbsp;(to&aacute;n tử nằm sau biến)</li>
-<li>D&ugrave;ng l&agrave;m tiền tố:&nbsp;<code>++variable</code>&nbsp;(to&aacute;n tử nằm trước biến)</li>
-</ol>
-<h3>#1 Sử dụng ++ l&agrave;m hậu tố</h3>
-<p>Ở đ&acirc;y, ch&uacute;ng ta sẽ x&eacute;t v&iacute; dụ sử dụng to&aacute;n tử&nbsp;<code>++</code>&nbsp;l&agrave;m hậu tố trước (v&igrave; trong thực tế, ch&uacute;ng ta thường d&ugrave;ng kiểu hậu tố nhiều hơn):</p>
-<div class="code-toolbar">
-<pre class="language-js" tabindex="0"><code>var number = 1;
-
-number++; // d&ugrave;ng l&agrave;m hậu tố, ++ ở ph&iacute;a sau biến
-console.log(number); // 2
-
-number++;
-console.log(number); // 3
-</code></pre>
-<div class="toolbar">
-<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
-</div>
-</div>
-<p>Sau mỗi khi sử dụng to&aacute;n tử&nbsp;<code>++</code>, gi&aacute; trị của biến&nbsp;<code>number</code>&nbsp;được tăng l&ecirc;n 1. C&oacute; vẻ kh&aacute; dễ d&agrave;ng để hiểu c&aacute;ch hoạt động của n&oacute; phải kh&ocirc;ng?</p>
-<p>Tuy nhi&ecirc;n, h&atilde;y xem x&eacute;t th&ecirc;m v&iacute; dụ sau:</p>
-<div class="code-toolbar">
-<pre class="language-js" tabindex="0"><code>var number = 1;
-
-console.log(number++); // 1
-console.log(number); // 2
-
-console.log(number++); // 2
-console.log(number); // 3
-</code></pre>
-<div class="toolbar">
-<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
-</div>
-</div>
-<blockquote>
-<p>👉 To&aacute;n tử&nbsp;<code>++</code>&nbsp;khi d&ugrave;ng l&agrave; hậu tố sẽ&nbsp;<strong>tăng gi&aacute; trị của biến l&ecirc;n 1</strong>&nbsp;v&agrave;&nbsp;<strong>trả về gi&aacute; trị trước khi tăng</strong>.</p>
-</blockquote>
-<h3>#2 Sử dụng ++ l&agrave;m tiền tố</h3>
-<p>Ở v&iacute; dụ n&agrave;y, ch&uacute;ng ta sử dụng&nbsp;<code>++</code>&nbsp;l&agrave;m tiền tố. Tuy nhi&ecirc;n, kết quả tr&ocirc;ng sẽ kh&ocirc;ng kh&aacute;c g&igrave; khi d&ugrave;ng&nbsp;<code>++</code>&nbsp;l&agrave;m hậu tố:</p>
-<div class="code-toolbar">
-<pre class="language-js" tabindex="0"><code>var number = 1;
-
-++number; // d&ugrave;ng l&agrave;m tiền tố, ++ ở ph&iacute;a trước biến
-console.log(number); // 2
-
-++number;
-console.log(number); // 3
-</code></pre>
-<div class="toolbar">
-<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
-</div>
-</div>
-<p>Nhưng khi xem x&eacute;t kỹ hơn, c&aacute;c bạn sẽ nh&igrave;n ra điểm kh&aacute;c:</p>
-<div class="code-toolbar">
-<pre class="language-js" tabindex="0"><code>var number = 1;
-
-console.log(++number); // 2
-console.log(number); // 2
-
-console.log(++number); // 3
-console.log(number); // 3
-</code></pre>
-<div class="toolbar">
-<div class="toolbar-item"><button class="copy-to-clipboard-button" type="button" data-copy-state="copy">Copy</button></div>
-</div>
-</div>
-<blockquote>
-<p>👉 To&aacute;n tử&nbsp;<code>++</code>&nbsp;khi d&ugrave;ng l&agrave; tiền tố sẽ&nbsp;<strong>tăng gi&aacute; trị của biến l&ecirc;n 1</strong>&nbsp;v&agrave;&nbsp;<strong>trả về gi&aacute; trị sau khi tăng</strong>.</p>
-</blockquote>
-<hr>
-<h2 id="toan-tu" data-appended="true">To&aacute;n tử - -</h2>
-<p>C&aacute;ch hoạt động tương tự như to&aacute;n tử ++, điểm kh&aacute;c biệt l&agrave; thay v&igrave; cộng th&ecirc;m 1, th&igrave; to&aacute;n tử&nbsp;<code>--</code>&nbsp;sẽ trừ đi 1.</p>
-<hr>
-<h2 id="tong-ket" data-appended="true">Tổng kết</h2>
-<ul>
-<li><code>x++</code>&nbsp;tăng gi&aacute; trị biến l&ecirc;n 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>trước</strong>&nbsp;khi tăng</li>
-<li><code>++x</code>&nbsp;tăng gi&aacute; trị biến l&ecirc;n 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>sau</strong>&nbsp;khi tăng</li>
-<li><code>x--</code>&nbsp;giảm gi&aacute; trị biến xuống 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>trước</strong>&nbsp;khi giảm</li>
-<li><code>--x</code>&nbsp;giảm gi&aacute; trị biến xuống 1 v&agrave; trả về gi&aacute; trị&nbsp;<strong>sau</strong>&nbsp;khi giảmm</li>
-</ul>
-<blockquote>
-<p>Trong video sau, ch&uacute;ng ta sẽ ph&acirc;n t&iacute;ch một c&aacute;ch chi tiết để hiểu nguy&ecirc;n l&yacute; của c&aacute;ch hoạt động tr&ecirc;n.</p>
-</blockquote>
-</div>`}
+          initialValue={props.data.content_blog}
           init={{
             height: "85vh",
           }}
@@ -1482,29 +1545,17 @@ console.log(number); // 3
   );
 };
 
-const ContentLeftQuiz = () => {
+const ContentLeftQuiz = (props: any) => {
   const [total, setTotal]: any = useState(null);
   const [color, setColor]: any = useState(null);
-  const quiz = [
-    {
-      answer: "Long Bui",
-      result: true,
-    },
-    {
-      answer: "Bui Long",
-      result: false,
-    },
-    {
-      answer: "LongBui",
-      result: false,
-    },
-  ];
+  const quiz = JSON.parse(props.data.questions);
+
   const handleClickAnswer = (value: any) => {
     setColor("#0093fc");
     setTotal(value);
   };
   const handleTotal = () => {
-    if (total.result) {
+    if (total.result == "true") {
       setColor("#48bd79");
       Confetti({
         particleCount: 100,
@@ -1544,26 +1595,7 @@ const ContentLeftQuiz = () => {
           }}>
           <Editor
             apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
-            initialValue={`<header class="wrapper">
-<h1 class="Heading_heading__VnWS7">&Ocirc;n lại kiến thức về Truthy v&agrave; Falsy</h1>
-<p class="Heading_updated__LqCQ8">Cập nhật&nbsp;th&aacute;ng 6 năm 2022</p>
-</header>
-<div class="desc">
-<div class="MarkdownParser_wrapper__JYN63">
-<div class="code-toolbar">
-<pre class="language-js" tabindex="0"><code>var a = '';
-var b = 0;
-var c = [];
-var d = 1 &gt; 2;
-var e = {};
-var f = '0';
-</code></pre>
-<div class="toolbar">
-<div class="toolbar-item">Những biến n&agrave;o sau đ&acirc;y c&oacute; gi&aacute; trị l&agrave; falsy?</div>
-</div>
-</div>
-</div>
-</div>`}
+            initialValue={props.data.content_quizz}
           />
         </Box>
         <Stack
@@ -1573,7 +1605,7 @@ var f = '0';
           zIndex={"1"}
           gap={"15px"}
           width={"70%"}>
-          {quiz.map((item) => {
+          {quiz.map((item: any) => {
             let check = false;
             if (total) {
               check = total.answer == item.answer;
