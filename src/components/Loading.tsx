@@ -1,12 +1,12 @@
 import { Box, CircularProgress } from "@mui/material";
 
-const Loading = () => {
+const Loading = (props:any) => {
   return (
     <Box
       sx={{
         display: "flex",
-        width: "100%",
-        height: "100vh",
+        width:props.width?props.width: "100%",
+        height: props.height?props.height:"100vh",
         position: "fixed",
         top: 0,
         left: 0,

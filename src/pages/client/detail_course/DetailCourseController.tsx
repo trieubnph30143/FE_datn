@@ -10,25 +10,26 @@ const DetailCourseController = () => {
   const [toggle, setToggle] = useState(true);
   const [totalLesson, setTotalLesson] = useState(0);
   const navigate = useNavigate();
+  const [expanded, setExpanded]:any = useState([
+  ]);
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
     },
     onSuccess(data) {
+     setExpanded([ true,
+      ...Array( data.lesson.length).fill(false),])
       let total = 0;
       data.lesson.map((item: any) => (total += item.sub_lesson.length));
       setTotalLesson(total);
     },
   });
 
-  const [expanded, setExpanded] = useState([
-    true,
-    ...Array(courses && courses.lesson.length).fill(false),
-  ]);
+  
 
   const handleTongle = (index: number) => {
-    setExpanded((prevExpanded) =>
-      prevExpanded.map((item, idx) => (idx === index ? !item : item))
+    setExpanded((prevExpanded:any) =>
+      prevExpanded.map((item:any, idx:any) => (idx === index ? !item : item))
     );
   };
   const handleTongleAll = () => {

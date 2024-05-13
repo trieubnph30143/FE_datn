@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Drawer,
   Fade,
   Popover,
@@ -49,6 +50,7 @@ import js from "../../../images/ja.svg";
 import html from "../../../images/html.svg";
 import css from "../../../images/css.svg";
 import Confetti from "canvas-confetti";
+import Loading from "@/components/Loading";
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -75,11 +77,17 @@ type Props = {
   dataLesson: any;
   typeCode: any;
   progress: any;
-  handleVideoEnd: any;
-  setCurrentTime: any;
-  playerRef: any;
   toggleDrawer: any;
   open: any;
+  handleProgress: any;
+  handleEnded: any;
+  player: any;
+  playing: any;
+  played: any;
+  handleNextLesson: any;
+  done: boolean;
+  loading: any;
+  setDone:any
 };
 const LearningView = ({
   courses,
@@ -94,32 +102,61 @@ const LearningView = ({
   dataLesson,
   typeCode,
   progress,
-  handleVideoEnd,
-  setCurrentTime,
-  playerRef,
   toggleDrawer,
   open,
+  handleProgress,
+  handleEnded,
+  player,
+  playing,
+  played,
+  handleNextLesson,
+  done,
+  loading,
+  setDone,
 }: Props) => {
+  
   return (
     <Box>
       <Header />
       <Stack direction={"row"}>
-        {dataLesson && dataLesson.type == "video" && (
-          <ContentLeftVideo
-            handleVideoEnd={handleVideoEnd}
-            setCurrentTime={setCurrentTime}
-            playerRef={playerRef}
-            data={dataLesson}
-          />
+        {loading && (
+          <Box
+            sx={{
+              display: "flex",
+              width: "75%",
+              height: "93vh",
+              justifyContent: "center",
+              alignItems: "center",
+              background: "rgba(255,255,255,.8)",
+            }}
+          >
+            <Box>
+              <CircularProgress />
+            </Box>
+          </Box>
         )}
-        {dataLesson && dataLesson.type == "blog" && (
-          <ContentLeftBlog data={dataLesson} />
-        )}
-        {dataLesson && dataLesson.type == "quiz" && (
-          <ContentLeftQuiz data={dataLesson} />
-        )}
-        {dataLesson && dataLesson.type == "code" && (
-          <ContentLeftExercise typeCode={typeCode} data={dataLesson} />
+        {!loading && (
+          <>
+            {dataLesson && dataLesson.type == "video" && (
+              <ContentLeftVideo
+                handleProgress={handleProgress}
+                handleEnded={handleEnded}
+                player={player}
+                playing={playing}
+                played={played}
+                data={dataLesson}
+              />
+            )}
+            {dataLesson && dataLesson.type == "blog" && (
+              <ContentLeftBlog data={dataLesson} />
+            )}
+            {dataLesson && dataLesson.type == "quiz" && (
+              <ContentLeftQuiz setDone={setDone} data={dataLesson} />
+            )}
+            {dataLesson && dataLesson.type == "code" && (
+              <ContentLeftExercise setDone={setDone} typeCode={typeCode} data={dataLesson} />
+            )}
+          </>
         )}
 
         <ContentRight
@@ -132,7 +169,7 @@ const LearningView = ({
           handleActiveLesson={handleActiveLesson}
           progress={progress}
         />
-        <Drawer open={open} anchor='right' onClose={toggleDrawer(false)}>
+        <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
           <ContentDrawer onClose={toggleDrawer} />
         </Drawer>
       </Stack>
@@ -148,11 +185,12 @@ const LearningView = ({
             fontWeight: "700",
             borderRadius: "30px",
             boxShadow: "0 0px 6px grey",
-          }}>
+          }}
+        >
           <RiMessengerFill size={20} /> Hỏi đáp
         </Button>
       </Box>
-      <Footer />
+      <Footer done={done} handleNextLesson={handleNextLesson} />
     </Box>
   );
 };
@@ -167,19 +205,21 @@ const Header = () => {
       direction={"row"}
       justifyContent={"space-between"}
       alignItems={"center"}
-      bgcolor={"#29303b"}>
+      bgcolor={"#29303b"}
+    >
       <Stack
         direction={"row"}
         alignItems={"center"}
         color={"white"}
-        gap={"15px"}>
+        gap={"15px"}
+      >
         <RiArrowLeftSLine size={25} />
         <img
           src={logo}
           width={30}
           style={{ borderRadius: "8px" }}
           height={30}
-          alt=''
+          alt=""
         />
         <Typography fontWeight={"bold"} fontSize={"13px"}>
           Lập Trình JavaScript Cơ Bản
@@ -196,7 +236,8 @@ const Header = () => {
               fill: "white !important",
               fontSize: "30px !important",
             },
-          }}>
+          }}
+        >
           <Box style={{ width: "35px", position: "relative" }}>
             <CircularProgressbar
               value={66}
@@ -221,7 +262,8 @@ const Header = () => {
           direction={"row"}
           color={"white"}
           alignItems={"center"}
-          gap={0.5}>
+          gap={0.5}
+        >
           <RiFile3Fill />
           <Typography fontSize={"13px"}>Ghi chú</Typography>
         </Stack>
@@ -229,7 +271,8 @@ const Header = () => {
           direction={"row"}
           color={"white"}
           alignItems={"center"}
-          gap={0.5}>
+          gap={0.5}
+        >
           <RiQuestionFill />
           <Typography fontSize={"13px"}>Hướng dẫn</Typography>
         </Stack>
@@ -238,7 +281,7 @@ const Header = () => {
   );
 };
 
-const Footer = () => {
+const Footer = (props: any) => {
   return (
     <Box
       position={"fixed"}
@@ -249,23 +292,27 @@ const Footer = () => {
       display={"flex"}
       alignItems={"center"}
       justifyContent={"center"}
-      left={0}>
+      left={0}
+    >
       <Stack
         direction={"row"}
         alignItems={"center"}
         gap={"35px"}
-        justifyContent={"center"}>
+        justifyContent={"center"}
+      >
         <Button sx={{ color: "black" }}>
           <RiArrowLeftSLine size={25} />
           Bài trước
         </Button>
         <Button
+          onClick={props.handleNextLesson}
           sx={{
             color: "#ff5117",
             border: "2px solid #ff5117",
             height: "35px",
             px: "15px",
-          }}>
+          }}
+        >
           Bài tiếp theo
           <RiArrowRightSLine size={25} />
         </Button>
@@ -275,38 +322,15 @@ const Footer = () => {
 };
 
 const ContentLeftVideo = (props: any) => {
-  const [playing, setPlaying] = useState(true);
-  const [etend, setExtend] = useState(false);
-  const [etendDad, setExtendDad] = useState(false);
-  const [played, setPlayed] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const player: any = useRef(null);
-
-  useEffect(() => {
-    if (player.current) {
-      player.current.seekTo(0.284015202710177);
-    }
-  }, [player.current]);
-
-  const handleProgress = (state: any) => {
-    if (played !== state.played) {
-      setPlayed(state.played);
-    }
-  };
-
-  const handleEnded = () => {
-    console.log("end");
-    setPlaying(false);
-  };
-
   return (
     <Box
       width={"75%"}
-      className='scroll-left'
+      className="scroll-left"
       height={"93vh"}
-      sx={{ overflowY: "scroll" }}>
+      sx={{ overflowY: "scroll" }}
+    >
       <Box>
-        <Stack className='section'>
+        <Stack className="section">
           <Box
             sx={{
               width: "100%",
@@ -315,19 +339,19 @@ const ContentLeftVideo = (props: any) => {
               display: "flex",
               justifyContent: "center",
             }}
-            className='player-wrapper'>
+            className="player-wrapper"
+          >
             <ReactPlayer
-              ref={player}
-              className='react-player'
-              width='80%'
-              height='100%'
+              ref={props.player}
+              className="react-player"
+              width="80%"
+              height="100%"
               url={`https://www.youtube.com/watch?v=${props.data.video_id}`}
-              playing={playing}
+              playing={props.playing}
               controls
-              played={played}
-              onProgress={handleProgress}
-              onEnded={handleEnded}
-              onDuration={setDuration}
+              played={props.played}
+              onProgress={props.handleProgress}
+              onEnded={props.handleEnded}
             />
           </Box>
         </Stack>
@@ -340,18 +364,18 @@ const ContentLeftVideo = (props: any) => {
           </Typography>
           <Typography mt={"20px"} lineHeight={2.5}>
             Tham gia nhóm Học{" "}
-            <a style={{ color: "#ff5117" }} href=''>
+            <a style={{ color: "#ff5117" }} href="">
               lập trình tại F8
             </a>{" "}
             trên Facebook để cùng nhau trao đổi trong quá trình học tập ❤️
             <br></br>
             Các bạn subscribe{" "}
-            <a style={{ color: "#ff5117" }} href=''>
+            <a style={{ color: "#ff5117" }} href="">
               kênh Youtube F8 Official
             </a>{" "}
             để nhận thông báo khi có các bài học mới nhé ❤️<br></br>
             Form HTML template:{" "}
-            <a style={{ color: "#ff5117" }} href=''>
+            <a style={{ color: "#ff5117" }} href="">
               https://codepen.io/ng-ngc-sn-the-bashful/pen/mdVEoWP
             </a>
             <br></br>
@@ -362,7 +386,8 @@ const ContentLeftVideo = (props: any) => {
         <Typography
           fontSize={"14px"}
           color={"#333"}
-          sx={{ display: "flex", alignItems: "center", gap: "3px" }}>
+          sx={{ display: "flex", alignItems: "center", gap: "3px" }}
+        >
           Made with <RiHeartFill size={20} color={"#ff5117"} />· Powered by F8
         </Typography>
       </Box>
@@ -374,10 +399,11 @@ const ContentRight = (props: any) => {
   return (
     <Box
       width={"25%"}
-      className='list-learning'
+      className="list-learning"
       padding={"15px"}
       paddingBottom={"65px"}
-      sx={{ overflowY: "scroll", height: "93vh" }}>
+      sx={{ overflowY: "scroll", height: "93vh" }}
+    >
       <Typography fontWeight={"700"} fontSize={"16px"}>
         Nội dung khóa học
       </Typography>
@@ -389,7 +415,8 @@ const ContentRight = (props: any) => {
               mt={"15px"}
               maxHeight={props.expanded[index] ? "1000px" : "47px"}
               overflow={"hidden"}
-              sx={{ transition: ".4s" }}>
+              sx={{ transition: ".4s" }}
+            >
               <Box>
                 <Stack
                   direction={"row"}
@@ -399,7 +426,8 @@ const ContentRight = (props: any) => {
                   padding={"10px 20px"}
                   bgcolor={"#f5f5f5"}
                   borderRadius={"6px"}
-                  border={"1px solid #ebebeb"}>
+                  border={"1px solid #ebebeb"}
+                >
                   <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
                     {props.expanded[index] ? (
                       <RiSubtractFill size={"25px"} color={"#f05123"} />
@@ -413,18 +441,31 @@ const ContentRight = (props: any) => {
                     {item.sub_lesson.length}
                   </Typography>
                 </Stack>
+                {item.sub_lesson&&
+                <>
                 {item.sub_lesson.map((itemchild: any, index2: any) => {
-                  let check =
-                    props.progress[0] &&
-                    props.progress[0].lesson_progress[index].sub_lesson[index2]
-                      .result &&
-                    props.progress[0] &&
-                    props.progress[0].lesson_progress[index].sub_lesson[index2]
-                      .completed == false;
-                  let checkSuccess =
-                    props.progress[0] &&
-                    props.progress[0].lesson_progress[index].sub_lesson[index2]
-                      .completed == true;
+                  let check;
+                  let checkSuccess;
+                  if(props.progress&&props.progress[0]){
+                    check=
+                     props.progress &&
+                     props.progress[0] &&
+                     props.progress &&
+                     props.progress[0].lesson_progress[index].sub_lesson[index2]
+                       .result &&
+                     props.progress &&
+                     props.progress[0] &&
+                     props.progress &&
+                     props.progress[0].lesson_progress[index].sub_lesson[index2]
+                       .completed == false;
+                       checkSuccess =
+                     props.progress &&
+                     props.progress[0] &&
+                     props.progress &&
+                     props.progress[0].lesson_progress[index].sub_lesson[index2]
+                       .completed == true;
+
+                  }
                   let active = props.activeLesson == itemchild._id;
                   return (
                     <Box
@@ -432,7 +473,8 @@ const ContentRight = (props: any) => {
                         pointerEvents:
                           !checkSuccess && !check ? "none" : "auto",
                       }}
-                      onClick={() => props.handleActiveLesson(itemchild)}>
+                      onClick={() => props.handleActiveLesson(itemchild)}
+                    >
                       <Stack
                         direction={"row"}
                         borderTop={index2 == 0 ? "none" : "1px solid #dddddd"}
@@ -446,11 +488,13 @@ const ContentRight = (props: any) => {
                           opacity: !checkSuccess && !check ? ".5" : "1",
                         }}
                         justifyContent={"space-between"}
-                        padding={"15px 20px"}>
+                        padding={"15px 20px"}
+                      >
                         <Stack
                           direction={"row"}
                           alignItems={"center"}
-                          gap={"7px"}>
+                          gap={"7px"}
+                        >
                           <Typography color={"#333"} fontSize={"14px"}>
                             {index2 + 1}.{itemchild.title}
                             <Stack direction={"row"} mt={"5px"} gap={"10px"}>
@@ -486,7 +530,7 @@ const ContentRight = (props: any) => {
                             <>
                               {checkSuccess && (
                                 <RiCheckboxCircleFill
-                                  color='green'
+                                  color="green"
                                   size={"20px"}
                                 />
                               )}
@@ -499,6 +543,8 @@ const ContentRight = (props: any) => {
                     </Box>
                   );
                 })}
+                </>}
+                
               </Box>
             </Box>
           );
@@ -537,8 +583,9 @@ const ContentDrawer = ({ onClose }: any) => {
       width={"800px"}
       height={"100vh"}
       padding={"50px"}
-      className='comment-tab'
-      sx={{ position: "relative", overflowY: "scroll" }}>
+      className="comment-tab"
+      sx={{ position: "relative", overflowY: "scroll" }}
+    >
       <Box position={"absolute"} onClick={onClose(false)} top={20} right={20}>
         <RiCloseLine size={30} />
       </Box>
@@ -550,7 +597,8 @@ const ContentDrawer = ({ onClose }: any) => {
           mt={"10px"}
           fontStyle={"italic"}
           fontSize={"14px"}
-          color={"#333"}>
+          color={"#333"}
+        >
           (Nếu thấy bình luận spam, các bạn bấm report giúp admin nhé)
         </Typography>
       </Box>
@@ -561,13 +609,14 @@ const ContentDrawer = ({ onClose }: any) => {
             width={50}
             height={50}
             style={{ borderRadius: "50%" }}
-            alt=''
+            alt=""
           />
           <Box
             sx={{
               maxHeight: etend ? "400px" : "43px",
               overflow: "hidden",
-            }}>
+            }}
+          >
             {etend ? (
               ""
             ) : (
@@ -575,7 +624,8 @@ const ContentDrawer = ({ onClose }: any) => {
                 onClick={() => setExtend(true)}
                 mt={"20px"}
                 borderBottom={"1px solid #333333"}
-                fontSize={"14px"}>
+                fontSize={"14px"}
+              >
                 Bạn có thắc mắc gì trong bài học này?
               </Typography>
             )}
@@ -585,11 +635,12 @@ const ContentDrawer = ({ onClose }: any) => {
                   display: "none !important",
                 },
                 width: "100%",
-              }}>
+              }}
+            >
               <Editor
-                apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                 onEditorChange={handleEditorChange}
-                initialValue='Bạn có thắc mắc gì trong bài học này?'
+                initialValue="Bạn có thắc mắc gì trong bài học này?"
                 init={{
                   plugins:
                     "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -663,7 +714,8 @@ const ContentDrawer = ({ onClose }: any) => {
               direction={"row"}
               justifyContent={"flex-end"}
               mt={"15px"}
-              gap={1}>
+              gap={1}
+            >
               <Button
                 onClick={() => setExtend(false)}
                 sx={{
@@ -671,7 +723,8 @@ const ContentDrawer = ({ onClose }: any) => {
                   border: "1px solid #333",
                   borderRadius: "99px",
                   height: "34px",
-                }}>
+                }}
+              >
                 Hủy
               </Button>
               <Button
@@ -682,7 +735,8 @@ const ContentDrawer = ({ onClose }: any) => {
                   borderRadius: "99px",
 
                   height: "34px",
-                }}>
+                }}
+              >
                 Bình Luận
               </Button>
             </Stack>
@@ -698,7 +752,7 @@ const ContentDrawer = ({ onClose }: any) => {
                 width={40}
                 height={40}
                 style={{ borderRadius: "50%" }}
-                alt=''
+                alt=""
               />
             </Box>
             <Box
@@ -706,20 +760,23 @@ const ContentDrawer = ({ onClose }: any) => {
                 maxHeight: etendDad || etendType ? "600px" : "110px",
 
                 overflow: "hidden",
-              }}>
+              }}
+            >
               <Box
                 sx={{
                   padding: "15px",
                   borderRadius: "10px",
                   background: "#f2f3f5",
                   width: "500px",
-                }}>
+                }}
+              >
                 <Typography fontWeight={"700"} fontSize={"14px"}>
                   Bùi Văn Toản
                 </Typography>
                 <Box
                   sx={{ color: "#292929", mt: "5px" }}
-                  dangerouslySetInnerHTML={{ __html: `haolo` }}></Box>
+                  dangerouslySetInnerHTML={{ __html: `haolo` }}
+                ></Box>
               </Box>
               <Box>
                 <Stack
@@ -727,9 +784,10 @@ const ContentDrawer = ({ onClose }: any) => {
                   sx={{ cursor: "pointer" }}
                   direction={"row"}
                   alignItems={"center"}
-                  gap={"6px"}>
+                  gap={"6px"}
+                >
                   <LightTooltip
-                    placement='top-start'
+                    placement="top-start"
                     title={
                       <Stack direction={"row"} gap={"15px"}>
                         <p style={{ fontSize: "22px" }}>👍</p>
@@ -739,7 +797,8 @@ const ContentDrawer = ({ onClose }: any) => {
                         <p style={{ fontSize: "22px" }}>😰</p>
                         <p style={{ fontSize: "22px" }}>😠</p>
                       </Stack>
-                    }>
+                    }
+                  >
                     <Typography color={"#ff5117"} fontSize={"12px"}>
                       Thích
                     </Typography>
@@ -748,7 +807,8 @@ const ContentDrawer = ({ onClose }: any) => {
                   <Typography
                     onClick={() => setExtendDad(true)}
                     color={"#ff5117"}
-                    fontSize={"12px"}>
+                    fontSize={"12px"}
+                  >
                     Trả lời
                   </Typography>
                   •
@@ -757,7 +817,7 @@ const ContentDrawer = ({ onClose }: any) => {
                   </Typography>
                   <RiMoreFill
                     aria-describedby={id}
-                    variant='contained'
+                    variant="contained"
                     onClick={handleClick}
                     size={20}
                   />
@@ -769,7 +829,8 @@ const ContentDrawer = ({ onClose }: any) => {
                     anchorOrigin={{
                       vertical: "bottom",
                       horizontal: "left",
-                    }}>
+                    }}
+                  >
                     <Typography
                       color={"#333"}
                       fontSize={"13px"}
@@ -778,7 +839,8 @@ const ContentDrawer = ({ onClose }: any) => {
                         display: "flex ",
                         alignItems: "center",
                         gap: "6px",
-                      }}>
+                      }}
+                    >
                       <RiFlagFill size={20} /> Báo cáo bình luận
                     </Typography>
                   </Popover>
@@ -790,7 +852,8 @@ const ContentDrawer = ({ onClose }: any) => {
                     display={"flex"}
                     alignItems={"center"}
                     gap={"3px"}
-                    fontSize={"13px"}>
+                    fontSize={"13px"}
+                  >
                     Xem 1 câu trả lời
                     <RiArrowDownSLine size={"20px"} />
                   </Typography>
@@ -806,7 +869,7 @@ const ContentDrawer = ({ onClose }: any) => {
                               width={40}
                               height={40}
                               style={{ borderRadius: "50%" }}
-                              alt=''
+                              alt=""
                             />
                           </Box>
                           <Box
@@ -814,14 +877,16 @@ const ContentDrawer = ({ onClose }: any) => {
                               maxHeight: etendChild ? "600px" : "100px",
                               transition: ".4s",
                               overflow: "hidden",
-                            }}>
+                            }}
+                          >
                             <Box
                               sx={{
                                 padding: "15px",
                                 borderRadius: "10px",
                                 background: "#f2f3f5",
                                 width: "500px",
-                              }}>
+                              }}
+                            >
                               <Typography fontWeight={"700"} fontSize={"14px"}>
                                 Bùi Văn Toản
                               </Typography>
@@ -829,7 +894,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                 sx={{ color: "#292929", mt: "5px" }}
                                 dangerouslySetInnerHTML={{
                                   __html: `haolo`,
-                                }}></Box>
+                                }}
+                              ></Box>
                             </Box>
                             <Box>
                               <Stack
@@ -837,9 +903,10 @@ const ContentDrawer = ({ onClose }: any) => {
                                 sx={{ cursor: "pointer" }}
                                 direction={"row"}
                                 alignItems={"center"}
-                                gap={"6px"}>
+                                gap={"6px"}
+                              >
                                 <LightTooltip
-                                  placement='top-start'
+                                  placement="top-start"
                                   title={
                                     <Stack direction={"row"} gap={"15px"}>
                                       <p style={{ fontSize: "22px" }}>👍</p>
@@ -849,10 +916,12 @@ const ContentDrawer = ({ onClose }: any) => {
                                       <p style={{ fontSize: "22px" }}>😰</p>
                                       <p style={{ fontSize: "22px" }}>😠</p>
                                     </Stack>
-                                  }>
+                                  }
+                                >
                                   <Typography
                                     color={"#ff5117"}
-                                    fontSize={"12px"}>
+                                    fontSize={"12px"}
+                                  >
                                     Thích
                                   </Typography>
                                 </LightTooltip>
@@ -860,7 +929,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                 <Typography
                                   onClick={() => setExtendChild(true)}
                                   color={"#ff5117"}
-                                  fontSize={"12px"}>
+                                  fontSize={"12px"}
+                                >
                                   Trả lời
                                 </Typography>
                                 •
@@ -869,7 +939,7 @@ const ContentDrawer = ({ onClose }: any) => {
                                 </Typography>
                                 <RiMoreFill
                                   aria-describedby={id}
-                                  variant='contained'
+                                  variant="contained"
                                   onClick={handleClick}
                                   size={20}
                                 />
@@ -881,7 +951,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                   anchorOrigin={{
                                     vertical: "bottom",
                                     horizontal: "left",
-                                  }}>
+                                  }}
+                                >
                                   <Typography
                                     color={"#333"}
                                     fontSize={"13px"}
@@ -890,7 +961,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                       display: "flex ",
                                       alignItems: "center",
                                       gap: "6px",
-                                    }}>
+                                    }}
+                                  >
                                     <RiFlagFill size={20} /> Báo cáo bình luận
                                   </Typography>
                                 </Popover>
@@ -903,11 +975,12 @@ const ContentDrawer = ({ onClose }: any) => {
                                         display: "none !important",
                                       },
                                       width: "100%",
-                                    }}>
+                                    }}
+                                  >
                                     <Editor
-                                      apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                                      apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                                       onEditorChange={handleEditorChange}
-                                      initialValue='Bạn có thắc mắc gì trong bài học này?'
+                                      initialValue="Bạn có thắc mắc gì trong bài học này?"
                                       init={{
                                         plugins:
                                           "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -1002,7 +1075,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                     direction={"row"}
                                     justifyContent={"flex-end"}
                                     mt={"15px"}
-                                    gap={1}>
+                                    gap={1}
+                                  >
                                     <Button
                                       onClick={() => setExtendChild(false)}
                                       sx={{
@@ -1010,7 +1084,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                         border: "1px solid #333",
                                         borderRadius: "99px",
                                         height: "34px",
-                                      }}>
+                                      }}
+                                    >
                                       Hủy
                                     </Button>
                                     <Button
@@ -1021,7 +1096,8 @@ const ContentDrawer = ({ onClose }: any) => {
                                         borderRadius: "99px",
 
                                         height: "34px",
-                                      }}>
+                                      }}
+                                    >
                                       Bình Luận
                                     </Button>
                                   </Stack>
@@ -1041,11 +1117,12 @@ const ContentDrawer = ({ onClose }: any) => {
                           display: "none !important",
                         },
                         width: "100%",
-                      }}>
+                      }}
+                    >
                       <Editor
-                        apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                        apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                         onEditorChange={handleEditorChange}
-                        initialValue='Bạn có thắc mắc gì trong bài học này?'
+                        initialValue="Bạn có thắc mắc gì trong bài học này?"
                         init={{
                           plugins:
                             "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -1133,7 +1210,8 @@ const ContentDrawer = ({ onClose }: any) => {
                       direction={"row"}
                       justifyContent={"flex-end"}
                       mt={"15px"}
-                      gap={1}>
+                      gap={1}
+                    >
                       <Button
                         onClick={() => setExtendDad(false)}
                         sx={{
@@ -1141,7 +1219,8 @@ const ContentDrawer = ({ onClose }: any) => {
                           border: "1px solid #333",
                           borderRadius: "99px",
                           height: "34px",
-                        }}>
+                        }}
+                      >
                         Hủy
                       </Button>
                       <Button
@@ -1152,7 +1231,8 @@ const ContentDrawer = ({ onClose }: any) => {
                           borderRadius: "99px",
 
                           height: "34px",
-                        }}>
+                        }}
+                      >
                         Bình Luận
                       </Button>
                     </Stack>
@@ -1168,6 +1248,7 @@ const ContentDrawer = ({ onClose }: any) => {
 };
 
 const ContentLeftExercise = (props: any) => {
+  
   const [value, setValue] = React.useState(0);
   const [valueRight, setValueRight] = React.useState(0);
   const [exerciseHtml, setexerciseHtml] = React.useState(
@@ -1176,9 +1257,25 @@ const ContentLeftExercise = (props: any) => {
   const [exerciseCss, setexerciseCss] = React.useState(
     JSON.parse(props.data.type_exercise).css
   );
+
   const [exercise, setExercise]: any = useState(
     JSON.parse(props.data.type_exercise).javascript
   );
+  
+  useEffect(()=>{
+    if(props.typeCode=="html"){
+      setexerciseHtml(JSON.parse(props.data.type_exercise).html)
+    }
+    if(props.typeCode=="javascript"){
+      setExercise(JSON.parse(props.data.type_exercise).javascript)
+    }
+    if(props.typeCode=="html-css"){
+      setexerciseCss(JSON.parse(props.data.type_exercise).css)
+      setexerciseHtml(JSON.parse(props.data.type_exercise).html)
+    }
+  },[props.data])
+
+ 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -1196,15 +1293,16 @@ const ContentLeftExercise = (props: any) => {
     setexerciseCss(e);
   };
   const handleClickSucess = () => {
+    props.setDone(true)
     Confetti({
       particleCount: 100,
       spread: 70,
       origin: { y: 1 },
     });
   };
-  console.log(JSON.parse(props.data.type_exercise).html);
+  
   return (
-    <Box width={"75%"}>
+    <Box width={"75%"} borderRight={"1px solid #dddddd"}>
       <Stack direction={"row"}>
         <Box
           sx={{
@@ -1219,14 +1317,16 @@ const ContentLeftExercise = (props: any) => {
             },
           }}
           width={"45%"}
-          borderRight={"1px solid #dddddd"}>
+          borderRight={"1px solid #dddddd"}
+        >
           <Tabs value={value} onChange={handleChange} centered>
             <Tab
               label={
                 <>
                   <Typography
                     sx={{ display: "flex", alignItems: "center", gap: "5px" }}
-                    fontWeight={600}>
+                    fontWeight={600}
+                  >
                     <RiFile3Fill /> Nội dung
                   </Typography>
                 </>
@@ -1237,7 +1337,8 @@ const ContentLeftExercise = (props: any) => {
                 <>
                   <Typography
                     sx={{ display: "flex", alignItems: "center", gap: "5px" }}
-                    fontWeight={600}>
+                    fontWeight={600}
+                  >
                     {" "}
                     <RiPlayCircleFill size={"19px"} />
                     Trình duyệt
@@ -1257,18 +1358,20 @@ const ContentLeftExercise = (props: any) => {
                     display: "none !important",
                   },
 
-                  height: "500px",
-                  // pointerEvents: "none",
+                  height: "82vh",
+                  
                   ".tox-tinymce": {
                     border: "none",
                   },
-                }}>
+                }}
+              >
                 <Editor
-                  apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+                  apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
                   initialValue={props.data.content_code}
                   init={{
                     height: "550px",
                   }}
+                  disabled
                 />
               </Box>
             </Box>
@@ -1277,11 +1380,11 @@ const ContentLeftExercise = (props: any) => {
           {value == 1 && (
             <Box>
               <iframe
-                title='result'
+                title="result"
                 srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
                 style={{
                   width: "100%",
-                  height: "80vh",
+                  height: "85vh",
                   border: "1px solid #ccc",
                 }}
               />
@@ -1312,12 +1415,14 @@ const ContentLeftExercise = (props: any) => {
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"center"}
-            width={"99.9%"}>
-            {props.typeCode == "html" && (
+            width={"99.9%"}
+          >
+            {props.typeCode!==null&&props.typeCode == "html" && (
               <Tabs
                 value={valueRight}
                 onChange={handleChangeRight}
-                aria-label='basic tabs example'>
+                aria-label="basic tabs example"
+              >
                 <Tab
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
@@ -1326,11 +1431,12 @@ const ContentLeftExercise = (props: any) => {
                         width={17}
                         height={17}
                         style={{ borderRadius: "5px" }}
-                        alt=''
+                        alt=""
                       />
                       <Typography
                         fontSize={"12px"}
-                        sx={{ textTransform: "lowercase" }}>
+                        sx={{ textTransform: "lowercase" }}
+                      >
                         index.html
                       </Typography>
                     </Stack>
@@ -1338,11 +1444,12 @@ const ContentLeftExercise = (props: any) => {
                 />
               </Tabs>
             )}
-            {props.typeCode == "javascript" && (
+            {props.typeCode!==null&&props.typeCode == "javascript" && (
               <Tabs
                 value={valueRight}
                 onChange={handleChangeRight}
-                aria-label='basic tabs example'>
+                aria-label="basic tabs example"
+              >
                 <Tab
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
@@ -1351,11 +1458,12 @@ const ContentLeftExercise = (props: any) => {
                         width={17}
                         height={17}
                         style={{ borderRadius: "5px" }}
-                        alt=''
+                        alt=""
                       />
                       <Typography
                         fontSize={"12px"}
-                        sx={{ textTransform: "lowercase" }}>
+                        sx={{ textTransform: "lowercase" }}
+                      >
                         main.js
                       </Typography>
                     </Stack>
@@ -1363,28 +1471,31 @@ const ContentLeftExercise = (props: any) => {
                 />
               </Tabs>
             )}
-            {props.typeCode == "html-css" && (
+            {props.typeCode!==null&&props.typeCode == "html-css" && (
               <>
                 <Tabs
                   value={valueRight}
                   onChange={handleChangeRight}
-                  aria-label='basic tabs example'>
+                  aria-label="basic tabs example"
+                >
                   <Tab
                     label={
                       <Stack
                         direction={"row"}
                         alignItems={"center"}
-                        gap={"4px"}>
+                        gap={"4px"}
+                      >
                         <img
                           src={html}
                           width={17}
                           height={17}
                           style={{ borderRadius: "5px" }}
-                          alt=''
+                          alt=""
                         />
                         <Typography
                           fontSize={"12px"}
-                          sx={{ textTransform: "lowercase" }}>
+                          sx={{ textTransform: "lowercase" }}
+                        >
                           index.html
                         </Typography>
                       </Stack>
@@ -1395,17 +1506,19 @@ const ContentLeftExercise = (props: any) => {
                       <Stack
                         direction={"row"}
                         alignItems={"center"}
-                        gap={"4px"}>
+                        gap={"4px"}
+                      >
                         <img
                           src={css}
                           width={17}
                           height={17}
                           style={{ borderRadius: "5px" }}
-                          alt=''
+                          alt=""
                         />
                         <Typography
                           fontSize={"12px"}
-                          sx={{ textTransform: "lowercase" }}>
+                          sx={{ textTransform: "lowercase" }}
+                        >
                           style.css
                         </Typography>
                       </Stack>
@@ -1420,7 +1533,8 @@ const ContentLeftExercise = (props: any) => {
               display={"flex"}
               alignItems={"center"}
               justifyContent={"center"}
-              bgcolor={"#1e1e1e"}>
+              bgcolor={"#1e1e1e"}
+            >
               <ReplayIcon sx={{ color: "white" }} />
             </Box>
           </Stack>
@@ -1429,42 +1543,43 @@ const ContentLeftExercise = (props: any) => {
               " .slider-mouseover": {
                 display: "none",
               },
-            }}>
-            {props.typeCode == "javascript" && (
+            }}
+          >
+            {props.typeCode!==null&&props.typeCode == "javascript" && (
               <MonacoEditor
                 width={"100%"}
-                height='350px'
-                language='javascript'
-                theme='vs-dark'
+                height="50vh"
+                language="javascript"
+                theme="vs-dark"
                 value={exercise}
                 onChange={(value) => handleChangeExercise(value)}
               />
             )}
-            {props.typeCode == "html" && (
+            {props.typeCode!==null&&props.typeCode == "html" && (
               <MonacoEditor
-                height='350px'
-                language='html'
-                theme='vs-dark'
+                height="50vh"
+                language="html"
+                theme="vs-dark"
                 value={exerciseHtml}
                 onChange={(value) => handleChangeExerciseHtml(value)}
               />
             )}
-            {props.typeCode == "html-css" && (
+            {props.typeCode!==null&&props.typeCode == "html-css" && (
               <>
                 {valueRight == 0 && (
                   <MonacoEditor
-                    height='350px'
-                    language='html'
-                    theme='vs-dark'
+                    height="50vh"
+                    language="html"
+                    theme="vs-dark"
                     value={exerciseHtml}
                     onChange={(value) => handleChangeExerciseHtml(value)}
                   />
                 )}
                 {valueRight == 1 && (
                   <MonacoEditor
-                    height='350px'
-                    language='css'
-                    theme='vs-dark'
+                    height="50vh"
+                    language="css"
+                    theme="vs-dark"
                     value={exerciseCss}
                     onChange={(value) => handleChangeExerciseCss(value)}
                   />
@@ -1477,7 +1592,8 @@ const ContentLeftExercise = (props: any) => {
             justifyContent={"space-between"}
             alignItems={"center"}
             padding={"10px"}
-            borderBottom={"1px solid #dddddd"}>
+            borderBottom={"1px solid #dddddd"}
+          >
             <Typography fontWeight={"600"} fontSize={"14px"}>
               Bài kiểm tra (0/1)
             </Typography>
@@ -1491,14 +1607,15 @@ const ContentLeftExercise = (props: any) => {
                 width: "92px",
                 height: "34px",
                 fontSize: "12px",
-              }}>
+              }}
+            >
               Kiểm tra
             </Button>
           </Stack>
           <Stack padding={"20px"}>
             <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
               <Box>
-                <RiCheckLine color='#5db85c' size={"25px"} />
+                <RiCheckLine color="#5db85c" size={"25px"} />
               </Box>
               <Typography fontWeight={"400"} fontSize={"16px"}>
                 Logs biến language ra tab Console
@@ -1532,9 +1649,10 @@ const ContentLeftBlog = (props: any) => {
           ".mce-content-body": {
             padding: "40px",
           },
-        }}>
+        }}
+      >
         <Editor
-          apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+          apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
           initialValue={props.data.content_blog}
           init={{
             height: "85vh",
@@ -1562,8 +1680,10 @@ const ContentLeftQuiz = (props: any) => {
         spread: 70,
         origin: { y: 1 },
       });
+      props.setDone(true)
     } else {
       setColor("#cc5140");
+      props.setDone(false)
     }
   };
   return (
@@ -1572,7 +1692,8 @@ const ContentLeftQuiz = (props: any) => {
         display={"flex"}
         flexDirection={"column"}
         alignItems={"center"}
-        justifyContent={"center"}>
+        justifyContent={"center"}
+      >
         <Box
           width={"80%"}
           sx={{
@@ -1592,9 +1713,10 @@ const ContentLeftQuiz = (props: any) => {
             "iframe code ": {
               background: "none",
             },
-          }}>
+          }}
+        >
           <Editor
-            apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
+            apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
             initialValue={props.data.content_quizz}
           />
         </Box>
@@ -1604,7 +1726,8 @@ const ContentLeftQuiz = (props: any) => {
           position={"relative"}
           zIndex={"1"}
           gap={"15px"}
-          width={"70%"}>
+          width={"70%"}
+        >
           {quiz.map((item: any) => {
             let check = false;
             if (total) {
@@ -1621,7 +1744,8 @@ const ContentLeftQuiz = (props: any) => {
                 justifyContent={"center"}
                 borderRadius={"10px"}
                 height={"50px"}
-                bgcolor={"#f6f7f9"}>
+                bgcolor={"#f6f7f9"}
+              >
                 {item.answer}
               </Box>
             );
@@ -1640,7 +1764,8 @@ const ContentLeftQuiz = (props: any) => {
               height: "34px",
               fontSize: "12px",
               float: "right",
-            }}>
+            }}
+          >
             Kiểm tra
           </Button>
         </Box>

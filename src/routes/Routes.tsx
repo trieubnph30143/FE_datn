@@ -3,6 +3,7 @@ import LayoutWebsite from "@/components/layouts/LayoutWebsite";
 import CategoriesController from "@/pages/admin/categories/CategoriesController";
 import CoursesController from "@/pages/admin/courses/CoursesController";
 import LessonController from "@/pages/admin/lesson/LessonController";
+import PostController from "@/pages/admin/post/PostController";
 import SubLessonController from "@/pages/admin/sublesson/SubLessonController";
 import DetailCourseController from "@/pages/client/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/client/featured_article/FeaturedArticleController";
@@ -39,6 +40,7 @@ const Router = () => {
           <Route path='lesson' element={<LessonController />} />
           <Route path='sublesson' element={<SubLessonController />} />
           <Route path='categories' element={<CategoriesController />} />
+          <Route path='post' element={<PostController />} />
         </Route>
         <Route path='*' element={<PageNotFound />} />
       </Routes>
