@@ -3,33 +3,31 @@ import DetailCourseView from "./DetailCourseView";
 import { getOneCourses } from "@/service/courses";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { addProgress, getProgress } from "@/service/progress";
+import { addProgress, getProgress, getUserProgress } from "@/service/progress";
+import { useCoursesContext } from "@/App";
 
 const DetailCourseController = () => {
   const { id } = useParams();
   const [toggle, setToggle] = useState(true);
   const [totalLesson, setTotalLesson] = useState(0);
   const navigate = useNavigate();
-  const [expanded, setExpanded]:any = useState([
-  ]);
+  const [expanded, setExpanded]: any = useState([]);
+  const context: any = useCoursesContext();
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
     },
     onSuccess(data) {
-     setExpanded([ true,
-      ...Array( data.lesson.length).fill(false),])
+      setExpanded([true, ...Array(data.lesson.length).fill(false)]);
       let total = 0;
       data.lesson.map((item: any) => (total += item.sub_lesson.length));
       setTotalLesson(total);
     },
   });
 
-  
-
   const handleTongle = (index: number) => {
-    setExpanded((prevExpanded:any) =>
-      prevExpanded.map((item:any, idx:any) => (idx === index ? !item : item))
+    setExpanded((prevExpanded: any) =>
+      prevExpanded.map((item: any, idx: any) => (idx === index ? !item : item))
     );
   };
   const handleTongleAll = () => {
@@ -64,15 +62,30 @@ const DetailCourseController = () => {
           }),
         };
       });
-
+      
+      if (Object.keys(context.state.user)[0]) {
       let body = {
         courses_id: courses._id,
         completed: false,
-        user_id: "66402cb7c2437f1cb1ad9889",
+        user_id: context.state.user !== undefined&& context.state.user[0]._id,
         lesson_progress: arr,
       };
-      // let data = await addProgress(body);
-      navigate(`/learning/${courses && courses._id}`);
+      
+        let data = await addProgress(body);
+        if (data?.status == 0) {
+          let res:any = await getUserProgress(context.state.user[0]._id) 
+          context.dispatch({
+            type: "PROGRESS",
+            payload: {
+              ...context.state,
+              progress: res.data,
+            },
+          });
+          navigate(`/learning/${courses && courses._id}`);
+        }
+      } else {
+        alert("ban can dang nhap");
+      }
     } catch (error) {
       console.log(error);
     }

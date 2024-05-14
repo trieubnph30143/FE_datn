@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { getOneCourses } from "@/service/courses";
 import { getProgress, updateProgress } from "@/service/progress";
+import { useCoursesContext } from "@/App";
+import Loading from "@/components/Loading";
+import { useLocalStorage } from "@/hooks/useStorage";
 
 const LearningController = () => {
   const queryClient = useQueryClient();
@@ -16,26 +19,39 @@ const LearningController = () => {
   const [open, setOpen] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [done, setDone] = useState(false);
-  const [played, setPlayed] = useState(0);
+  const playedRef = useRef(0);
   const [loading, setLoading]: any = useState(false);
   const [detail, setDetail]: any = useState({});
   const [expanded, setExpanded]: any = useState([]);
   const player: any = useRef(null);
-
+  const [user, setUser] = useLocalStorage("user", {});
+  const [loadingAll,setLoadingAll] = useState({
+    courses:false,
+    progress:false
+  })
+  
   const navigate = useNavigate();
 
   const { data: progress } = useQuery(["progress", id], {
     queryFn: () => {
-      return getProgress("66402cb7c2437f1cb1ad9889", id);
+     
+      return getProgress(user.data[0]._id, id);
+    },
+    onSuccess(data) {
+      setLoadingAll({...loadingAll,progress:true})
     },
     refetchOnWindowFocus: false,
   });
-  console.log(progress);
+  
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
     },
     onSuccess(data) {
+      setTimeout(()=>{
+        setLoadingAll({...loadingAll,courses:true})
+      },500)
+      
       let arr = [...Array(data.lesson.length).fill(false)];
       setDetail(data);
       let total = 0;
@@ -113,8 +129,7 @@ const LearningController = () => {
     refetchOnWindowFocus: false,
   });
 
-  console.log(activeLesson);
-  console.log(dataLesson);
+ 
 
   const handleTongle = (index: number) => {
     setExpanded((prevExpanded: any) =>
@@ -148,7 +163,7 @@ const LearningController = () => {
     }
   };
 
-  console.log(typeCode);
+ 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -156,7 +171,7 @@ const LearningController = () => {
   // xu ly video
   useEffect(() => {
     const handleBeforeUnload = () => {
-      localStorage.setItem("videoCurrentTime", JSON.stringify(played));
+      localStorage.setItem("videoCurrentTime", JSON.stringify(playedRef.current));
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -164,18 +179,19 @@ const LearningController = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [played]);
+  }, [playedRef.current]);
 
   useEffect(() => {
     const savedTime: any = localStorage.getItem("videoCurrentTime");
+    
     if (player.current) {
       player.current.seekTo(JSON.parse(savedTime));
     }
   }, [player.current]);
 
-  const handleProgress = (state: any) => {
-    if (played !== state.played) {
-      setPlayed(state.played);
+  const handleProgress = (state:any) => {
+    if (playedRef.current !== state.played) {
+      playedRef.current = state.played;
     }
   };
   const handleEnded = () => {
@@ -357,8 +373,14 @@ const LearningController = () => {
     }
   };
 
+  console.log(progress);
+  
+  
   return (
     <>
+    {!loadingAll.courses && <Loading/>}
+    
+    {loadingAll.courses&&loadingAll.progress && 
       <LearningView
         courses={courses && courses}
         expanded={expanded}
@@ -378,12 +400,12 @@ const LearningController = () => {
         handleEnded={handleEnded}
         player={player}
         playing={playing}
-        played={played}
+        played={playedRef.current}
         handleNextLesson={handleNextLesson}
         done={done}
         loading={loading}
         setDone={setDone}
-      />
+      />}
     </>
   );
 };

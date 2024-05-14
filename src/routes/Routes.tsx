@@ -5,6 +5,7 @@ import CoursesController from "@/pages/admin/courses/CoursesController";
 import LessonController from "@/pages/admin/lesson/LessonController";
 import PostController from "@/pages/admin/post/PostController";
 import SubLessonController from "@/pages/admin/sublesson/SubLessonController";
+import DetailBlogController from "@/pages/client/detail_blog/DetailBlogController";
 import DetailCourseController from "@/pages/client/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/client/featured_article/FeaturedArticleController";
 import HomeController from "@/pages/client/home/HomeController";
@@ -33,6 +34,7 @@ const Router = () => {
           <Route path='profile' element={<ProfileController />} />
           <Route path='my_article' element={<MyArticleController />} />
           <Route path='setting' element={<SettingProfileController />} />
+        <Route path='/detail_blog' element={<DetailBlogController />} />
         </Route>
         <Route path='/learning/:id' element={<LearningController />} />
         <Route path='/dashboard' element={<LayoutAdmin />}>

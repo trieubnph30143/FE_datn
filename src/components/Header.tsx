@@ -22,13 +22,30 @@ import { useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import profile from "../images/user.png";
 import product from "../images/product.png";
+import { useAuthMutation } from "@/hooks/useAuthMutation";
+import { coursesContext, useCoursesContext } from "@/App";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "react-query";
+import { getUserProgress } from "@/service/progress";
 const Header = () => {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorElNotify, setAnchorElNotify] =
+    useState<HTMLButtonElement | null>(null);
+  const [anchorElProfile, setAnchorElProfile] =
+    useState<HTMLButtonElement | null>(null);
   const [open, setOpen] = useState(false);
   const [check, setCheck] = useState("");
   const [select, setSelect] = useState(true);
   const [registerType, setRegisterType] = useState(false);
-
+  const openCourses = Boolean(anchorEl);
+  const id = openCourses ? "simple-popover" : undefined;
+  const openNotify = Boolean(anchorElNotify);
+  const idNotify = openNotify ? "simple-popover" : undefined;
+  const openProfile = Boolean(anchorElProfile);
+  const idProfile = openProfile ? "simple-popover" : undefined;
+  const navigate = useNavigate();
+  const context: any = useCoursesContext();
+  const queryClient = useQueryClient();
   const handleClose = () => {
     setCheck("");
     setSelect(true);
@@ -44,11 +61,6 @@ const Header = () => {
       setOpen(true);
     }
   };
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [anchorElNotify, setAnchorElNotify] =
-    useState<HTMLButtonElement | null>(null);
-  const [anchorElProfile, setAnchorElProfile] =
-    useState<HTMLButtonElement | null>(null);
 
   const handleClickCourses = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -70,13 +82,42 @@ const Header = () => {
     setAnchorElProfile(null);
   };
 
-  const openCourses = Boolean(anchorEl);
-  const id = openCourses ? "simple-popover" : undefined;
-  const openNotify = Boolean(anchorElNotify);
-  const idNotify = openNotify ? "simple-popover" : undefined;
-  const openProfile = Boolean(anchorElProfile);
-  const idProfile = openProfile ? "simple-popover" : undefined;
-  const navigate = useNavigate()
+  const { register, reset, handleSubmit, onFinish }: any = useAuthMutation({
+    action: check == "login" ? "SIGNIN" : "SIGNUP",
+    onSuccess: async(data) => {
+      if (check !== "login") {
+        if (data.status == 1) {
+          alert(data.message);
+        } else {
+          reset();
+          setCheck("login");
+          setSelect(true);
+          setRegisterType(false);
+        }
+      } else {
+        if (data.status == 0) {
+          handleClose();
+          context.dispatch({
+            type: "LOGIN",
+            payload: {
+              ...context.state,
+              user: data,
+            },
+          });
+          let res:any = await getUserProgress(data.data[0]._id) 
+          context.dispatch({
+            type: "PROGRESS",
+            payload: {
+              ...context.state,
+              progress: res.data,
+            },
+          });
+          
+        }
+      }
+    },
+  });
+
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -127,219 +168,256 @@ const Header = () => {
             }}
           />
         </Box>
-        <Stack direction={"row"} gap={"30px"} alignItems={"center"}>
-          <Box>
-            <Typography
-              aria-describedby={id}
-              onClick={handleClickCourses}
-              fontSize={"14px"}
-            >
-              Khóa học của tôi
-            </Typography>
-            <Popover
-              id={id}
-              open={openCourses}
-              anchorEl={anchorEl}
-              onClose={handleCloseCourses}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              <Box p={"15px"} width={"380px"}>
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Typography fontWeight={"600"}>Khóa học của tôi</Typography>
-                  <Typography fontSize={"13px"} color={"#ff5117"}>
-                    {" "}
-                    Xem tất cả
-                  </Typography>
-                </Stack>
-                <Stack
-                  className="see-more"
-                  mt={"20px"}
-                  direction={"column"}
-                  gap={"14px"}
-                  maxHeight={"400px"}
-                  sx={{ overflowY: "scroll" }}
-                >
-                  {[1, 2, 3, 4, 5, 6].map(() => {
-                    return (
-                      <Stack direction={"row"} gap={"20px"}>
-                        <Box>
-                          <img
-                            src={product}
-                            width={120}
-                            height={67}
-                            style={{ borderRadius: "6px" }}
-                            alt=""
-                          />
-                        </Box>
-                        <Box>
-                          <Typography>Kiến Thức Nhập Môn IT</Typography>
-                          <ProgressBar percentage={75} />
-                        </Box>
-                      </Stack>
-                    );
-                  })}
-                </Stack>
-              </Box>
-            </Popover>
-          </Box>
-          <Box>
-            <Typography aria-describedby={idNotify} onClick={handleClickNotify}>
-              <Badge badgeContent={4} color="primary">
-                <NotificationsIcon />
-              </Badge>
-            </Typography>
-            <Popover
-              id={idNotify}
-              open={openNotify}
-              anchorEl={anchorElNotify}
-              onClose={handleCloseNotify}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              <Box p={"15px"} width={"380px"}>
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
-                  <Typography fontWeight={"600"}>Thông báo</Typography>
-                  <Typography fontSize={"13px"} color={"#ff5117"}>
-                    {" "}
-                    Đánh dấu đã đọc
-                  </Typography>
-                </Stack>
-                <Stack
-                  className="see-more"
-                  mt={"20px"}
-                  direction={"column"}
-                  gap={"14px"}
-                  maxHeight={"400px"}
-                  sx={{ overflowY: "scroll" }}
-                >
-                  {[1, 2, 3, 4, 5, 6].map(() => {
-                    return (
-                      <Stack direction={"row"} gap={"20px"}>
-                        <Box>
-                          <img
-                            src={logo}
-                            width={40}
-                            height={40}
-                            style={{ borderRadius: "50%" }}
-                            alt=""
-                          />
-                        </Box>
-                        <Box>
-                          <Typography>Kiến Thức Nhập Môn IT</Typography>
-                          <ProgressBar percentage={75} />
-                        </Box>
-                      </Stack>
-                    );
-                  })}
-                </Stack>
-              </Box>
-            </Popover>
-          </Box>
-
-          <Box>
-            <Typography aria-describedby={id} onClick={handleClickProfile}>
-              <img
-                src={profile}
-                width={40}
-                height={40}
-                style={{ borderRadius: "50%" }}
-                alt=""
-              />
-            </Typography>
-            <Popover
-              id={idProfile}
-              open={openProfile}
-              anchorEl={anchorElProfile}
-              onClose={handleCloseProfile}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              <Box p={"20px"} width={"200px"}>
-                <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
-                  <Box>
-                    <img
-                      src={profile}
-                      width={40}
-                      height={40}
-                      style={{ borderRadius: "50%" }}
-                      alt=""
-                    />
-                  </Box>
-                  <Box>
-                    <Typography fontSize={"14px"} fontWeight={"bold"}>
-                      Bùi Văn Toản
+        {Object.keys(context.state.user)[0] ? (
+          <Stack direction={"row"} gap={"30px"} alignItems={"center"}>
+            <Box>
+              <Typography
+                aria-describedby={id}
+                onClick={handleClickCourses}
+                fontSize={"14px"}
+              >
+                Khóa học của tôi
+              </Typography>
+              <Popover
+                id={id}
+                open={openCourses}
+                anchorEl={anchorEl}
+                onClose={handleCloseCourses}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <Box p={"15px"} width={"380px"}>
+                  <Stack
+                    direction={"row"}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                  >
+                    <Typography fontWeight={"600"}>Khóa học của tôi</Typography>
+                    <Typography fontSize={"13px"} color={"#ff5117"}>
+                      {" "}
+                      Xem tất cả
                     </Typography>
-                  </Box>
+                  </Stack>
+                  <Stack
+                    className="see-more"
+                    mt={"20px"}
+                    direction={"column"}
+                    gap={"14px"}
+                    maxHeight={"400px"}
+                    sx={{ overflowY: "scroll" }}
+                  >
+                    {[1, 2, 3, 4, 5, 6].map(() => {
+                      return (
+                        <Stack direction={"row"} gap={"20px"}>
+                          <Box>
+                            <img
+                              src={product}
+                              width={120}
+                              height={67}
+                              style={{ borderRadius: "6px" }}
+                              alt=""
+                            />
+                          </Box>
+                          <Box>
+                            <Typography>Kiến Thức Nhập Môn IT</Typography>
+                            <ProgressBar percentage={75} />
+                          </Box>
+                        </Stack>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+              </Popover>
+            </Box>
+            <Box>
+              <Typography
+                aria-describedby={idNotify}
+                onClick={handleClickNotify}
+              >
+                <Badge badgeContent={4} color="primary">
+                  <NotificationsIcon />
+                </Badge>
+              </Typography>
+              <Popover
+                id={idNotify}
+                open={openNotify}
+                anchorEl={anchorElNotify}
+                onClose={handleCloseNotify}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <Box p={"15px"} width={"380px"}>
+                  <Stack
+                    direction={"row"}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                  >
+                    <Typography fontWeight={"600"}>Thông báo</Typography>
+                    <Typography fontSize={"13px"} color={"#ff5117"}>
+                      {" "}
+                      Đánh dấu đã đọc
+                    </Typography>
+                  </Stack>
+                  <Stack
+                    className="see-more"
+                    mt={"20px"}
+                    direction={"column"}
+                    gap={"14px"}
+                    maxHeight={"400px"}
+                    sx={{ overflowY: "scroll" }}
+                  >
+                    {[1, 2, 3, 4, 5, 6].map(() => {
+                      return (
+                        <Stack direction={"row"} gap={"20px"}>
+                          <Box>
+                            <img
+                              src={logo}
+                              width={40}
+                              height={40}
+                              style={{ borderRadius: "50%" }}
+                              alt=""
+                            />
+                          </Box>
+                          <Box>
+                            <Typography>Kiến Thức Nhập Môn IT</Typography>
+                            <ProgressBar percentage={75} />
+                          </Box>
+                        </Stack>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+              </Popover>
+            </Box>
 
-                </Stack>
-                <Stack direction={"column"} mt={"20px"} gap={"18px"}>
-                  <Box borderBottom={"1px solid #dddddd" } paddingBottom={"8px"}>
-                  <Typography fontSize={"14px"} color={"#333"} onClick={()=>{
-                    handleCloseProfile()
-                    navigate("/profile")}}  >Trang cá nhân</Typography>
-                  </Box>
-                  <Box borderBottom={"1px solid #dddddd" } paddingBottom={"8px"}>
-                  <Typography fontSize={"14px"} color={"#333"} onClick={()=>{
-                     handleCloseProfile()
-                    navigate("/my_article")}}>Bài viết của tôi</Typography>
-                  </Box>
-                  <Box borderBottom={"1px solid #dddddd" } onClick={()=>{
-                     handleCloseProfile()
-                    navigate("/setting")}} paddingBottom={"8px"}>
-                  <Typography fontSize={"14px"} color={"#333"} >Cài đặt </Typography>
-                  </Box>
-                
-                 
-                 
-                  <Typography fontSize={"14px"} color={"#333"}>Đăng xuất </Typography>
-                </Stack>
-              </Box>
-            </Popover>
-          </Box>
-        </Stack>
-        {/* <Stack direction={"row"} gap={2}>
-          <Button onClick={() => handleCheck("login")} sx={{ color: "black" }}>
-            Đăng nhập
-          </Button>
-          <Button
-            onClick={() => handleCheck("register")}
-            sx={{
-              background: "linear-gradient(to right bottom, #ff8f26, #ff5117)",
-              color: "white",
-              borderRadius: "99px",
-              width: "92px",
-              height: "34px",
-            }}>
-            Đăng Ký
-          </Button>
-        </Stack> */}
+            <Box>
+              <Typography aria-describedby={id} onClick={handleClickProfile}>
+                <img
+                  src={profile}
+                  width={40}
+                  height={40}
+                  style={{ borderRadius: "50%" }}
+                  alt=""
+                />
+              </Typography>
+              <Popover
+                id={idProfile}
+                open={openProfile}
+                anchorEl={anchorElProfile}
+                onClose={handleCloseProfile}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+              >
+                <Box p={"20px"} width={"200px"}>
+                  <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
+                    <Box>
+                      <img
+                        src={profile}
+                        width={40}
+                        height={40}
+                        style={{ borderRadius: "50%" }}
+                        alt=""
+                      />
+                    </Box>
+                    <Box>
+                      <Typography fontSize={"14px"} fontWeight={"bold"}>
+                        Bùi Văn Toản
+                      </Typography>
+                    </Box>
+                  </Stack>
+                  <Stack direction={"column"} mt={"20px"} gap={"18px"}>
+                    <Box
+                      borderBottom={"1px solid #dddddd"}
+                      paddingBottom={"8px"}
+                    >
+                      <Typography
+                        fontSize={"14px"}
+                        color={"#333"}
+                        onClick={() => {
+                          handleCloseProfile();
+                          navigate("/profile");
+                        }}
+                      >
+                        Trang cá nhân
+                      </Typography>
+                    </Box>
+                    <Box
+                      borderBottom={"1px solid #dddddd"}
+                      paddingBottom={"8px"}
+                    >
+                      <Typography
+                        fontSize={"14px"}
+                        color={"#333"}
+                        onClick={() => {
+                          handleCloseProfile();
+                          navigate("/my_article");
+                        }}
+                      >
+                        Bài viết của tôi
+                      </Typography>
+                    </Box>
+                    <Box
+                      borderBottom={"1px solid #dddddd"}
+                      onClick={() => {
+                        handleCloseProfile();
+                        navigate("/setting");
+                      }}
+                      paddingBottom={"8px"}
+                    >
+                      <Typography fontSize={"14px"} color={"#333"}>
+                        Cài đặt{" "}
+                      </Typography>
+                    </Box>
+
+                    <Typography fontSize={"14px"} color={"#333"}>
+                      Đăng xuất{" "}
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Popover>
+            </Box>
+          </Stack>
+        ) : (
+          <Stack direction={"row"} gap={2}>
+            <Button
+              onClick={() => handleCheck("login")}
+              sx={{ color: "black" }}
+            >
+              Đăng nhập
+            </Button>
+            <Button
+              onClick={() => handleCheck("register")}
+              sx={{
+                background:
+                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                color: "white",
+                borderRadius: "99px",
+                width: "92px",
+                height: "34px",
+              }}
+            >
+              Đăng Ký
+            </Button>
+          </Stack>
+        )}
       </Stack>
 
       <Dialog
@@ -349,7 +427,7 @@ const Header = () => {
         aria-describedby="alert-dialog-description"
         sx={{ borderRadius: "15px" }}
       >
-        <Box sx={{ position: "relative", width: "540px", height: "660px" }}>
+        <Box sx={{ position: "relative", width: "540px", maxHeight: "750px" }}>
           <Box
             onClick={handleClose}
             sx={{
@@ -486,54 +564,54 @@ const Header = () => {
                 </Stack>
               ) : (
                 <Box my={"20px"}>
-                  <Box padding={"0 65px"}>
-                    <Box mt={"10px"}>
-                      <Stack
-                        direction={"row"}
-                        justifyContent={"space-between"}
-                        alignItems={"flex-end"}
-                      >
-                        <Typography
-                          marginLeft={"15px"}
-                          textAlign={"left"}
-                          fontSize={"14px"}
-                          fontWeight={"600"}
+                  <form onSubmit={handleSubmit(onFinish)}>
+                    <Box padding={"0 65px"}>
+                      <Box mt={"10px"}>
+                        <Stack
+                          direction={"row"}
+                          justifyContent={"space-between"}
+                          alignItems={"flex-end"}
                         >
-                          {registerType ? " Số điện thoại" : "Email"}
-                        </Typography>
-                        <Typography
-                          sx={{ position: "relative", zIndex: 10 }}
-                          onClick={() => setRegisterType(!registerType)}
-                          fontSize={"12px"}
-                          color={"#666"}
-                        >
-                          {registerType
-                            ? " Đăng nhập với Email"
-                            : "Đăng nhập với SĐT"}
-                        </Typography>
-                      </Stack>
-                      <TextField
-                        sx={{
-                          width: "100%",
-                          height: "42px",
-                          mt: "5px",
-                          borderRadius: "30px",
-                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
-                            {
-                              borderRadius: "30px",
-                            },
-                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              height: "28px",
-                            },
-                        }}
-                        helperText=" "
-                        placeholder={registerType ? "Số điện thoại" : "Email"}
-                        id="demo-helper-text-aligned-no-helper"
-                        size="small"
-                      />
-                      {!registerType ? (
+                          <Typography
+                            marginLeft={"15px"}
+                            textAlign={"left"}
+                            fontSize={"14px"}
+                            fontWeight={"600"}
+                          >
+                            {registerType ? " Số điện thoại" : "Email"}
+                          </Typography>
+                          <Typography
+                            sx={{ position: "relative", zIndex: 10 }}
+                            onClick={() => setRegisterType(!registerType)}
+                            fontSize={"12px"}
+                            color={"#666"}
+                          >
+                            Đăng nhập với Email
+                          </Typography>
+                        </Stack>
                         <TextField
+                          {...register("email")}
+                          sx={{
+                            width: "100%",
+                            height: "42px",
+                            mt: "5px",
+                            borderRadius: "30px",
+                            ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                              {
+                                borderRadius: "30px",
+                              },
+                            ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                              {
+                                height: "28px",
+                              },
+                          }}
+                          helperText=" "
+                          placeholder={"Email"}
+                          id="demo-helper-text-aligned-no-helper"
+                          size="small"
+                        />
+                        <TextField
+                          {...register("password")}
                           sx={{
                             width: "100%",
                             height: "42px",
@@ -554,64 +632,27 @@ const Header = () => {
                           id="demo-helper-text-aligned-no-helper"
                           size="small"
                         />
-                      ) : (
-                        <TextField
+                      </Box>
+                      <Box>
+                        <Button
+                         
+                          type="submit"
                           sx={{
                             width: "100%",
-                            height: "42px",
-                            mt: "15px",
+                            height: "44px",
+                            background:
+                              "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
+                            color: "white",
                             borderRadius: "30px",
-                            ".css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root":
-                              {
-                                borderRadius: "30px",
-                                paddingRight: "3px",
-                              },
-                            ".css-19qh8xo-MuiInputBase-input-MuiOutlinedInput-input":
-                              {
-                                height: "28px",
-                              },
+                            mt: "20px",
+                            fontWeight: "700",
                           }}
-                          helperText=" "
-                          placeholder="Nhập mã xác nhận"
-                          id="demo-helper-text-aligned-no-helper"
-                          size="small"
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <Button
-                                  sx={{
-                                    color: "white",
-                                    background: "#f05123",
-                                    borderRadius: "30px",
-                                    width: "100px",
-                                    height: "41px",
-                                  }}
-                                >
-                                  Gửi mã
-                                </Button>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      )}
+                        >
+                          Đăng nhập
+                        </Button>
+                      </Box>
                     </Box>
-                    <Box>
-                      <Button
-                        sx={{
-                          width: "100%",
-                          height: "44px",
-                          background:
-                            "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
-                          color: "white",
-                          borderRadius: "30px",
-                          mt: "20px",
-                          fontWeight: "700",
-                        }}
-                      >
-                        Đăng ký
-                      </Button>
-                    </Box>
-                  </Box>
+                  </form>
                 </Box>
               )}
               <Typography fontSize={"14px"} color={"#333"}>
@@ -751,139 +792,96 @@ const Header = () => {
                 </Stack>
               ) : (
                 <Box my={"20px"}>
-                  <Box padding={"0 65px"}>
-                    <Box>
-                      <Typography
-                        marginLeft={"15px"}
-                        textAlign={"left"}
-                        fontSize={"14px"}
-                        fontWeight={"600"}
-                      >
-                        Tên của bạn?
-                      </Typography>
-                      <TextField
-                        sx={{
-                          width: "100%",
-                          height: "42px",
-                          mt: "5px",
-                          borderRadius: "30px",
-                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
-                            {
-                              borderRadius: "30px",
-                            },
-                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              height: "28px",
-                            },
-                        }}
-                        helperText=" "
-                        placeholder="Họ và tên của bạn"
-                        id="demo-helper-text-aligned-no-helper"
-                        size="small"
-                      />
-                    </Box>
-                    <Box mt={"10px"}>
-                      <Stack
-                        direction={"row"}
-                        justifyContent={"space-between"}
-                        alignItems={"flex-end"}
-                      >
+                  <form onSubmit={handleSubmit(onFinish)}>
+                    <Box padding={"0 65px"}>
+                      <Box>
                         <Typography
                           marginLeft={"15px"}
                           textAlign={"left"}
                           fontSize={"14px"}
                           fontWeight={"600"}
                         >
-                          {registerType ? " Số điện thoại" : "Email"}
+                          Tên của bạn?
                         </Typography>
-                        <Typography
-                          sx={{ position: "relative", zIndex: 10 }}
-                          onClick={() => setRegisterType(!registerType)}
-                          fontSize={"12px"}
-                          color={"#666"}
+                        <TextField
+                          sx={{
+                            width: "100%",
+                            height: "42px",
+                            mt: "5px",
+                            borderRadius: "30px",
+                            ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                              {
+                                borderRadius: "30px",
+                              },
+                            ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                              {
+                                height: "28px",
+                              },
+                          }}
+                          {...register("user_name")}
+                          helperText=" "
+                          placeholder="Họ và tên của bạn"
+                          id="demo-helper-text-aligned-no-helper"
+                          size="small"
+                        />
+                      </Box>
+                      <Box mt={"10px"}>
+                        <Stack
+                          direction={"row"}
+                          justifyContent={"space-between"}
+                          alignItems={"flex-end"}
                         >
-                          {registerType
-                            ? " Đăng ký với Email"
-                            : "Đăng ký với SĐT"}
-                        </Typography>
-                      </Stack>
+                          <Typography
+                            sx={{ position: "relative", zIndex: 10 }}
+                            onClick={() => setRegisterType(!registerType)}
+                            fontSize={"12px"}
+                            color={"#666"}
+                          >
+                            Đăng ký với Email
+                          </Typography>
+                        </Stack>
 
-                      <TextField
-                        sx={{
-                          width: "100%",
-                          height: "42px",
-                          mt: "5px",
-                          borderRadius: "30px",
-                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
-                            {
-                              borderRadius: "30px",
-                            },
-                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              height: "28px",
-                            },
-                        }}
-                        helperText=" "
-                        placeholder={registerType ? "Số điện thoại" : "Email"}
-                        id="demo-helper-text-aligned-no-helper"
-                        size="small"
-                      />
-                      <TextField
-                        sx={{
-                          width: "100%",
-                          height: "42px",
-                          mt: "15px",
-                          borderRadius: "30px",
-                          ".css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root":
-                            {
-                              borderRadius: "30px",
-                              paddingRight: "3px",
-                            },
-                          ".css-19qh8xo-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              height: "28px",
-                            },
-                        }}
-                        helperText=" "
-                        placeholder="Nhập mã xác nhận"
-                        id="demo-helper-text-aligned-no-helper"
-                        size="small"
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <Button
-                                sx={{
-                                  color: "white",
-                                  background: "#f05123",
-                                  borderRadius: "30px",
-                                  width: "100px",
-                                  height: "41px",
-                                }}
-                              >
-                                Gửi mã
-                              </Button>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
+                        <TextField
+                          {...register("email")}
+                          sx={{
+                            width: "100%",
+                            height: "42px",
+                            mt: "5px",
+                            borderRadius: "30px",
+                            ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                              {
+                                borderRadius: "30px",
+                              },
+                            ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                              {
+                                height: "28px",
+                              },
+                          }}
+                          helperText=" "
+                          placeholder={"Email"}
+                          id="demo-helper-text-aligned-no-helper"
+                          size="small"
+                        />
+                      </Box>
+                      <Box>
+                        <Button
+                          type="submit"
+                          sx={{
+                            width: "100%",
+                            height: "44px",
+                            background:
+                              "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
+                            color: "white",
+                            borderRadius: "30px",
+                            mt: "20px",
+                            fontWeight: "700",
+                          }}
+                        >
+                          Đăng ký
+                        </Button>
+                      </Box>
                     </Box>
-                    <Box>
-                      <Button
-                        sx={{
-                          width: "100%",
-                          height: "44px",
-                          background:
-                            "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
-                          color: "white",
-                          borderRadius: "30px",
-                          mt: "20px",
-                          fontWeight: "700",
-                        }}
-                      >
-                        Đăng ký
-                      </Button>
-                    </Box>
-                  </Box>
+                  </form>
                 </Box>
               )}
               <Typography fontSize={"14px"} color={"#333"}>

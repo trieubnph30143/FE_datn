@@ -10,6 +10,8 @@ const WiteBlogPostController = () => {
     setContent(editor.getContent());
   };
 
+  console.log(content);
+
   const handleImageChange = (e: any) => {
     let file = e.target.files[0];
 

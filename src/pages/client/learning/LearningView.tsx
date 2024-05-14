@@ -114,7 +114,7 @@ const LearningView = ({
   loading,
   setDone,
 }: Props) => {
-  
+
   return (
     <Box>
       <Header />
@@ -158,7 +158,7 @@ const LearningView = ({
             )}
           </>
         )}
-
+        {progress!==undefined&&
         <ContentRight
           courses={courses}
           expanded={expanded}
@@ -168,7 +168,7 @@ const LearningView = ({
           activeLesson={activeLesson}
           handleActiveLesson={handleActiveLesson}
           progress={progress}
-        />
+        />}
         <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
           <ContentDrawer onClose={toggleDrawer} />
         </Drawer>
@@ -396,6 +396,7 @@ const ContentLeftVideo = (props: any) => {
 };
 
 const ContentRight = (props: any) => {
+  
   return (
     <Box
       width={"25%"}
@@ -446,25 +447,16 @@ const ContentRight = (props: any) => {
                 {item.sub_lesson.map((itemchild: any, index2: any) => {
                   let check;
                   let checkSuccess;
-                  if(props.progress&&props.progress[0]){
-                    check=
-                     props.progress &&
-                     props.progress[0] &&
-                     props.progress &&
-                     props.progress[0].lesson_progress[index].sub_lesson[index2]
-                       .result &&
-                     props.progress &&
-                     props.progress[0] &&
-                     props.progress &&
-                     props.progress[0].lesson_progress[index].sub_lesson[index2]
-                       .completed == false;
-                       checkSuccess =
-                     props.progress &&
-                     props.progress[0] &&
-                     props.progress &&
-                     props.progress[0].lesson_progress[index].sub_lesson[index2]
-                       .completed == true;
-
+                  console.log(props.progress);
+                  if (props.progress && props.progress[0]) {
+                    const lessonProgress = props.progress[0].lesson_progress[index];
+                    if (lessonProgress) {
+                      const subLessonProgress = lessonProgress.sub_lesson[index2];
+                      if (subLessonProgress) {
+                        check = subLessonProgress.result && !subLessonProgress.completed;
+                        checkSuccess = subLessonProgress.completed;
+                      }
+                    }
                   }
                   let active = props.activeLesson == itemchild._id;
                   return (

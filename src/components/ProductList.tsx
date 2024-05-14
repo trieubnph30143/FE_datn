@@ -5,11 +5,17 @@ const ProductList = ({
   title,
   type,
   data,
+  progress,
 }: {
   title: string;
   type?: string;
   data?: any;
+  progress?:any
 }) => {
+ 
+  let checkRegisterCourses = progress&&progress.length&&progress.map((item:any)=>item.courses_id[0])
+
+  
   return (
     <Box mt={"20px"} px={"40px"}>
       <Typography fontSize={30} fontWeight={"bold"}>
@@ -21,9 +27,14 @@ const ProductList = ({
             {data &&
               data.length &&
               data.map((item: any) => {
+                let check =false 
+                if(progress&&progress[0]){
+                  check = checkRegisterCourses.includes(item._id)
+                }
+                
                 return (
                   <Grid item xs={12} sm={6} md={3}>
-                    <Product type={type} item={item} />
+                    <Product type={type} check={check} item={item} />
                   </Grid>
                 );
               })}

@@ -20,6 +20,7 @@
     "@tinymce/tinymce-react": "^5.0.1",
     "axios": "^1.4.0",
     "canvas-confetti": "^1.9.3",
+    "html-react-parser": "^5.1.10",
     "react": "^18.2.0",
     "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18.2.0",

@@ -8,9 +8,10 @@ import Product from "@/components/Product";
 import ProductList from "@/components/ProductList";
 type Props = {
   courses:typeCourses[];
+  progress:any
 };
 
-const HomeView = ({courses}:Props) => {
+const HomeView = ({courses,progress}:Props) => {
   const settings = {
     customPaging: function (i: any) {
       return (
@@ -216,7 +217,7 @@ const HomeView = ({courses}:Props) => {
         </Slider>
       </Box>
       <ProductList type='takecharge' title='Khóa học Pro' />
-      <ProductList type={"free"} data={courses} title='Khóa học miễn phí' />
+      <ProductList type={"free"} data={courses} progress={progress} title='Khóa học miễn phí' />
       <ProductList type={"blog"} title='Bài viết nổi bật' />
       <ProductList type={"video"} title='Videos nổi bật' />
     </>

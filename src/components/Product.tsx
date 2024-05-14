@@ -4,10 +4,15 @@ import { RiEyeFill, RiGroup2Line, RiMessage2Fill } from "react-icons/ri";
 import user from "../images/user.png";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useNavigate } from "react-router-dom";
-const Product = ({ type, item }: { type?: string; item?: any }) => {
+const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boolean}) => {
   let navigate = useNavigate();
   const handleRouter = (id: any) => {
-    navigate(`/courses/${id}`);
+    if(check){
+      navigate(`/learning/${id}`);
+    }else{
+
+      navigate(`/courses/${id}`);
+    }
   };
   return (
     <>
@@ -57,7 +62,7 @@ const Product = ({ type, item }: { type?: string; item?: any }) => {
                   },
                 }}>
                 {type === "video" && "Xem video"}
-                {type !== "video" && type !== "blog" && "Xem khóa học"}
+                {type !== "video" && type !== "blog" && check?"Tiếp tục học":"Xem khóa học"}
                 {type === "blog" && "Xem Bài viết"}
               </Button>
             </Box>
