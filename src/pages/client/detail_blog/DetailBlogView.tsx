@@ -1,40 +1,38 @@
-import { Box, Paper, Popover, Stack, Typography } from "@mui/material"
-import { Editor } from "@tinymce/tinymce-react"
+import { Box, Paper, Popover, Stack, Typography } from "@mui/material";
+import { Editor } from "@tinymce/tinymce-react";
 import { useEffect, useRef, useState } from "react";
 import user from "../../../images/user.png";
 import article from "../../../images/article.png";
-import parse from 'html-react-parser';
-import { RiBookmarkLine, RiFacebookCircleFill, RiHeartLine, RiMailFill, RiMessage3Line, RiMoreFill, RiTwitterFill } from "react-icons/ri"
+import parse from "html-react-parser";
+import {
+  RiBookmarkLine,
+  RiFacebookCircleFill,
+  RiHeartLine,
+  RiMailFill,
+  RiMessage3Line,
+  RiMoreFill,
+  RiTwitterFill,
+} from "react-icons/ri";
+import styled from "styled-components";
 
 const DetailBlogView = () => {
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-    const iframeRef = useRef(null);
-    const open = Boolean(anchorEl);
-    const id = open ? "simple-popover" : undefined;
- 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const iframeRef = useRef(null);
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
   return (
     <Box>
-        <Stack direction={"row"} justifyContent={"space-between"}>
-            <Box width={"20%"} display={"flex"} justifyContent={"center"}> 
-                   <Box >
-                    <Typography fontWeight={500} fontSize={"18px"}>Thánh Wibu</Typography>
-                    <hr style={{width:"200%" ,margin:"25px 0"}}/>
-                    <Box display={"flex"} gap={"20px"}>
-
-                    <Stack color={"#757575"}  direction={"row"} gap={"7px"}><RiHeartLine  size={"23px"}/> 5</Stack>
-                    <Stack  color={"#757575"} direction={"row"} gap={"7px"}><RiMessage3Line  size={"23px"}/> 1</Stack>
-                    </Box>
-                   </Box>
-            </Box>
-            <Box width={"75%"}>
-            <Box
+      <Stack direction={"row"} justifyContent={"center"}>
+        <Box width={"85%"}>
+          <Box
             sx={{
               " .tox-editor-header": {
                 display: "none !important",
@@ -42,59 +40,54 @@ const DetailBlogView = () => {
               ".tox-statusbar": {
                 display: "none !important",
               },
-              width: "80%",
-              maxHeight:"3000px"
-             
-            }}
-          >
-           <Box
-            width={"100%"}
-            
-           >
-            <Stack
-              mb={"10px"}
-              direction={"row"}
-              justifyContent={"space-between"}
-              alignItems={"center"}>
-              <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
-                <img
-                  width={26}
-                  height={26}
-                  style={{ borderRadius: "50%" }}
-                  src={user}
-                  alt=''
-                />
-                <Typography mt={"5px"} fontSize={"12px"}>
-                  Thánh Wibu
-                </Typography>
+              width: "100%",
+            }}>
+            <Box width={"100%"}>
+              <Stack
+                mb={"10px"}
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}>
+                <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
+                  <img
+                    width={26}
+                    height={26}
+                    style={{ borderRadius: "50%" }}
+                    src={user}
+                    alt=''
+                  />
+                  <Typography mt={"5px"} fontSize={"12px"}>
+                    Thánh Wibu
+                  </Typography>
+                </Stack>
+                <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
+                  <RiBookmarkLine color='#333' size={"20px"} />
+                  <RiMoreFill
+                    onClick={handleClick}
+                    color='#333'
+                    size={"20px"}
+                  />
+                </Stack>
               </Stack>
-              <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-                <RiBookmarkLine color='#333' size={"20px"} />
-                <RiMoreFill onClick={handleClick} color='#333' size={"20px"} />
+              <Stack direction={"row"}>
+                <Box width={"60%"}>
+                  <Typography variant='h6' fontWeight={"bold"}>
+                    Config Zsh bằng Oh-my-zsh và P10k trên WSL cực ngầu ✨
+                  </Typography>
+                  <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
+                    Hello anh em , thì như blog trước mình có nói rằng mình ko
+                    có dùng Ubuntu, nhưng sao lại có...
+                  </Typography>
+                  <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
+                    6 Ngày trước • 6 phút đọc
+                  </Typography>
+                </Box>
+                <Box width={"40%"}></Box>
               </Stack>
-            </Stack>
-            <Stack direction={"row"}>
-              <Box width={"60%"}>
-                <Typography variant='h6' fontWeight={"bold"}>
-                  Config Zsh bằng Oh-my-zsh và P10k trên WSL cực ngầu ✨
-                </Typography>
-                <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
-                  Hello anh em , thì như blog trước mình có nói rằng mình ko có
-                  dùng Ubuntu, nhưng sao lại có...
-                </Typography>
-                <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
-                  6 Ngày trước • 6 phút đọc
-                </Typography>
-              </Box>
-              <Box width={"40%"}>
-               
-              </Box>
-            </Stack>
-          </Box>
-          <Box mt={"30px"}>
-
-         <Box maxHeight={"4000px"}>
-         <div style={{margin:"auto !important",padding:"auto !important",all:"unset"}} dangerouslySetInnerHTML={{ __html: `<h2 id="i-gioi-thieu-dev-mode" data-appended="true">I. Giới thiệu Dev Mode</h2>
+            </Box>
+            <Box mt={"30px"}>
+              <Content
+                html={`<h2 id="i-gioi-thieu-dev-mode" data-appended="true">I. Giới thiệu Dev Mode</h2>
                 <h3>1.1 Dev Mode hữu &iacute;ch khi học kiến thức mới</h3>
                 <p><em>Dev Mode</em>&nbsp;cực kỳ hữu &iacute;ch khi bạn học c&aacute;c kiến thức mới, n&oacute; gi&uacute;p bạn trải nghiệm thực tế lu&ocirc;n, thay v&igrave; chỉ xem video đơn thuần như hầu hết c&aacute;c kh&oacute;a học kh&aacute;c.</p>
                 <p><img src="https://files.fullstack.edu.vn/f8-prod/blog_posts/8333/64f0031f9f336.png" alt="image.png"><em>B&ecirc;n tr&aacute;i l&agrave; b&agrave;i học video, b&ecirc;n phải l&agrave; tr&igrave;nh viết code v&agrave; browser hỗ trợ live reload.</em></p>
@@ -145,10 +138,9 @@ const DetailBlogView = () => {
                 <li>Kh&oacute;a học HTML CSS Pro:&nbsp;<a href="https://fullstack.edu.vn/landing/htmlcss/" target="_blank" rel="noopener noreferrer">https://fullstack.edu.vn/landing/htmlcss/</a></li>
                 <li>Kh&oacute;a học ng&ocirc;n ngữ Sass:&nbsp;<a href="https://fullstack.edu.vn/landing/sass/" target="_blank" rel="noopener noreferrer">https://fullstack.edu.vn/landing/sass/</a></li>
                 <li>C&aacute;c kh&oacute;a học kh&aacute;c, t&igrave;m hiểu th&ecirc;m tại trang chủ F8:&nbsp;<a href="https://fullstack.edu.vn/" target="_blank" rel="noopener noreferrer">https://fullstack.edu.vn/</a></li>
-                </ol>` }} />
-         
-         </Box>
-          </Box>
+                </ol>`}
+              />
+            </Box>
             {/* <Editor
               apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
             initialValue={``}
@@ -158,9 +150,9 @@ const DetailBlogView = () => {
               disabled
             /> */}
           </Box>
-            </Box>
-        </Stack>
-        <Popover
+        </Box>
+      </Stack>
+      <Popover
         id={id}
         open={open}
         anchorEl={anchorEl}
@@ -193,7 +185,18 @@ const DetailBlogView = () => {
         </Paper>
       </Popover>
     </Box>
-  )
-}
+  );
+};
 
-export default DetailBlogView
+export default DetailBlogView;
+
+const Container = styled.div`
+  margin: auto;
+  padding: auto;
+  all: unset; /* Remove all inherited styles */
+  font-family: "Roboto Slab", serif;
+`;
+
+const Content = ({ html }: { html: string }) => (
+  <Container dangerouslySetInnerHTML={{ __html: html }} />
+);

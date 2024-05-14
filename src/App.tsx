@@ -20,8 +20,8 @@ const reducer = (state: any, action: any) => {
       };
     case "PROGRESS":
       return {
-          ...state,
-          progress: action.payload.progress,
+        ...state,
+        progress: action.payload.progress,
       };
     case "LOGOUT":
       return {
@@ -35,7 +35,7 @@ const reducer = (state: any, action: any) => {
 const App = () => {
   const [state, dispatch] = useReducer(reducer, {
     user: {},
-    progress:undefined
+    progress: undefined,
   });
   console.log(state);
   const [user, setUser] = useLocalStorage("user", {});
@@ -54,9 +54,17 @@ const App = () => {
       try {
         const response: any = await Authentication(user.token);
         if (response.status === 1) {
+          let res: any = await getUserProgress(user.data[0]._id);
+          dispatch({
+            type: "PROGRESS",
+            payload: {
+              ...state,
+              progress: res.data,
+            },
+          });
           handleRefreshToken();
         } else {
-          let res:any = await getUserProgress(user.data[0]._id) 
+          let res: any = await getUserProgress(user.data[0]._id);
           dispatch({
             type: "PROGRESS",
             payload: {
