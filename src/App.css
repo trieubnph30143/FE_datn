@@ -129,9 +129,12 @@ footer {
 .col ul {
   /* margin: 15px 0; */
   line-height: 37px;
+  margin: 0;
+  padding: 0;
 }
 .col ul li {
   list-style: none;
+  margin: 0;
 }
 .col ul li a {
   text-decoration: none;

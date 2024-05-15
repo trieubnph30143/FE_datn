@@ -16,6 +16,14 @@ export const getOneCourses = async (id: any) => {
     console.log(`get_Courses`, error);
   }
 };
+export const getMyCourses = async (id: any) => {
+  try {
+    const response = await axios.get(`/courses/my_courses/${id}`);
+    return response;
+  } catch (error) {
+    console.log(`get_Courses`, error);
+  }
+};
 export const addCourses = async (value: typeCourses) => {
   try {
     const response = await axios.post(`/courses`, value);

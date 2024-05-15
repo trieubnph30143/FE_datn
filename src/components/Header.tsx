@@ -2,6 +2,7 @@ import {
   Badge,
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogContent,
   DialogContentText,
@@ -18,15 +19,22 @@ import google from "../images/google-18px.svg";
 import github from "../images/github-18px.svg";
 import fb from "../images/facebook-18px.svg";
 import { RiArrowLeftSLine, RiCloseLine, RiSearchLine } from "react-icons/ri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import profile from "../images/user.png";
 import product from "../images/product.png";
 import { useAuthMutation } from "@/hooks/useAuthMutation";
-import { coursesContext, useCoursesContext } from "@/App";
+import {  useCoursesContext } from "@/App";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { getUserProgress } from "@/service/progress";
+import { getMyCourses } from "@/service/courses";
+import { useLocalStorage } from "@/hooks/useStorage";
+import { signInWithPopup } from 'firebase/auth'
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth, googleProvider } from "@/core/firebase";
+import { calculateProgress } from "@/utils/utils";
+
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [anchorElNotify, setAnchorElNotify] =
@@ -45,13 +53,93 @@ const Header = () => {
   const idProfile = openProfile ? "simple-popover" : undefined;
   const navigate = useNavigate();
   const context: any = useCoursesContext();
+  const [, setUser] = useLocalStorage("user", {});
   const queryClient = useQueryClient();
+  const [loadingCourses,setLoadingCourses] = useState(false)
+  const [courses,setCourses] = useState([])
+  const [progressBar,setProgressBar] = useState([])
   const handleClose = () => {
     setCheck("");
     setSelect(true);
     setRegisterType(false);
     setOpen(false);
   };
+  const { register, reset, handleSubmit, onFinish }: any = useAuthMutation({
+    action: check == "login" ? "SIGNIN" : "SIGNUP",
+    onSuccess: async(data) => {
+      if (check !== "login") {
+        if(data.token&&data.refeshToken){
+          if (data.status == 0) {
+            queryClient.invalidateQueries({
+              queryKey: ["my_courses"],
+            });
+            handleClose();
+            context.dispatch({
+              type: "LOGIN",
+              payload: {
+                ...context.state,
+                user: data.data,
+              },
+            });
+            let res:any = await getUserProgress(data.data[0]._id) 
+            context.dispatch({
+              type: "PROGRESS",
+              payload: {
+                ...context.state,
+                progress: res.data,
+              },
+            });
+            
+          }
+        }else{
+          if (data.status == 1) {
+            alert(data.message);
+          } else {
+            reset();
+            setCheck("login");
+            setSelect(true);
+            setRegisterType(false);
+          }
+
+        }
+      } else {
+        if (data.status == 0) {
+          queryClient.invalidateQueries({
+            queryKey: ["my_courses"],
+          });
+          handleClose();
+          context.dispatch({
+            type: "LOGIN",
+            payload: {
+              ...context.state,
+              user: data.data,
+            },
+          });
+          let res:any = await getUserProgress(data.data[0]._id) 
+          context.dispatch({
+            type: "PROGRESS",
+            payload: {
+              ...context.state,
+              progress: res.data,
+            },
+          });
+          
+        }
+      }
+    },
+  });
+  const signInWithGoogle = async () => {
+    try {
+      setCheck("register")
+      const result:any = await signInWithPopup(auth, googleProvider);
+      if(Object.keys(result)[0]){
+        onFinish({email:result.user.email,user_name:result.user.displayName,uid:result.user.uid,type:"google"})
+      }
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
+  };
+
   const handleCheck = (type: string) => {
     if (type == "login") {
       setCheck(type);
@@ -61,10 +149,25 @@ const Header = () => {
       setOpen(true);
     }
   };
-
-  const handleClickCourses = (event: React.MouseEvent<HTMLButtonElement>) => {
+  
+  const handleClickCourses = async(event: React.MouseEvent<HTMLButtonElement>) => {
+    setLoadingCourses(true)
     setAnchorEl(event.currentTarget);
+    try { 
+      let data:any = await getMyCourses(context.state.user[0]._id)
+      let progress:any = await getUserProgress(context.state.user[0]._id)
+      
+      if(data.status ==0&&progress.status==0){
+        let arr = calculateProgress(progress.data)
+         setProgressBar(arr)
+        setCourses(data.data)
+        setLoadingCourses(false)
+      }
+    } catch (error) {
+      setLoadingCourses(false)
+    }
   };
+ 
   const handleClickNotify = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElNotify(event.currentTarget);
   };
@@ -82,42 +185,14 @@ const Header = () => {
     setAnchorElProfile(null);
   };
 
-  const { register, reset, handleSubmit, onFinish }: any = useAuthMutation({
-    action: check == "login" ? "SIGNIN" : "SIGNUP",
-    onSuccess: async(data) => {
-      if (check !== "login") {
-        if (data.status == 1) {
-          alert(data.message);
-        } else {
-          reset();
-          setCheck("login");
-          setSelect(true);
-          setRegisterType(false);
-        }
-      } else {
-        if (data.status == 0) {
-          handleClose();
-          context.dispatch({
-            type: "LOGIN",
-            payload: {
-              ...context.state,
-              user: data,
-            },
-          });
-          let res:any = await getUserProgress(data.data[0]._id) 
-          context.dispatch({
-            type: "PROGRESS",
-            payload: {
-              ...context.state,
-              progress: res.data,
-            },
-          });
-          
-        }
-      }
-    },
-  });
-
+  const handleLogout = ()=>{
+    setUser({})
+    context.dispatch({
+      type:"LOGOUT"
+    })
+    setAnchorElProfile(null);
+  }
+ 
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -212,12 +287,18 @@ const Header = () => {
                     maxHeight={"400px"}
                     sx={{ overflowY: "scroll" }}
                   >
-                    {[1, 2, 3, 4, 5, 6].map(() => {
+                    {loadingCourses&&<Box height={40} width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
+                      <CircularProgress  size={"20px"}  />
+                      </Box>}
+                    {!loadingCourses&&<> {courses==undefined||courses.length==0?<>
+                    <Typography textAlign={"center"}>Not found data</Typography>
+                    </>:<>
+                    {courses&&courses.map((item:any,index) => {
                       return (
                         <Stack direction={"row"} gap={"20px"}>
                           <Box>
                             <img
-                              src={product}
+                              src={item.image.url}
                               width={120}
                               height={67}
                               style={{ borderRadius: "6px" }}
@@ -225,12 +306,16 @@ const Header = () => {
                             />
                           </Box>
                           <Box>
-                            <Typography>Kiến Thức Nhập Môn IT</Typography>
-                            <ProgressBar percentage={75} />
+                            <Typography fontSize={"14px"} fontWeight={"bold"}>{item.title}</Typography>
+                            
+                            <ProgressBar percentage={progressBar[index]} />
                           </Box>
                         </Stack>
                       );
                     })}
+                    </>}</>}
+                   
+                    
                   </Stack>
                 </Box>
               </Popover>
@@ -387,7 +472,7 @@ const Header = () => {
                       </Typography>
                     </Box>
 
-                    <Typography fontSize={"14px"} color={"#333"}>
+                    <Typography onClick={handleLogout} fontSize={"14px"} color={"#333"}>
                       Đăng xuất{" "}
                     </Typography>
                   </Stack>
@@ -521,7 +606,7 @@ const Header = () => {
                     <Box width={"15%"}>
                       <img src={google} width={20} height={20} alt="" />
                     </Box>
-                    <Box width={"80%"}>
+                    <Box width={"80%"} onClick={signInWithGoogle}>
                       <Typography fontSize={"13px"} fontWeight={"600"}>
                         Đăng nhập với Google
                       </Typography>
@@ -919,7 +1004,7 @@ const ProgressBar = ({ percentage }: any) => {
     <div
       className="progress-bar-container"
       style={{
-        width: "100%",
+        width: "90%",
         backgroundColor: "#f0f0f0",
         borderRadius: "4px",
         overflow: "hidden",
@@ -929,7 +1014,7 @@ const ProgressBar = ({ percentage }: any) => {
       <div
         className="progress-bar"
         style={{
-          height: "15px",
+          height: "9px",
           backgroundColor: "#007bff",
           color: "white",
           display: "flex",
@@ -939,7 +1024,7 @@ const ProgressBar = ({ percentage }: any) => {
           width: `${percentage}%`,
         }}
       >
-        <span style={{ fontSize: "14px" }}>{percentage}%</span>
+       
       </div>
     </div>
   );

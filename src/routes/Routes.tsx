@@ -34,7 +34,7 @@ const Router = () => {
           <Route path='profile' element={<ProfileController />} />
           <Route path='my_article' element={<MyArticleController />} />
           <Route path='setting' element={<SettingProfileController />} />
-        <Route path='/detail_blog' element={<DetailBlogController />} />
+        <Route path='/detail_blog/:id' element={<DetailBlogController />} />
         </Route>
         <Route path='/learning/:id' element={<LearningController />} />
         <Route path='/dashboard' element={<LayoutAdmin />}>

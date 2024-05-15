@@ -1,15 +1,16 @@
-import { addPost, deletePost, updateActivePost } from "@/service/post";
+import { addPost, deletePost, updateActivePost, updatePost } from "@/service/post";
 import { deleteImage, uploadImage } from "@/service/upload";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
 import * as yup from "yup";
+import { useLocalStorage } from "./useStorage";
 type usePostMutationProps = {
-  action: "CREATE" | "UPDATE" | "DELETE"|"ACTIVE";
+  action: "CREATE" | "UPDATE" | "DELETE" | "ACTIVE";
   defaultValues?: any;
   onSuccess?: () => void;
   file?: any;
-  content?:any
+  content?: any;
 };
 const schema = yup.object({
   title: yup.string().required(),
@@ -21,10 +22,10 @@ export const usePostMutation = ({
   defaultValues = { name: "" },
   onSuccess,
   file,
-  content
+  content,
 }: usePostMutationProps) => {
   const queryClient = useQueryClient();
-
+  const [user, setUser]: any = useLocalStorage("user", {});
   const {
     register,
     handleSubmit,
@@ -40,6 +41,8 @@ export const usePostMutation = ({
           return await addPost({ ...post });
         case "ACTIVE":
           return await updateActivePost(post);
+        case "UPDATE":
+          return await updatePost(post);
         case "DELETE":
           return await deletePost(post._id);
         default:
@@ -61,19 +64,20 @@ export const usePostMutation = ({
       if (Object.keys(upload).length > 0) {
         mutate({
           ...values,
-          content:content,
+          content: content,
           image: {
             url: upload.imageUrl.secure_url,
             public_id: upload.imageUrl.public_id,
           },
-          author:["6641ccf4ced6dff448e6fcbf"],
-          active:false
+          author: [user.data[0]._id],
+          active: false,
         });
       }
     } else {
       if (file === null) {
         mutate({
           ...values,
+          content: content,
         });
       } else {
         let image: any = await deleteImage(values.image.public_id);
@@ -84,7 +88,7 @@ export const usePostMutation = ({
           if (Object.keys(upload).length > 0) {
             mutate({
               ...values,
-            
+              content: content,
               image: {
                 url: upload.imageUrl.secure_url,
                 public_id: upload.imageUrl.public_id,
@@ -98,7 +102,7 @@ export const usePostMutation = ({
   const onRemove = (post: any) => {
     mutate(post);
   };
-  const onActive= (post: any) => {
+  const onActive = (post: any) => {
     mutate(post);
   };
   return {
@@ -108,6 +112,6 @@ export const usePostMutation = ({
     handleSubmit,
     errors,
     reset,
-    onActive
+    onActive,
   };
 };

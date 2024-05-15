@@ -7,6 +7,30 @@ export const getPost = async () => {
     console.log(`get_Post`, error);
   }
 };
+export const getOnePost = async (id:string) => {
+  try {
+    const response = await axios.get(`/post/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(`get_Post`, error);
+  }
+};
+export const getUserPost = async (id:string) => {
+  try {
+    const response = await axios.get(`/post/user/${id}`);
+    return response;
+  } catch (error) {
+    console.log(`get_Post`, error);
+  }
+};
+export const getPostActive = async (data:any) => {
+  try {
+    const response = await axios.get(`/post/active?page=${data.page}&size=${data.limit}`);
+    return response;
+  } catch (error) {
+    console.log(`get_Post`, error);
+  }
+};
 export const addPost = async (value: any) => {
   try {
     const response = await axios.post(`/post`, value);
@@ -18,8 +42,13 @@ export const addPost = async (value: any) => {
 export const updatePost = async (value: any) => {
   try {
     const response = await axios.put(`/post/${value._id}`, {
-      name: value.name,
-      description: value.description,
+      title: value.title,
+      content: value.content,
+      image:value.image,
+      readers:value.readers,
+      description:value.description,
+      active:value.active,
+      author:value.author
     });
     return response.data;
   } catch (error) {

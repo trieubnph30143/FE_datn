@@ -7,6 +7,7 @@ import { getProgress, updateProgress } from "@/service/progress";
 import { useCoursesContext } from "@/App";
 import Loading from "@/components/Loading";
 import { useLocalStorage } from "@/hooks/useStorage";
+import { calculateProgress } from "@/utils/utils";
 
 const LearningController = () => {
   const queryClient = useQueryClient();
@@ -23,35 +24,44 @@ const LearningController = () => {
   const [loading, setLoading]: any = useState(false);
   const [detail, setDetail]: any = useState({});
   const [expanded, setExpanded]: any = useState([]);
+  const [progressBar, setprogressBar]: any = useState([]);
+  const [totalProgressBar, setTotalprogressBar]: any = useState(0);
   const player: any = useRef(null);
   const [user, setUser] = useLocalStorage("user", {});
-  const [loadingAll,setLoadingAll] = useState({
-    courses:false,
-    progress:false
-  })
-  
+  const [loadingAll, setLoadingAll] = useState({
+    courses: false,
+    progress: false,
+  });
+
   const navigate = useNavigate();
 
   const { data: progress } = useQuery(["progress", id], {
     queryFn: () => {
-     
       return getProgress(user.data[0]._id, id);
     },
     onSuccess(data) {
-      setLoadingAll({...loadingAll,progress:true})
+      let total = 0;
+      data[0].lesson_progress.map((item: any) => {
+        item.sub_lesson.map(() => total++);
+      });
+      const percentagePerItem = Math.round(100 / total);
+      setTotalprogressBar(percentagePerItem);
+      let arr = calculateProgress(data);
+
+      setprogressBar(arr);
+      setLoadingAll({ ...loadingAll, progress: true });
     },
     refetchOnWindowFocus: false,
   });
-  
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
     },
     onSuccess(data) {
-      setTimeout(()=>{
-        setLoadingAll({...loadingAll,courses:true})
-      },500)
-      
+      setTimeout(() => {
+        setLoadingAll({ ...loadingAll, courses: true });
+      }, 500);
+
       let arr = [...Array(data.lesson.length).fill(false)];
       setDetail(data);
       let total = 0;
@@ -129,8 +139,6 @@ const LearningController = () => {
     refetchOnWindowFocus: false,
   });
 
- 
-
   const handleTongle = (index: number) => {
     setExpanded((prevExpanded: any) =>
       prevExpanded.map((item: any, idx: any) => (idx === index ? !item : item))
@@ -163,7 +171,6 @@ const LearningController = () => {
     }
   };
 
- 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -171,7 +178,10 @@ const LearningController = () => {
   // xu ly video
   useEffect(() => {
     const handleBeforeUnload = () => {
-      localStorage.setItem("videoCurrentTime", JSON.stringify(playedRef.current));
+      localStorage.setItem(
+        "videoCurrentTime",
+        JSON.stringify(playedRef.current)
+      );
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -183,13 +193,13 @@ const LearningController = () => {
 
   useEffect(() => {
     const savedTime: any = localStorage.getItem("videoCurrentTime");
-    
+
     if (player.current) {
       player.current.seekTo(JSON.parse(savedTime));
     }
   }, [player.current]);
 
-  const handleProgress = (state:any) => {
+  const handleProgress = (state: any) => {
     if (playedRef.current !== state.played) {
       playedRef.current = state.played;
     }
@@ -332,7 +342,7 @@ const LearningController = () => {
           });
           if (dataLesson.type == "video" && done) {
             let data = await updateProgress(arr[0]);
-
+            setprogressBar([(progressBar[0] += totalProgressBar)]);
             queryClient.invalidateQueries({
               queryKey: ["progress", "detail"],
             });
@@ -340,7 +350,7 @@ const LearningController = () => {
           }
           if (dataLesson.type == "blog") {
             let data = await updateProgress(arr[0]);
-
+            setprogressBar([(progressBar[0] += totalProgressBar)]);
             queryClient.invalidateQueries({
               queryKey: ["progress", "detail"],
             });
@@ -348,7 +358,7 @@ const LearningController = () => {
           }
           if (dataLesson.type == "code") {
             let data = await updateProgress(arr[0]);
-
+            setprogressBar([(progressBar[0] += totalProgressBar)]);
             queryClient.invalidateQueries({
               queryKey: ["progress", "detail"],
             });
@@ -356,7 +366,7 @@ const LearningController = () => {
           }
           if (dataLesson.type == "quiz") {
             let data = await updateProgress(arr[0]);
-
+            setprogressBar([(progressBar[0] += totalProgressBar)]);
             queryClient.invalidateQueries({
               queryKey: ["progress", "detail"],
             });
@@ -374,38 +384,40 @@ const LearningController = () => {
   };
 
   console.log(progress);
-  
-  
+
   return (
     <>
-    {!loadingAll.courses && <Loading/>}
-    
-    {loadingAll.courses&&loadingAll.progress && 
-      <LearningView
-        courses={courses && courses}
-        expanded={expanded}
-        handleTongle={handleTongle}
-        handleTongleAll={handleTongleAll}
-        toggle={toggle}
-        totalLesson={totalLesson}
-        navigate={navigate}
-        activeLesson={activeLesson}
-        handleActiveLesson={handleActiveLesson}
-        dataLesson={dataLesson}
-        typeCode={typeCode}
-        progress={progress}
-        toggleDrawer={toggleDrawer}
-        open={open}
-        handleProgress={handleProgress}
-        handleEnded={handleEnded}
-        player={player}
-        playing={playing}
-        played={playedRef.current}
-        handleNextLesson={handleNextLesson}
-        done={done}
-        loading={loading}
-        setDone={setDone}
-      />}
+      {!loadingAll.courses && <Loading />}
+
+      {loadingAll.courses && loadingAll.progress && (
+        <LearningView
+          courses={courses && courses}
+          expanded={expanded}
+          handleTongle={handleTongle}
+          handleTongleAll={handleTongleAll}
+          toggle={toggle}
+          totalLesson={totalLesson}
+          navigate={navigate}
+          activeLesson={activeLesson}
+          handleActiveLesson={handleActiveLesson}
+          dataLesson={dataLesson}
+          typeCode={typeCode}
+          progress={progress}
+          toggleDrawer={toggleDrawer}
+          open={open}
+          handleProgress={handleProgress}
+          handleEnded={handleEnded}
+          player={player}
+          playing={playing}
+          played={playedRef.current}
+          handleNextLesson={handleNextLesson}
+          done={done}
+          loading={loading}
+          setDone={setDone}
+          progressBar={progressBar}
+          totalProgressBar={totalProgressBar}
+        />
+      )}
     </>
   );
 };

@@ -51,6 +51,7 @@ import html from "../../../images/html.svg";
 import css from "../../../images/css.svg";
 import Confetti from "canvas-confetti";
 import Loading from "@/components/Loading";
+import BlogContent from "@/components/BlogContent";
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -88,6 +89,8 @@ type Props = {
   done: boolean;
   loading: any;
   setDone:any
+  progressBar:any
+  totalProgressBar:any
 };
 const LearningView = ({
   courses,
@@ -113,11 +116,13 @@ const LearningView = ({
   done,
   loading,
   setDone,
+  progressBar,
+  totalProgressBar
 }: Props) => {
 
   return (
     <Box>
-      <Header />
+      <Header progressBar={progressBar} totalProgressBar={totalProgressBar}/>
       <Stack direction={"row"}>
         {loading && (
           <Box
@@ -197,7 +202,10 @@ const LearningView = ({
 
 export default LearningView;
 
-const Header = () => {
+const Header = (props:any) => {
+  let total = Math.floor(100/ props.totalProgressBar)
+  let success = Math.floor(props.progressBar[0]/props.totalProgressBar)
+
   return (
     <Stack
       height={"50px "}
@@ -240,8 +248,8 @@ const Header = () => {
         >
           <Box style={{ width: "35px", position: "relative" }}>
             <CircularProgressbar
-              value={66}
-              text={`${66}%`}
+              value={props.progressBar[0]}
+              text={`${props.progressBar[0]}%`}
               strokeWidth={7}
               styles={buildStyles({
                 strokeLinecap: "round",
@@ -255,7 +263,7 @@ const Header = () => {
             />
           </Box>
           <Typography fontSize={"13px"}>
-            <b>180/205</b> bài học
+            <b>{success}/{total}</b> bài học
           </Typography>
         </Stack>
         <Stack
@@ -1357,14 +1365,8 @@ const ContentLeftExercise = (props: any) => {
                   },
                 }}
               >
-                <Editor
-                  apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
-                  initialValue={props.data.content_code}
-                  init={{
-                    height: "550px",
-                  }}
-                  disabled
-                />
+                <BlogContent content={props.data.content_code} />
+                
               </Box>
             </Box>
           )}
@@ -1625,31 +1627,18 @@ const ContentLeftBlog = (props: any) => {
       <Box
         width={"100%"}
         paddingLeft={"95px"}
+        className="resultCourses"
         sx={{
-          " .tox-editor-header": {
-            display: "none !important",
-          },
-          ".tox-statusbar": {
-            display: "none !important",
-          },
+         
 
-          height: "600px",
-
-          ".tox-tinymce": {
-            border: "none",
-          },
-          ".mce-content-body": {
-            padding: "40px",
-          },
+          height: "85vh",
+          overflowY:"scroll",
+          paddingRight:"20px",
+         
         }}
       >
-        <Editor
-          apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
-          initialValue={props.data.content_blog}
-          init={{
-            height: "85vh",
-          }}
-        />
+        <BlogContent content={props.data.content_blog} />
+        
       </Box>
     </Box>
   );
@@ -1682,6 +1671,7 @@ const ContentLeftQuiz = (props: any) => {
     <Box width={"75%"}>
       <Box
         display={"flex"}
+        mt={"40px"}
         flexDirection={"column"}
         alignItems={"center"}
         justifyContent={"center"}
@@ -1707,14 +1697,12 @@ const ContentLeftQuiz = (props: any) => {
             },
           }}
         >
-          <Editor
-            apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
-            initialValue={props.data.content_quizz}
-          />
+          <BlogContent content={props.data.content_quizz} />
+          
         </Box>
         <Stack
           direction={"column"}
-          mt={"-40px"}
+          mt={"50px"}
           position={"relative"}
           zIndex={"1"}
           gap={"15px"}

@@ -2,6 +2,7 @@ import Router from "./routes/Routes";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./App.css";
+import 'highlight.js/styles/default.css';
 import { QueryClient, QueryClientProvider } from "react-query";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { useLocalStorage } from "./hooks/useStorage";
@@ -27,6 +28,7 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         user: {},
+        progress: undefined,
       };
     default:
       return state;

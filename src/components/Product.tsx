@@ -6,12 +6,18 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useNavigate } from "react-router-dom";
 const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boolean}) => {
   let navigate = useNavigate();
-  const handleRouter = (id: any) => {
-    if(check){
-      navigate(`/learning/${id}`);
-    }else{
+  const handleRouter = (id: any,type:string) => {
+    if(type !== "video" && type !== "blog"){
+      if(check){
+        navigate(`/learning/${id}`);
+      }else{
+  
+        navigate(`/courses/${id}`);
+      }
 
-      navigate(`/courses/${id}`);
+    }
+    if(type=="blog"){
+      navigate(`/detail_blog/${id}`)
     }
   };
   return (
@@ -22,7 +28,8 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
             <img
               src={item.image.url}
               width={"100%"}
-              style={{ borderRadius: "18px" }}
+              height={"228px"}
+              style={{ borderRadius: "18px",objectFit:"cover" }}
               alt=''
             />
             <Box
@@ -47,7 +54,7 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                 },
               }}>
               <Button
-                onClick={() => handleRouter(item._id)}
+                onClick={() => handleRouter(item._id,String(type))}
                 sx={{
                   background: "white",
                   color: "black",
@@ -61,9 +68,10 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                     backgroundColor: "white",
                   },
                 }}>
-                {type === "video" && "Xem video"}
-                {type !== "video" && type !== "blog" && check?"Tiếp tục học":"Xem khóa học"}
-                {type === "blog" && "Xem Bài viết"}
+                  {check&&type !== "video" && type !== "blog"?<>{check?"Tiếp tục học":"Xem khóa học"}</>:<> {type === "video" && "Xem video"}
+                
+                {type === "blog" && "Xem Bài viết"}</>}
+               
               </Button>
             </Box>
           </Box>
@@ -98,7 +106,7 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                     alt=''
                   />
                   <Typography fontWeight={"600"} fontSize={"14px"}>
-                    Bùi Văn Toản
+                   {item.author[0].user_name}
                   </Typography>
                   <Typography fontSize={"12px"} color={"#666666"}>
                     6 phút đọc
