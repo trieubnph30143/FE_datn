@@ -3,8 +3,11 @@ import bgprofile from "../../../images/bgprofile.png";
 import user from "../../../images/user.png";
 import { RiGroupFill } from "react-icons/ri";
 import product from "../../../images/product.png";
-
-const ProfileView = () => {
+type Props = {
+  user:any,
+  courses:any
+}
+const ProfileView = ({user,courses}:Props) => {
   return (
     <Box>
       <Box width={"70%"} mx={"auto"}>
@@ -36,7 +39,7 @@ const ProfileView = () => {
                 alt=''
               />
               <Typography fontWeight={"700"} fontSize={"25px"}>
-                Bùi Văn Toản
+               {user[0].user_name}
               </Typography>
             </Box>
           </Box>
@@ -92,7 +95,7 @@ const ProfileView = () => {
               Các khóa học đã tham gia
             </Typography>
             <Stack mt={"15px"} direction={"column"} gap={"15px"}>
-              {[1, 2, 3].map((_, index) => {
+              {courses&&courses.map((item:any,index:number) => {
                 return (
                   <Stack
                     borderTop={index == 0 ? "none" : "1px solid rgba(0,0,0,.1)"}
@@ -101,7 +104,7 @@ const ProfileView = () => {
                     gap={"15px"}>
                     <Box>
                       <img
-                        src={product}
+                        src={item.image.url}
                         width={228}
                         height={128}
                         style={{ borderRadius: "12px" }}
@@ -110,14 +113,10 @@ const ProfileView = () => {
                     </Box>
                     <Box>
                       <Typography fontWeight={"600"} fontSize={"15px"}>
-                        Lập trình C++ cơ bản, nâng cao
+                        {item.title}
                       </Typography>
                       <Typography fontSize={"14px"}>
-                        Khóa học lập trình C++ từ cơ bản tới nâng cao dành cho
-                        người mới bắt đầu. Mục tiêu của khóa học này nhằm giúp
-                        các bạn nắm được các khái niệm căn cơ của lập trình,
-                        giúp các bạn có nền tảng vững chắc để chinh phục con
-                        đường trở thành một lập trình viên.
+                       {item.description}
                       </Typography>
                     </Box>
                   </Stack>

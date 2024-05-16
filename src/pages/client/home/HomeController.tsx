@@ -24,7 +24,8 @@ const HomeController = (props: Props) => {
     },
     refetchOnWindowFocus: false,
   });
-  console.log(post);
+  
+
   return (
     <>
       <HomeView

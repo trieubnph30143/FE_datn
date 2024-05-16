@@ -7,10 +7,10 @@ import { useMutation, useQueryClient } from "react-query";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Signin, Signup } from "@/service/auth";
+import { Signin, Signup, updateUSer } from "@/service/auth";
 import { useLocalStorage } from "./useStorage";
 type useAuthMutationProps = {
-  action: "SIGNIN" | "SIGNUP";
+  action: "SIGNIN" | "SIGNUP" | "UPDATE" | "DELETE";
   defaultValues?: any;
   onSuccess?: (data: any) => void;
 };
@@ -44,38 +44,50 @@ export const useAuthMutation = ({
           return await Signin({ ...auth });
         case "SIGNUP":
           return await Signup(auth);
+        case "UPDATE":
+          return await updateUSer(auth);
 
         default:
           return null;
       }
     },
     onSuccess: (data) => {
-      if (action == "SIGNIN") {
-        if (Object.keys(data)[0]) {
-          setUser(data);
-        }
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
+      if (action == "UPDATE") {
       } else {
-        if (data.token && data.refeshToken) {
-          setUser(data);
+        if (action == "SIGNIN") {
+          if (Object.keys(data)[0]) {
+            setUser(data);
+          }
+        } else {
+          if (data.token && data.refeshToken) {
+            setUser(data);
+          }
         }
       }
       onSuccess && onSuccess(data);
     },
   });
   const onFinish = async (values: any) => {
-    if (values.type == "google") {
-      mutate(values);
+    if (action == "UPDATE") {
+      mutate({role:values.role_id,email:values.email,_id:values._id,user_name:values.user_name})
     } else {
-      (values.type = "email"), mutate(values);
+      if (values.type == "google") {
+        mutate(values);
+      } else {
+        (values.type = "email"), mutate(values);
+      }
     }
   };
-  // const onRemove = (categories: typeAuth) => {
-  //   mutate(categories);
-  // };
+  const onRemove = (categories: typeAuth) => {
+    mutate(categories);
+  };
   return {
     register,
     onFinish,
-    // onRemove,
+    onRemove,
     handleSubmit,
     errors,
     reset,

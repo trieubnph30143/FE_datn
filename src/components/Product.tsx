@@ -4,20 +4,27 @@ import { RiEyeFill, RiGroup2Line, RiMessage2Fill } from "react-icons/ri";
 import user from "../images/user.png";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useNavigate } from "react-router-dom";
-const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boolean}) => {
+import { convertToVND } from "@/utils/utils";
+const Product = ({
+  type,
+  item,
+  check,
+}: {
+  type?: string;
+  item?: any;
+  check?: boolean;
+}) => {
   let navigate = useNavigate();
-  const handleRouter = (id: any,type:string) => {
-    if(type !== "video" && type !== "blog"){
-      if(check){
+  const handleRouter = (id: any, type: string) => {
+    if (type !== "video" && type !== "blog") {
+      if (check) {
         navigate(`/learning/${id}`);
-      }else{
-  
+      } else {
         navigate(`/courses/${id}`);
       }
-
     }
-    if(type=="blog"){
-      navigate(`/detail_blog/${id}`)
+    if (type == "blog") {
+      navigate(`/detail_blog/${id}`);
     }
   };
   return (
@@ -29,8 +36,8 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
               src={item.image.url}
               width={"100%"}
               height={"228px"}
-              style={{ borderRadius: "18px",objectFit:"cover" }}
-              alt=''
+              style={{ borderRadius: "18px", objectFit: "cover" }}
+              alt=""
             />
             <Box
               sx={{
@@ -52,9 +59,10 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                 "&:hover button": {
                   transform: "translateY(0px)",
                 },
-              }}>
+              }}
+            >
               <Button
-                onClick={() => handleRouter(item._id,String(type))}
+                onClick={() => handleRouter(item._id, String(type))}
                 sx={{
                   background: "white",
                   color: "black",
@@ -67,16 +75,22 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                     color: "black", // Thay đổi màu chữ khi hover
                     backgroundColor: "white",
                   },
-                }}>
-                  {check&&type !== "video" && type !== "blog"?<>{check?"Tiếp tục học":"Xem khóa học"}</>:<> {type === "video" && "Xem video"}
-                
-                {type === "blog" && "Xem Bài viết"}</>}
-               
+                }}
+              >
+                { type == "free" ? (
+                  <>{check ? "Tiếp tục học" : "Xem khóa học"}</>
+                ) : (
+                  <>
+                    {type === "takecharge" && <>{check ? "Tiếp tục học" : "Xem khóa học"}</>}
+                    {type === "video" && "Xem video"}
+                    {type === "blog" && "Xem Bài viết"}
+                  </>
+                )}
               </Button>
             </Box>
           </Box>
           <Box mt={"10px"}>
-            <Typography variant='h6' fontWeight={"bold"} fontSize={"16px"}>
+            <Typography variant="h6" fontWeight={"bold"} fontSize={"16px"}>
               {item.title}
             </Typography>
             <Box>
@@ -84,16 +98,14 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                 <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
                   <RiGroup2Line size={24} color={"#666666"} />{" "}
                   <Typography fontSize={"14px"} color={"#666666"}>
-                    132.500
+                    {item.students.length}
                   </Typography>
                 </Stack>
               )}
               {type === "takecharge" && (
                 <Stack direction={"row"} gap={1.5}>
-                  <Typography sx={{ textDecoration: "line-through" }}>
-                    2.500.000
-                  </Typography>
-                  <Typography sx={{ color: "red" }}>1.500.000</Typography>
+                 
+                  <Typography sx={{ color: "red" }}>{convertToVND(item.price)}</Typography>
                 </Stack>
               )}
               {type === "blog" && (
@@ -103,10 +115,10 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                     width={30}
                     height={30}
                     style={{ borderRadius: "50%" }}
-                    alt=''
+                    alt=""
                   />
                   <Typography fontWeight={"600"} fontSize={"14px"}>
-                   {item.author[0].user_name}
+                    {item.author[0].user_name}
                   </Typography>
                   <Typography fontSize={"12px"} color={"#666666"}>
                     6 phút đọc
@@ -145,7 +157,7 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
               src={product}
               width={"100%"}
               style={{ borderRadius: "18px" }}
-              alt=''
+              alt=""
             />
             <Box
               sx={{
@@ -167,7 +179,8 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                 "&:hover button": {
                   transform: "translateY(0px)",
                 },
-              }}>
+              }}
+            >
               <Button
                 sx={{
                   background: "white",
@@ -181,7 +194,8 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                     color: "black", // Thay đổi màu chữ khi hover
                     backgroundColor: "white",
                   },
-                }}>
+                }}
+              >
                 {type === "video" && "Xem video"}
                 {type !== "video" && type !== "blog" && "Xem khóa học"}
                 {type === "blog" && "Xem Bài viết"}
@@ -189,7 +203,7 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
             </Box>
           </Box>
           <Box mt={"10px"}>
-            <Typography variant='h6' fontWeight={"bold"} fontSize={"16px"}>
+            <Typography variant="h6" fontWeight={"bold"} fontSize={"16px"}>
               HTML CSS Pro
             </Typography>
             <Box>
@@ -216,7 +230,7 @@ const Product = ({ type, item ,check}: { type?: string; item?: any ,check?:boole
                     width={30}
                     height={30}
                     style={{ borderRadius: "50%" }}
-                    alt=''
+                    alt=""
                   />
                   <Typography fontWeight={"600"} fontSize={"14px"}>
                     Bùi Văn Toản

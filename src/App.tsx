@@ -8,6 +8,8 @@ import { createContext, useContext, useEffect, useReducer } from "react";
 import { useLocalStorage } from "./hooks/useStorage";
 import { Authentication, RefeshToken } from "./service/auth";
 import { getUserProgress } from "./service/progress";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const queryClient = new QueryClient();
 export const coursesContext = createContext({});
 
@@ -118,6 +120,7 @@ const App = () => {
           <Router />
         </coursesContext.Provider>
       </QueryClientProvider>
+      <ToastContainer/>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { convertToVND } from "@/utils/utils";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import {
   RiAddFill,
@@ -21,6 +22,7 @@ type Props = {
   totalLesson: number;
   navigate: any;
   handleProgress:any;
+  paymentSuccess:any
 };
 const DetailCourseView = ({
   courses,
@@ -31,6 +33,7 @@ const DetailCourseView = ({
   totalLesson,
   navigate,
   handleProgress,
+  paymentSuccess
 }: Props) => {
   return (
     <Box>
@@ -156,7 +159,7 @@ const DetailCourseView = ({
             </Box>
           </Box>
           <Typography variant='h4' my={"20px"} color={"#f05123"}>
-            Miễn phí
+            {courses&&<>{courses&&courses.price==0?"Miễn phí":convertToVND(courses.price)}</>}
           </Typography>
           <Button
             onClick={handleProgress}
@@ -168,7 +171,8 @@ const DetailCourseView = ({
               borderRadius: "30px",
               fontWeight: "700",
             }}>
-            ĐĂNG KÝ HỌC
+              {paymentSuccess?"BẮT ĐẦU":<> {courses&&courses.price==0? "ĐĂNG KÝ HỌC":"MUA KHÓA HỌC"}</>}
+           
           </Button>
           <Stack mt={"20px"}>
             <Stack direction={"column"} gap={"10px"}>

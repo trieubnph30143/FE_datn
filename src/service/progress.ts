@@ -7,6 +7,14 @@ export const addProgress = async (value: any) => {
     console.log(`add_progress`, error);
   }
 };
+export const checkExersiceProgress = async (value: any) => {
+  try {
+    const response = await axios.post(`/progress/exersice`, value);
+    return response;
+  } catch (error) {
+    console.log(`add_progress`, error);
+  }
+};
 export const getProgress = async (id: string,courses_id:string) => {
   try {
     const response = await axios.get(`/progress/detail/${id}/${courses_id}`);
@@ -31,7 +39,7 @@ export const updateProgress = async (value: any) => {
       user_id: value.user_id,
       courses_id:value.courses_id[0]._id
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.log(`update_Categories`, error);
   }

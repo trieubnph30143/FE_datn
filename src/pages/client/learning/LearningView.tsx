@@ -52,6 +52,7 @@ import css from "../../../images/css.svg";
 import Confetti from "canvas-confetti";
 import Loading from "@/components/Loading";
 import BlogContent from "@/components/BlogContent";
+import { checkExersiceProgress } from "@/service/progress";
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -88,9 +89,9 @@ type Props = {
   handleNextLesson: any;
   done: boolean;
   loading: any;
-  setDone:any
-  progressBar:any
-  totalProgressBar:any
+  setDone: any;
+  progressBar: any;
+  totalProgressBar: any;
 };
 const LearningView = ({
   courses,
@@ -117,12 +118,15 @@ const LearningView = ({
   loading,
   setDone,
   progressBar,
-  totalProgressBar
+  totalProgressBar,
 }: Props) => {
-
   return (
     <Box>
-      <Header progressBar={progressBar} totalProgressBar={totalProgressBar}/>
+      <Header
+        progressBar={progressBar}
+        courses={courses}
+        totalProgressBar={totalProgressBar}
+      />
       <Stack direction={"row"}>
         {loading && (
           <Box
@@ -159,21 +163,26 @@ const LearningView = ({
               <ContentLeftQuiz setDone={setDone} data={dataLesson} />
             )}
             {dataLesson && dataLesson.type == "code" && (
-              <ContentLeftExercise setDone={setDone} typeCode={typeCode} data={dataLesson} />
+              <ContentLeftExercise
+                setDone={setDone}
+                typeCode={typeCode}
+                data={dataLesson}
+              />
             )}
           </>
         )}
-        {progress!==undefined&&
-        <ContentRight
-          courses={courses}
-          expanded={expanded}
-          handleTongle={handleTongle}
-          handleTongleAll={handleTongleAll}
-          toggle={toggle}
-          activeLesson={activeLesson}
-          handleActiveLesson={handleActiveLesson}
-          progress={progress}
-        />}
+        {progress !== undefined && (
+          <ContentRight
+            courses={courses}
+            expanded={expanded}
+            handleTongle={handleTongle}
+            handleTongleAll={handleTongleAll}
+            toggle={toggle}
+            activeLesson={activeLesson}
+            handleActiveLesson={handleActiveLesson}
+            progress={progress}
+          />
+        )}
         <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
           <ContentDrawer onClose={toggleDrawer} />
         </Drawer>
@@ -202,9 +211,9 @@ const LearningView = ({
 
 export default LearningView;
 
-const Header = (props:any) => {
-  let total = Math.floor(100/ props.totalProgressBar)
-  let success = Math.floor(props.progressBar[0]/props.totalProgressBar)
+const Header = (props: any) => {
+  let total = Math.floor(100 / props.totalProgressBar);
+  let success = Math.floor(props.progressBar[0] / props.totalProgressBar);
 
   return (
     <Stack
@@ -230,7 +239,7 @@ const Header = (props:any) => {
           alt=""
         />
         <Typography fontWeight={"bold"} fontSize={"13px"}>
-          Lập Trình JavaScript Cơ Bản
+          {props.courses.title}
         </Typography>
       </Stack>
       <Stack direction={"row"} gap={"20px"}>
@@ -263,7 +272,10 @@ const Header = (props:any) => {
             />
           </Box>
           <Typography fontSize={"13px"}>
-            <b>{success}/{total}</b> bài học
+            <b>
+              {success}/{total}
+            </b>{" "}
+            bài học
           </Typography>
         </Stack>
         <Stack
@@ -365,7 +377,7 @@ const ContentLeftVideo = (props: any) => {
         </Stack>
         <Box mt={"30px"} padding={"0 10%"}>
           <Typography fontSize={"30px"} fontWeight={"700"}>
-            Xử lý báo lỗi cơ bản
+            {props.data.title}
           </Typography>
           <Typography fontSize={"14px"} color={"#333"} my={"10px"}>
             Cập nhật tháng 2 năm 2022
@@ -404,7 +416,6 @@ const ContentLeftVideo = (props: any) => {
 };
 
 const ContentRight = (props: any) => {
-  
   return (
     <Box
       width={"25%"}
@@ -450,101 +461,116 @@ const ContentRight = (props: any) => {
                     {item.sub_lesson.length}
                   </Typography>
                 </Stack>
-                {item.sub_lesson&&
-                <>
-                {item.sub_lesson.map((itemchild: any, index2: any) => {
-                  let check;
-                  let checkSuccess;
-                  console.log(props.progress);
-                  if (props.progress && props.progress[0]) {
-                    const lessonProgress = props.progress[0].lesson_progress[index];
-                    if (lessonProgress) {
-                      const subLessonProgress = lessonProgress.sub_lesson[index2];
-                      if (subLessonProgress) {
-                        check = subLessonProgress.result && !subLessonProgress.completed;
-                        checkSuccess = subLessonProgress.completed;
+                {item.sub_lesson && (
+                  <>
+                    {item.sub_lesson.map((itemchild: any, index2: any) => {
+                      let check;
+                      let checkSuccess;
+                      console.log(props.progress);
+                      if (props.progress && props.progress[0]) {
+                        const lessonProgress =
+                          props.progress[0].lesson_progress[index];
+                        if (lessonProgress) {
+                          const subLessonProgress =
+                            lessonProgress.sub_lesson[index2];
+                          if (subLessonProgress) {
+                            check =
+                              subLessonProgress.result &&
+                              !subLessonProgress.completed;
+                            checkSuccess = subLessonProgress.completed;
+                          }
+                        }
                       }
-                    }
-                  }
-                  let active = props.activeLesson == itemchild._id;
-                  return (
-                    <Box
-                      sx={{
-                        pointerEvents:
-                          !checkSuccess && !check ? "none" : "auto",
-                      }}
-                      onClick={() => props.handleActiveLesson(itemchild)}
-                    >
-                      <Stack
-                        direction={"row"}
-                        borderTop={index2 == 0 ? "none" : "1px solid #dddddd"}
-                        alignItems={"center"}
-                        sx={{
-                          background: active
-                            ? "rgba(240, 81, 35, .2)"
-                            : !checkSuccess && !check
-                            ? "#e6e6e6"
-                            : undefined,
-                          opacity: !checkSuccess && !check ? ".5" : "1",
-                        }}
-                        justifyContent={"space-between"}
-                        padding={"15px 20px"}
-                      >
-                        <Stack
-                          direction={"row"}
-                          alignItems={"center"}
-                          gap={"7px"}
+                      let active = props.activeLesson == itemchild._id;
+                      return (
+                        <Box
+                          sx={{
+                            pointerEvents:
+                              !checkSuccess && !check ? "none" : "auto",
+                          }}
+                          onClick={() => props.handleActiveLesson(itemchild)}
                         >
-                          <Typography color={"#333"} fontSize={"14px"}>
-                            {index2 + 1}.{itemchild.title}
-                            <Stack direction={"row"} mt={"5px"} gap={"10px"}>
-                              {itemchild.type == "video" && (
-                                <RiYoutubeFill
-                                  size={"20px"}
-                                  color={"#f05123"}
-                                />
-                              )}
-                              {itemchild.type == "blog" && (
-                                <RiArticleLine
-                                  size={"20px"}
-                                  color={"#f05123"}
-                                />
-                              )}
-                              {itemchild.type == "code" && (
-                                <RiPencilFill size={"20px"} color={"#f05123"} />
-                              )}
-                              {itemchild.type == "quiz" && (
-                                <RiQuestionFill
-                                  size={"20px"}
-                                  color={"#f05123"}
-                                />
-                              )}{" "}
-                              {itemchild.duration}
+                          <Stack
+                            direction={"row"}
+                            borderTop={
+                              index2 == 0 ? "none" : "1px solid #dddddd"
+                            }
+                            alignItems={"center"}
+                            sx={{
+                              background: active
+                                ? "rgba(240, 81, 35, .2)"
+                                : !checkSuccess && !check
+                                ? "#e6e6e6"
+                                : undefined,
+                              opacity: !checkSuccess && !check ? ".5" : "1",
+                            }}
+                            justifyContent={"space-between"}
+                            padding={"15px 20px"}
+                          >
+                            <Stack
+                              direction={"row"}
+                              alignItems={"center"}
+                              gap={"7px"}
+                            >
+                              <Typography color={"#333"} fontSize={"14px"}>
+                                {index2 + 1}.{itemchild.title}
+                                <Stack
+                                  direction={"row"}
+                                  mt={"5px"}
+                                  gap={"10px"}
+                                >
+                                  {itemchild.type == "video" && (
+                                    <RiYoutubeFill
+                                      size={"20px"}
+                                      color={"#f05123"}
+                                    />
+                                  )}
+                                  {itemchild.type == "blog" && (
+                                    <RiArticleLine
+                                      size={"20px"}
+                                      color={"#f05123"}
+                                    />
+                                  )}
+                                  {itemchild.type == "code" && (
+                                    <RiPencilFill
+                                      size={"20px"}
+                                      color={"#f05123"}
+                                    />
+                                  )}
+                                  {itemchild.type == "quiz" && (
+                                    <RiQuestionFill
+                                      size={"20px"}
+                                      color={"#f05123"}
+                                    />
+                                  )}{" "}
+                                  {itemchild.duration}
+                                </Stack>
+                              </Typography>
                             </Stack>
-                          </Typography>
-                        </Stack>
-                        <Typography fontSize={"12px"}>
-                          {check ? (
-                            ""
-                          ) : (
-                            <>
-                              {checkSuccess && (
-                                <RiCheckboxCircleFill
-                                  color="green"
-                                  size={"20px"}
-                                />
-                              )}
+                            <Typography fontSize={"12px"}>
+                              {check ? (
+                                ""
+                              ) : (
+                                <>
+                                  {checkSuccess && (
+                                    <RiCheckboxCircleFill
+                                      color="green"
+                                      size={"20px"}
+                                    />
+                                  )}
 
-                              {!checkSuccess && <RiLock2Fill size={"20px"} />}
-                            </>
-                          )}
-                        </Typography>
-                      </Stack>
-                    </Box>
-                  );
-                })}
-                </>}
-                
+                                  {!checkSuccess && (
+                                    <RiLock2Fill size={"20px"} />
+                                  )}
+                                </>
+                              )}
+                            </Typography>
+                          </Stack>
+                        </Box>
+                      );
+                    })}
+                  </>
+                )}
               </Box>
             </Box>
           );
@@ -1248,12 +1274,13 @@ const ContentDrawer = ({ onClose }: any) => {
 };
 
 const ContentLeftExercise = (props: any) => {
-  
   const [value, setValue] = React.useState(0);
   const [valueRight, setValueRight] = React.useState(0);
   const [exerciseHtml, setexerciseHtml] = React.useState(
     JSON.parse(props.data.type_exercise).html
   );
+  const [message, setMessage]: any = useState("");
+  const [success, setSuccess]: any = useState(false);
   const [exerciseCss, setexerciseCss] = React.useState(
     JSON.parse(props.data.type_exercise).css
   );
@@ -1261,21 +1288,24 @@ const ContentLeftExercise = (props: any) => {
   const [exercise, setExercise]: any = useState(
     JSON.parse(props.data.type_exercise).javascript
   );
-  
-  useEffect(()=>{
-    if(props.typeCode=="html"){
-      setexerciseHtml(JSON.parse(props.data.type_exercise).html)
-    }
-    if(props.typeCode=="javascript"){
-      setExercise(JSON.parse(props.data.type_exercise).javascript)
-    }
-    if(props.typeCode=="html-css"){
-      setexerciseCss(JSON.parse(props.data.type_exercise).css)
-      setexerciseHtml(JSON.parse(props.data.type_exercise).html)
-    }
-  },[props.data])
 
- 
+  useEffect(() => {
+    if (props.data.solution_key == "...") {
+      setSuccess(true);
+      setMessage("Nhấn nút kiểm tra để hoàn thành bài học");
+    }
+    if (props.typeCode == "html") {
+      setexerciseHtml(JSON.parse(props.data.type_exercise).html);
+    }
+    if (props.typeCode == "javascript") {
+      setExercise(JSON.parse(props.data.type_exercise).javascript);
+    }
+    if (props.typeCode == "html-css") {
+      setexerciseCss(JSON.parse(props.data.type_exercise).css);
+      setexerciseHtml(JSON.parse(props.data.type_exercise).html);
+    }
+  }, [props.data]);
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -1292,15 +1322,39 @@ const ContentLeftExercise = (props: any) => {
   const handleChangeExerciseCss = (e: any) => {
     setexerciseCss(e);
   };
-  const handleClickSucess = () => {
-    props.setDone(true)
-    Confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 1 },
-    });
+  const handleClickSucess = async () => {
+    try {
+      if (props.data.solution_key !== "...") {
+        
+        let data: any = await checkExersiceProgress({
+          id: props.data.solution_key,
+          type: props.typeCode,
+          exercise: props.typeCode == "javascript" ? exercise : `${exerciseHtml}<style>${exerciseCss}</style>`,
+        });
+        if (data?.status == 0) {
+          setSuccess(true);
+          setMessage(data.message);
+          props.setDone(true);
+          Confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 1 },
+          });
+        } else {
+          setMessage(data.message);
+          setSuccess(false);
+        }
+      } else {
+        props.setDone(true);
+        Confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 1 },
+        });
+      }
+    } catch (error) {}
   };
-  
+
   return (
     <Box width={"75%"} borderRight={"1px solid #dddddd"}>
       <Stack direction={"row"}>
@@ -1350,6 +1404,9 @@ const ContentLeftExercise = (props: any) => {
           {value == 0 && (
             <Box p={"15px"}>
               <Box
+                width={"100%"}
+               
+                className="resultCourses"
                 sx={{
                   " .tox-editor-header": {
                     display: "none !important",
@@ -1358,15 +1415,25 @@ const ContentLeftExercise = (props: any) => {
                     display: "none !important",
                   },
 
-                  height: "82vh",
                   
                   ".tox-tinymce": {
                     border: "none",
                   },
+                 
+
+                  overflowY: "scroll",
+                  
                 }}
               >
-                <BlogContent content={props.data.content_code} />
-                
+                <Editor
+                  apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+                  initialValue={props.data.content_code}
+                  init={{
+                    height: "85vh",
+                  }}
+                  disabled
+                />
+                <BlogContent content={props.data.content_blog} />
               </Box>
             </Box>
           )}
@@ -1411,7 +1478,7 @@ const ContentLeftExercise = (props: any) => {
             alignItems={"center"}
             width={"99.9%"}
           >
-            {props.typeCode!==null&&props.typeCode == "html" && (
+            {props.typeCode !== null && props.typeCode == "html" && (
               <Tabs
                 value={valueRight}
                 onChange={handleChangeRight}
@@ -1438,7 +1505,7 @@ const ContentLeftExercise = (props: any) => {
                 />
               </Tabs>
             )}
-            {props.typeCode!==null&&props.typeCode == "javascript" && (
+            {props.typeCode !== null && props.typeCode == "javascript" && (
               <Tabs
                 value={valueRight}
                 onChange={handleChangeRight}
@@ -1465,7 +1532,7 @@ const ContentLeftExercise = (props: any) => {
                 />
               </Tabs>
             )}
-            {props.typeCode!==null&&props.typeCode == "html-css" && (
+            {props.typeCode !== null && props.typeCode == "html-css" && (
               <>
                 <Tabs
                   value={valueRight}
@@ -1539,7 +1606,7 @@ const ContentLeftExercise = (props: any) => {
               },
             }}
           >
-            {props.typeCode!==null&&props.typeCode == "javascript" && (
+            {props.typeCode !== null && props.typeCode == "javascript" && (
               <MonacoEditor
                 width={"100%"}
                 height="50vh"
@@ -1549,7 +1616,7 @@ const ContentLeftExercise = (props: any) => {
                 onChange={(value) => handleChangeExercise(value)}
               />
             )}
-            {props.typeCode!==null&&props.typeCode == "html" && (
+            {props.typeCode !== null && props.typeCode == "html" && (
               <MonacoEditor
                 height="50vh"
                 language="html"
@@ -1558,7 +1625,7 @@ const ContentLeftExercise = (props: any) => {
                 onChange={(value) => handleChangeExerciseHtml(value)}
               />
             )}
-            {props.typeCode!==null&&props.typeCode == "html-css" && (
+            {props.typeCode !== null && props.typeCode == "html-css" && (
               <>
                 {valueRight == 0 && (
                   <MonacoEditor
@@ -1589,7 +1656,7 @@ const ContentLeftExercise = (props: any) => {
             borderBottom={"1px solid #dddddd"}
           >
             <Typography fontWeight={"600"} fontSize={"14px"}>
-              Bài kiểm tra (0/1)
+              {success ? "Bài kiểm tra (1/1)" : "Bài kiểm tra (0/1)"}
             </Typography>
             <Button
               onClick={handleClickSucess}
@@ -1608,12 +1675,22 @@ const ContentLeftExercise = (props: any) => {
           </Stack>
           <Stack padding={"20px"}>
             <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-              <Box>
-                <RiCheckLine color="#5db85c" size={"25px"} />
-              </Box>
-              <Typography fontWeight={"400"} fontSize={"16px"}>
-                Logs biến language ra tab Console
-              </Typography>
+              {message !== "" ? (
+                <>
+                  <Box>
+                    {success ? (
+                      <RiCheckLine color="#5db85c" size={"25px"} />
+                    ) : (
+                      <RiCloseLine size={"25px"} color="red" />
+                    )}
+                  </Box>
+                  <Typography fontWeight={"400"} fontSize={"16px"}>
+                    {message}
+                  </Typography>
+                </>
+              ) : (
+                ""
+              )}
             </Stack>
           </Stack>
         </Box>
@@ -1629,16 +1706,12 @@ const ContentLeftBlog = (props: any) => {
         paddingLeft={"95px"}
         className="resultCourses"
         sx={{
-         
-
           height: "85vh",
-          overflowY:"scroll",
-          paddingRight:"20px",
-         
+          overflowY: "scroll",
+          paddingRight: "20px",
         }}
       >
         <BlogContent content={props.data.content_blog} />
-        
       </Box>
     </Box>
   );
@@ -1661,10 +1734,10 @@ const ContentLeftQuiz = (props: any) => {
         spread: 70,
         origin: { y: 1 },
       });
-      props.setDone(true)
+      props.setDone(true);
     } else {
       setColor("#cc5140");
-      props.setDone(false)
+      props.setDone(false);
     }
   };
   return (
@@ -1698,7 +1771,6 @@ const ContentLeftQuiz = (props: any) => {
           }}
         >
           <BlogContent content={props.data.content_quizz} />
-          
         </Box>
         <Stack
           direction={"column"}

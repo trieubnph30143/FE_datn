@@ -4,11 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { getOneCourses } from "@/service/courses";
 import { getProgress, updateProgress } from "@/service/progress";
-import { useCoursesContext } from "@/App";
 import Loading from "@/components/Loading";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { calculateProgress } from "@/utils/utils";
-
+import {toast}  from 'react-toastify'
 const LearningController = () => {
   const queryClient = useQueryClient();
   const { id }: any = useParams();
@@ -221,7 +220,7 @@ const LearningController = () => {
               let lengthLesson = progress[0].lesson_progress.length - 1;
               if (lengthLesson == index && length == index2) {
                 true;
-                alert("chuc mung ban da hoan thanh khoa hoc");
+                toast.success("Chúc mừng bạn đã hoàn thành khóa học")
               } else {
                 if (length == index2) {
                   expanded[index + 1] = true;
@@ -341,20 +340,33 @@ const LearningController = () => {
             });
           });
           if (dataLesson.type == "video" && done) {
-            let data = await updateProgress(arr[0]);
-            setprogressBar([(progressBar[0] += totalProgressBar)]);
-            queryClient.invalidateQueries({
-              queryKey: ["progress", "detail"],
-            });
+            try {
+              let data = await updateProgress(arr[0]);
+              if (data?.status == 0) {
+                setprogressBar([(progressBar[0] += totalProgressBar)]);
+                queryClient.invalidateQueries({
+                  queryKey: ["progress", "detail"],
+                });
+              }
+            } catch (error) {}
+
             setLoading(false);
           }
           if (dataLesson.type == "blog") {
-            let data = await updateProgress(arr[0]);
-            setprogressBar([(progressBar[0] += totalProgressBar)]);
-            queryClient.invalidateQueries({
-              queryKey: ["progress", "detail"],
-            });
-            setLoading(false);
+            try {
+              let data = await updateProgress(arr[0]);
+              if(data?.status==0){
+                setprogressBar([(progressBar[0] += totalProgressBar)]);
+                queryClient.invalidateQueries({
+                  queryKey: ["progress", "detail"],
+                });
+                setLoading(false);
+  
+              }
+            } catch (error) {
+              
+            }
+           
           }
           if (dataLesson.type == "code") {
             let data = await updateProgress(arr[0]);
@@ -365,16 +377,24 @@ const LearningController = () => {
             setLoading(false);
           }
           if (dataLesson.type == "quiz") {
-            let data = await updateProgress(arr[0]);
-            setprogressBar([(progressBar[0] += totalProgressBar)]);
-            queryClient.invalidateQueries({
-              queryKey: ["progress", "detail"],
-            });
+            try {
+              let data = await updateProgress(arr[0]);
+              if(data?.status==0){
 
-            setLoading(false);
+                setprogressBar([(progressBar[0] += totalProgressBar)]);
+                queryClient.invalidateQueries({
+                queryKey: ["progress", "detail"],
+              });
+  
+              setLoading(false);
+              }
+            } catch (error) {
+              
+            }
+            
           }
         } else {
-          alert("chua hoan thanh xong");
+          toast.success("Bạn chưa hoàn thành bài học")
           setLoading(false);
         }
       }
@@ -383,7 +403,7 @@ const LearningController = () => {
     }
   };
 
-  console.log(progress);
+  
 
   return (
     <>

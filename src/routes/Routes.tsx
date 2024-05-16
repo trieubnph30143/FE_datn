@@ -3,8 +3,12 @@ import LayoutWebsite from "@/components/layouts/LayoutWebsite";
 import CategoriesController from "@/pages/admin/categories/CategoriesController";
 import CoursesController from "@/pages/admin/courses/CoursesController";
 import LessonController from "@/pages/admin/lesson/LessonController";
+import PermissionController from "@/pages/admin/permission/PermissionController";
 import PostController from "@/pages/admin/post/PostController";
+import RoleController from "@/pages/admin/role/RoleController";
+import RolePermissionController from "@/pages/admin/role_permission/RolePermissionController";
 import SubLessonController from "@/pages/admin/sublesson/SubLessonController";
+import UserController from "@/pages/admin/user/UserController";
 import DetailBlogController from "@/pages/client/detail_blog/DetailBlogController";
 import DetailCourseController from "@/pages/client/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/client/featured_article/FeaturedArticleController";
@@ -43,6 +47,10 @@ const Router = () => {
           <Route path='sublesson' element={<SubLessonController />} />
           <Route path='categories' element={<CategoriesController />} />
           <Route path='post' element={<PostController />} />
+          <Route path='role' element={<RoleController />} />
+          <Route path='permission' element={<PermissionController />} />
+          <Route path='role_permission' element={<RolePermissionController />} />
+          <Route path='user' element={<UserController />} />
         </Route>
         <Route path='*' element={<PageNotFound />} />
       </Routes>

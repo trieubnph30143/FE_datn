@@ -217,8 +217,8 @@ const HomeView = ({courses,progress,post}:Props) => {
           </Box>
         </Slider>
       </Box>
-      <ProductList type='takecharge' title='Khóa học Pro' />
-      <ProductList type={"free"} data={courses} progress={progress} title='Khóa học miễn phí' />
+      <ProductList type='takecharge' data={courses&&courses.filter((item)=>item.price!==0)} progress={progress} title='Khóa học Pro' />
+      <ProductList type={"free"} data={courses&&courses.filter((item)=>item.price==0)} progress={progress} title='Khóa học miễn phí' />
       <ProductList type={"blog"} data={post} title='Bài viết nổi bật' />
       <ProductList type={"video"} title='Videos nổi bật' />
     </>
