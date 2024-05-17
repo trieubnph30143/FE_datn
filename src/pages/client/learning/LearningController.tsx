@@ -1,13 +1,14 @@
-import { useNavigate, useParams } from "react-router-dom";
-import LearningView from "./LearningView";
-import { useEffect, useRef, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
-import { getOneCourses } from "@/service/courses";
-import { getProgress, updateProgress } from "@/service/progress";
 import Loading from "@/components/Loading";
 import { useLocalStorage } from "@/hooks/useStorage";
+import { getOneCourses } from "@/service/courses";
+import { getProgress, updateProgress } from "@/service/progress";
 import { calculateProgress } from "@/utils/utils";
-import {toast}  from 'react-toastify'
+import { useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import CommentController from "./CommentController";
+import LearningView from "./LearningView";
 const LearningController = () => {
   const queryClient = useQueryClient();
   const { id }: any = useParams();
@@ -27,11 +28,12 @@ const LearningController = () => {
   const [totalProgressBar, setTotalprogressBar]: any = useState(0);
   const player: any = useRef(null);
   const [user, setUser] = useLocalStorage("user", {});
+
   const [loadingAll, setLoadingAll] = useState({
     courses: false,
     progress: false,
   });
-
+  console.log(activeLesson);
   const navigate = useNavigate();
 
   const { data: progress } = useQuery(["progress", id], {
@@ -170,9 +172,6 @@ const LearningController = () => {
     }
   };
 
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpen(newOpen);
-  };
 
   // xu ly video
   useEffect(() => {
@@ -208,6 +207,8 @@ const LearningController = () => {
     setPlaying(false);
   };
 
+  console.log(activeLesson);
+  console.log(dataLesson);
   const handleNextLesson = async () => {
     setLoading(true);
     try {
@@ -220,7 +221,7 @@ const LearningController = () => {
               let lengthLesson = progress[0].lesson_progress.length - 1;
               if (lengthLesson == index && length == index2) {
                 true;
-                toast.success("Chúc mừng bạn đã hoàn thành khóa học")
+                toast.success("Chúc mừng bạn đã hoàn thành khóa học");
               } else {
                 if (length == index2) {
                   expanded[index + 1] = true;
@@ -355,18 +356,14 @@ const LearningController = () => {
           if (dataLesson.type == "blog") {
             try {
               let data = await updateProgress(arr[0]);
-              if(data?.status==0){
+              if (data?.status == 0) {
                 setprogressBar([(progressBar[0] += totalProgressBar)]);
                 queryClient.invalidateQueries({
                   queryKey: ["progress", "detail"],
                 });
                 setLoading(false);
-  
               }
-            } catch (error) {
-              
-            }
-           
+            } catch (error) {}
           }
           if (dataLesson.type == "code") {
             let data = await updateProgress(arr[0]);
@@ -379,22 +376,18 @@ const LearningController = () => {
           if (dataLesson.type == "quiz") {
             try {
               let data = await updateProgress(arr[0]);
-              if(data?.status==0){
-
+              if (data?.status == 0) {
                 setprogressBar([(progressBar[0] += totalProgressBar)]);
                 queryClient.invalidateQueries({
-                queryKey: ["progress", "detail"],
-              });
-  
-              setLoading(false);
+                  queryKey: ["progress", "detail"],
+                });
+
+                setLoading(false);
               }
-            } catch (error) {
-              
-            }
-            
+            } catch (error) {}
           }
         } else {
-          toast.success("Bạn chưa hoàn thành bài học")
+          toast.success("Bạn chưa hoàn thành bài học");
           setLoading(false);
         }
       }
@@ -402,7 +395,6 @@ const LearningController = () => {
       console.log(error);
     }
   };
-
   
 
   return (
@@ -410,21 +402,18 @@ const LearningController = () => {
       {!loadingAll.courses && <Loading />}
 
       {loadingAll.courses && loadingAll.progress && (
+        <>
         <LearningView
           courses={courses && courses}
           expanded={expanded}
           handleTongle={handleTongle}
           handleTongleAll={handleTongleAll}
           toggle={toggle}
-          totalLesson={totalLesson}
-          navigate={navigate}
           activeLesson={activeLesson}
           handleActiveLesson={handleActiveLesson}
           dataLesson={dataLesson}
           typeCode={typeCode}
           progress={progress}
-          toggleDrawer={toggleDrawer}
-          open={open}
           handleProgress={handleProgress}
           handleEnded={handleEnded}
           player={player}
@@ -436,8 +425,16 @@ const LearningController = () => {
           setDone={setDone}
           progressBar={progressBar}
           totalProgressBar={totalProgressBar}
+         
         />
+        <CommentController
+        lesson_id={activeLesson}
+        courses_id={id}
+        />
+        
+        </>
       )}
+
     </>
   );
 };

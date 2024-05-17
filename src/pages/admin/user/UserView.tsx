@@ -36,9 +36,9 @@ type typeProps = {
   anchorEl: any;
   open: any;
   action: string;
-  deleteRole: any;
-  setValueRole: any;
-  valueRole: any;
+  deleteUser: any;
+  setValueUser : any;
+  valueUser: any;
   role:any
 };
 const UserView = ({
@@ -58,18 +58,16 @@ const UserView = ({
   anchorEl,
   open,
   action,
-  deleteRole,
-  setValueRole,
-  valueRole,
+  deleteUser,
+  setValueUser ,
+  valueUser,
   role
 }: typeProps) => {
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Role</Typography>
-        <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add Role
-        </Button>
+        <Typography variant="h5">User</Typography>
+        
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -127,7 +125,7 @@ const UserView = ({
           <Stack direction={"row"} mt={"15px"} justifyContent={"end"}>
             <Button onClick={handleClose}>Hủy</Button>
             <Button
-              onClick={() => handleDelete(deleteRole)}
+              onClick={() => handleDelete(deleteUser)}
               sx={{ color: "red" }}
             >
               Xóa
@@ -144,8 +142,8 @@ const UserView = ({
         handleClose={handleCloseModal}
         onSubmit={onSubmit}
         action={action}
-        setValueRole={setValueRole}
-        valueRole={valueRole}
+        setValueUser ={setValueUser }
+        valueUser={valueUser }
         role={role}
       />
     </>
@@ -191,9 +189,9 @@ const ModalForm = (props: any) => {
                 {...props.register("role_id")}
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={props.valueRole}
+                value={props.valueUser }
                 label="Role"
-                onChange={(e) => props.setValueRole(e.target.value)}
+                onChange={(e) => props.setValueUser(e.target.value)}
               >
                 {props.role &&
                   props.role.length &&

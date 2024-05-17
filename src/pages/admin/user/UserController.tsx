@@ -13,23 +13,13 @@ const UserController = () => {
   const [openModal, setOpenModal] = React.useState(false);
   const [loading, setLoading] = useState(false);
   const [action, setAction]: any = useState("CREATE");
-  const [deleteRole, setDeleteRole] = useState(null);
+  const [deleteUser, setDeleteUser] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
-  const [valueRole, setValueRole] = useState("");
-  const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
-    dataDelete: any
-  ) => {
-    setDeleteRole(dataDelete);
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
+  const [valueUser, setValueUser] = useState("");
 
   const { data } = useQuery("user", {
     queryFn: () => getUser(),
@@ -37,6 +27,19 @@ const UserController = () => {
   const { data:role } = useQuery("role", {
     queryFn: () => getRole(),
   });
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    dataDelete: any
+  ) => {
+    setDeleteUser(dataDelete);
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  
+
+
   const { register, handleSubmit, onFinish, errors, reset } =
     useAuthMutation({
       action: action,
@@ -55,7 +58,7 @@ const UserController = () => {
       
       setOpenModal(true);
     } else {
-      setValueRole(data.role)
+      setValueUser(data.role)
       reset(data);
       setOpenModal(true);
     }
@@ -96,9 +99,9 @@ const UserController = () => {
         open={open}
         role={role}
         action={action}
-        deleteRole={deleteRole}
-        setValueRole={setValueRole}
-        valueRole={valueRole}
+        deleteUser={deleteUser}
+        setValueUser={setValueUser}
+        valueUser={valueUser}
       />
 
       {loading && <Loading />}
