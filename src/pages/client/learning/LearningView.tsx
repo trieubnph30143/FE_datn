@@ -53,6 +53,8 @@ import Confetti from "canvas-confetti";
 import Loading from "@/components/Loading";
 import BlogContent from "@/components/BlogContent";
 import { checkExersiceProgress } from "@/service/progress";
+import { useLocalStorage } from "@/hooks/useStorage";
+import { addNote } from "@/service/note";
 
 type Props = {
   courses: typeCourses;
@@ -77,7 +79,7 @@ type Props = {
   setDone: any;
   progressBar: any;
   totalProgressBar: any;
-
+  toggleDrawerNote:any
 };
 const LearningView = ({
   courses,
@@ -101,14 +103,18 @@ const LearningView = ({
   setDone,
   progressBar,
   totalProgressBar,
-  
+  toggleDrawerNote
 }: Props) => {
+
+  
+  
   return (
     <Box>
       <Header
         progressBar={progressBar}
         courses={courses}
         totalProgressBar={totalProgressBar}
+        toggleDrawerNote={toggleDrawerNote}
       />
       <Stack direction={"row"}>
         {loading && (
@@ -131,6 +137,7 @@ const LearningView = ({
           <>
             {dataLesson && dataLesson.type == "video" && (
               <ContentLeftVideo
+              courses={courses}
                 handleProgress={handleProgress}
                 handleEnded={handleEnded}
                 player={player}
@@ -166,9 +173,8 @@ const LearningView = ({
             progress={progress}
           />
         )}
-      
       </Stack>
-      
+
       <Footer done={done} handleNextLesson={handleNextLesson} />
     </Box>
   );
@@ -248,9 +254,10 @@ const Header = (props: any) => {
           color={"white"}
           alignItems={"center"}
           gap={0.5}
+          onClick={props.toggleDrawerNote(true)}
         >
           <RiFile3Fill />
-          <Typography fontSize={"13px"}>Ghi chú</Typography>
+          <Typography  fontSize={"13px"}>Ghi chú</Typography>
         </Stack>
         <Stack
           direction={"row"}
@@ -307,6 +314,31 @@ const Footer = (props: any) => {
 };
 
 const ContentLeftVideo = (props: any) => {
+  const [user, setUser] = useLocalStorage("user", {});
+  const [open, setOpen] = React.useState(false);
+  const [content, setContent] = React.useState('');
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setOpen(newOpen);
+  };
+  const handleEditorChange = (e: any, editor: any) => {
+    setContent(editor.getContent());
+  };
+  const handleNote = async()=>{
+    try {
+      let body = {
+        courses_id:[props.courses._id],
+        sub_lesson_id:[props.data._id],
+        content:content,
+        user_id:[user.data[0]._id]
+      }
+      let data  = await addNote(body);
+      if(data?.status==0){
+        setOpen(false)
+      }
+    } catch (error) {
+      
+    }
+  }
   return (
     <Box
       width={"75%"}
@@ -341,9 +373,31 @@ const ContentLeftVideo = (props: any) => {
           </Box>
         </Stack>
         <Box mt={"30px"} padding={"0 10%"}>
-          <Typography fontSize={"30px"} fontWeight={"700"}>
-            {props.data.title}
-          </Typography>
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Typography fontSize={"30px"} fontWeight={"700"}>
+              {props.data.title}
+            </Typography>
+            <Box
+              onClick={toggleDrawer(true)}
+              sx={{
+                background: "rgb(235, 235, 235)",
+                borderRadius: "6px",
+                padding: "10px",
+                display: "flex",
+                alignItems: "center",
+                gap: "3px",
+              }}
+            >
+              <RiAddFill />{" "}
+              <Typography mt={"2px"} fontSize={"15px"} color={"#333"}>
+                Thêm ghi chú
+              </Typography>{" "}
+            </Box>
+          </Stack>
           <Typography fontSize={"14px"} color={"#333"} my={"10px"}>
             Cập nhật tháng 2 năm 2022
           </Typography>
@@ -376,6 +430,103 @@ const ContentLeftVideo = (props: any) => {
           Made with <RiHeartFill size={20} color={"#ff5117"} />· Powered by F8
         </Typography>
       </Box>
+
+      <Drawer open={open} anchor={"bottom"} onClose={toggleDrawer(false)}>
+        <Box width={"100%"} padding={"50px 100px"}>
+          <Box
+            sx={{
+              ".tox-statusbar": {
+                display: "none !important",
+              },
+              width: "100%",
+            }}
+          >
+            <Typography mb={"20px"}>Thêm ghi chú tại bài <b>{props.data.title}</b></Typography>
+            <Editor
+            value={content}
+            onChange={handleEditorChange}
+              apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+              init={{
+                plugins:
+                  "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
+                editimage_cors_hosts: ["picsum.photos"],
+                menubar: "file edit view insert format tools table help",
+                toolbar:
+                  "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
+                autosave_ask_before_unload: true,
+                autosave_interval: "30s",
+                autosave_prefix: "{path}{query}-{id}-",
+                autosave_restore_when_empty: false,
+                autosave_retention: "2m",
+                image_advtab: true,
+                link_list: [
+                  { title: "My page 1", value: "https://www.tiny.cloud" },
+                  { title: "My page 2", value: "http://www.moxiecode.com" },
+                ],
+                image_list: [
+                  { title: "My page 1", value: "https://www.tiny.cloud" },
+                  { title: "My page 2", value: "http://www.moxiecode.com" },
+                ],
+                image_class_list: [
+                  { title: "None", value: "" },
+                  { title: "Some class", value: "class-name" },
+                ],
+                importcss_append: true,
+                file_picker_callback: (callback, value, meta) => {
+                  /* Provide file and text for the link dialog */
+                  if (meta.filetype === "file") {
+                    callback("https://www.google.com/logos/google.jpg", {
+                      text: "My text",
+                    });
+                  }
+
+                  /* Provide image and alt text for the image dialog */
+                  if (meta.filetype === "image") {
+                    callback("https://www.google.com/logos/google.jpg", {
+                      alt: "My alt text",
+                    });
+                  }
+
+                  /* Provide alternative source and posted for the media dialog */
+                  if (meta.filetype === "media") {
+                    callback("movie.mp4", {
+                      source2: "alt.ogg",
+                      poster: "https://www.google.com/logos/google.jpg",
+                    });
+                  }
+                },
+
+                height: 300,
+                image_caption: true,
+                quickbars_selection_toolbar:
+                  "bold italic | quicklink h2 h3 blockquote quickimage quicktable",
+                noneditable_class: "mceNonEditable",
+                toolbar_mode: "sliding",
+                contextmenu: "link image table",
+
+                content_style:
+                  "body { font-family:Helvetica,Arial,sans-serif; font-size:16px }",
+              }}
+            />
+          </Box>
+          <Box display={"flex"} gap={"10px"} justifyContent={"end"} mt={"30px"}>
+            <Button onClick={toggleDrawer(false)} sx={{ color: "black",}}>Hủy bỏ</Button>
+            <Button
+             onClick={handleNote}
+              sx={{
+                background:
+                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                color: "white",
+
+                
+                height: "34px",
+              }}
+            >
+              Tạo ghi chú
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
     </Box>
   );
 };
@@ -543,8 +694,6 @@ const ContentRight = (props: any) => {
   );
 };
 
-
-
 const ContentLeftExercise = (props: any) => {
   const [value, setValue] = React.useState(0);
   const [valueRight, setValueRight] = React.useState(0);
@@ -597,11 +746,13 @@ const ContentLeftExercise = (props: any) => {
   const handleClickSucess = async () => {
     try {
       if (props.data.solution_key !== "...") {
-        
         let data: any = await checkExersiceProgress({
           id: props.data.solution_key,
           type: props.typeCode,
-          exercise: props.typeCode == "javascript" ? exercise : `${exerciseHtml}<style>${exerciseCss}</style>`,
+          exercise:
+            props.typeCode == "javascript"
+              ? exercise
+              : `${exerciseHtml}<style>${exerciseCss}</style>`,
         });
         if (data?.status == 0) {
           setSuccess(true);
@@ -677,7 +828,6 @@ const ContentLeftExercise = (props: any) => {
             <Box p={"15px"}>
               <Box
                 width={"100%"}
-               
                 className="resultCourses"
                 sx={{
                   " .tox-editor-header": {
@@ -687,14 +837,11 @@ const ContentLeftExercise = (props: any) => {
                     display: "none !important",
                   },
 
-                  
                   ".tox-tinymce": {
                     border: "none",
                   },
-                 
 
                   overflowY: "scroll",
-                  
                 }}
               >
                 <Editor

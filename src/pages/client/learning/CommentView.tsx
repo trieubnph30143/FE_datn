@@ -20,7 +20,7 @@ import {
   RiMessengerFill,
   RiMoreFill,
 } from "react-icons/ri";
-import image from "../../../images/user.png";
+import image from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import BlogContent from "@/components/BlogContent";
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -145,7 +145,7 @@ const CommentView = ({
           </Box>
           <Box>
             <Typography fontSize={"20px"} fontWeight={700}>
-              287 hỏi đáp
+              {comments.length} hỏi đáp
             </Typography>
             <Typography
               mt={"10px"}
@@ -159,7 +159,7 @@ const CommentView = ({
           <Box mt={"20px"}>
             <Stack direction={"row"} gap={"10px"}>
               <img
-                src={image}
+                src={user.data[0].image.url?user.data[0].image.url:image}
                 width={50}
                 height={50}
                 style={{ borderRadius: "50%" }}
@@ -303,12 +303,13 @@ const CommentView = ({
               comments.map((item: any, index: number) => {
                 let check = etendType.includes(item._id);
                 let comment = feedBack == item._id;
+                console.log(item);
                 return (
                   <Box>
                     <Stack direction={"row"} gap={"10px"}>
                       <Box>
                         <img
-                          src={image}
+                          src={item.user_id[0].image.url?item.user_id[0].image.url:image}
                           width={40}
                           height={40}
                           style={{ borderRadius: "50%" }}

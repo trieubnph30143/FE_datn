@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import article from "../../../images/article.png";
-import user from "../../../images/user.png";
+import user from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import b from "../../../images/b.png";
 import {
   RiBookmarkLine,
@@ -78,7 +78,7 @@ const FeaturedArticleView = ({
                         width={26}
                         height={26}
                         style={{ borderRadius: "50%" }}
-                        src={user}
+                        src={item.author[0].image.url?item.author[0].image.url:user}
                         alt=""
                       />
                       <Typography mt={"5px"} fontSize={"12px"}>

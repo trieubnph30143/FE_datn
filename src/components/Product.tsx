@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import product from "../images/product.png";
 import { RiEyeFill, RiGroup2Line, RiMessage2Fill } from "react-icons/ri";
-import user from "../images/user.png";
+import user from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useNavigate } from "react-router-dom";
 import { convertToVND } from "@/utils/utils";
@@ -111,7 +111,7 @@ const Product = ({
               {type === "blog" && (
                 <Stack direction={"row"} alignItems={"center"} gap={1.5}>
                   <img
-                    src={user}
+                    src={item.author[0].image.url?item.author[0].image.url:user}
                     width={30}
                     height={30}
                     style={{ borderRadius: "50%" }}

@@ -2,44 +2,41 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useRef, useState } from "react";
 import { RiUploadCloudFill, RiUserSettingsFill } from "react-icons/ri";
 import user from "../../../images/user.png";
-
-const SettingProfileView = () => {
-  const [disableName, setDisableName] = useState(true);
-  const [image, setImage] = useState(true);
-  const [bio, setBio] = useState(true);
-
-  const handleClickFocus = () => {
-    setDisableName(!disableName);
-  };
-  const handleClickBio = () => {
-    setBio(!bio);
-  };
-  const handleClickImage = () => {
-    setImage(!image);
-    setImageUrl(user);
-  };
-  const [imageUrl, setImageUrl] = useState(user);
-
-  const handleImageChange = (e: any) => {
-    let file = e.target.files[0];
-    if (image) {
-      setImage(!image);
-    }
-    if (!file) return;
-
-    const reader: any = new FileReader();
-    reader.onload = () => {
-      setImageUrl(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-
+type Props = {
+  disableName: any;
+  image: any;
+  bio: any;
+  handleClickFocus: any;
+  handleClickImage: any;
+  handleImageChange: any;
+  imageUrl: any;
+  handleClickBio: any;
+  handleSaveChange: any;
+  setValueName: any;
+  setValueBio: any;
+  valueName: any;
+  valueBio: any;
+  
+};
+const SettingProfileView = ({
+  disableName,
+  image,
+  bio,
+  handleClickFocus,
+  handleClickImage,
+  handleImageChange,
+  imageUrl,
+  handleClickBio,
+  handleSaveChange,
+  setValueName,
+  setValueBio,
+  valueName,
+  valueBio,
+  
+}: Props) => {
   return (
     <Box>
-      <Typography variant='h4' fontWeight={"bold"} fontSize={"27px"}>
+      <Typography variant="h4" fontWeight={"bold"} fontSize={"27px"}>
         Cài đặt
       </Typography>
       <Stack direction={"row"} mt={"30px"} gap={"5%"}>
@@ -53,17 +50,19 @@ const SettingProfileView = () => {
             borderRadius: "6px",
           }}
           padding={"10px"}
-          height={"48px"}>
+          height={"48px"}
+        >
           <RiUserSettingsFill size={25} color={"#ff5117"} />{" "}
           <Typography>Cài đặt tài khoản</Typography>
         </Box>
         <Box width={"47%"}>
           <Typography
-            variant='h4'
+            variant="h4"
             fontWeight={"bold"}
             paddingBottom={"8px"}
             borderBottom={"1px solid #666666"}
-            fontSize={"20px"}>
+            fontSize={"20px"}
+          >
             Thông tin cá nhân
           </Typography>
           <Box mt={"40px"}>
@@ -78,9 +77,10 @@ const SettingProfileView = () => {
                     pointerEvents: disableName ? "none" : "auto",
                   }}
                   focused={!disableName}
-                  id='standard-basic'
-                  value={"Bùi văn toản"}
-                  variant='standard'
+                  id="standard-basic"
+                  value={valueName}
+                  variant="standard"
+                  onChange={(e)=>setValueName(e.target.value)}
                 />
               </Box>
               <Box width={"50%"}>
@@ -94,17 +94,20 @@ const SettingProfileView = () => {
                         color: "rgba(0, 0, 0, .54)",
                         fontSize: "12px",
                         float: "right",
-                      }}>
+                      }}
+                    >
                       Hủy
                     </Button>
                     <Button
+                      onClick={() => handleSaveChange("name")}
                       sx={{
                         borderRadius: "30px",
                         border: "1px solid #ff5117",
                         color: "#ff5117",
                         fontSize: "12px",
                         float: "right",
-                      }}>
+                      }}
+                    >
                       Lưu
                     </Button>
                   </Box>
@@ -117,7 +120,8 @@ const SettingProfileView = () => {
                       color: "rgba(0, 0, 0, .54)",
                       fontSize: "12px",
                       float: "right",
-                    }}>
+                    }}
+                  >
                     Chỉnh sửa
                   </Button>
                 )}
@@ -140,9 +144,11 @@ const SettingProfileView = () => {
                     pointerEvents: bio ? "none" : "auto",
                   }}
                   focused={!bio}
-                  id='standard-basic'
-                  placeholder='Thêm giới thiệu'
-                  variant='standard'
+                  id="standard-basic"
+                  placeholder="Thêm giới thiệu"
+                  variant="standard"
+                  value={valueBio}
+                  onChange={(e)=>setValueBio(e.target.value)}
                 />
               </Box>
               <Box width={"50%"}>
@@ -156,17 +162,20 @@ const SettingProfileView = () => {
                         color: "rgba(0, 0, 0, .54)",
                         fontSize: "12px",
                         float: "right",
-                      }}>
+                      }}
+                    >
                       Hủy
                     </Button>
                     <Button
+                      onClick={() => handleSaveChange("bio")}
                       sx={{
                         borderRadius: "30px",
                         border: "1px solid #ff5117",
                         color: "#ff5117",
                         fontSize: "12px",
                         float: "right",
-                      }}>
+                      }}
+                    >
                       Lưu
                     </Button>
                   </Box>
@@ -179,7 +188,8 @@ const SettingProfileView = () => {
                       color: "rgba(0, 0, 0, .54)",
                       fontSize: "12px",
                       float: "right",
-                    }}>
+                    }}
+                  >
                     Chỉnh sửa
                   </Button>
                 )}
@@ -196,19 +206,21 @@ const SettingProfileView = () => {
               <Box
                 width={"50%"}
                 display={"flex"}
-                justifyContent={"space-between"}>
+                justifyContent={"space-between"}
+              >
                 <Typography fontSize={"12px"} color={"#757575"} mt={"20px"}>
                   Nên là ảnh vuông, chấp nhận các tệp: JPG, PNG hoặc GIF.
                 </Typography>
                 <Box sx={{ width: "28%" }}>
                   <div
-                    className='container'
+                    className="container"
                     style={{
                       width: "100%",
-                    }}>
+                    }}
+                  >
                     <label
-                      htmlFor='input-img'
-                      className='preview'
+                      htmlFor="input-img"
+                      className="preview"
                       style={{
                         border: "2px dashed  #ff5117",
                         width: "100%",
@@ -223,7 +235,8 @@ const SettingProfileView = () => {
                         justifyContent: "center",
                         flexDirection: "column",
                         cursor: "pointer",
-                      }}>
+                      }}
+                    >
                       {imageUrl ? (
                         <img
                           src={imageUrl}
@@ -236,7 +249,7 @@ const SettingProfileView = () => {
                             left: 0,
                             background: "white",
                           }}
-                          alt=''
+                          alt=""
                         />
                       ) : (
                         ""
@@ -248,7 +261,8 @@ const SettingProfileView = () => {
                       <Typography
                         textAlign={"center"}
                         mt={"10px"}
-                        fontSize={"12px"}>
+                        fontSize={"12px"}
+                      >
                         Nhấn vào đây để chọn ảnh khác
                       </Typography>
                     ) : (
@@ -256,9 +270,9 @@ const SettingProfileView = () => {
                     )}
                     <input
                       onChange={handleImageChange}
-                      type='file'
+                      type="file"
                       hidden
-                      id='input-img'
+                      id="input-img"
                     />
                   </div>
                 </Box>
@@ -274,17 +288,20 @@ const SettingProfileView = () => {
                         color: "rgba(0, 0, 0, .54)",
                         fontSize: "12px",
                         float: "right",
-                      }}>
+                      }}
+                    >
                       Hủy
                     </Button>
                     <Button
+                      onClick={() => handleSaveChange("image")}
                       sx={{
                         borderRadius: "30px",
                         border: "1px solid #ff5117",
                         color: "#ff5117",
                         fontSize: "12px",
                         float: "right",
-                      }}>
+                      }}
+                    >
                       Lưu
                     </Button>
                   </Box>
@@ -297,7 +314,8 @@ const SettingProfileView = () => {
                       color: "rgba(0, 0, 0, .54)",
                       fontSize: "12px",
                       float: "right",
-                    }}>
+                    }}
+                  >
                     Chỉnh sửa
                   </Button>
                 )}
@@ -315,9 +333,9 @@ const SettingProfileView = () => {
                     opacity: ".5",
                     pointerEvents: "none",
                   }}
-                  id='standard-basic'
+                  id="standard-basic"
                   value={"toanbui219@gmail.com"}
-                  variant='standard'
+                  variant="standard"
                 />
               </Box>
             </Stack>

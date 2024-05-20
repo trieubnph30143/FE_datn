@@ -21,7 +21,7 @@ import fb from "../images/facebook-18px.svg";
 import { RiArrowLeftSLine, RiCloseLine, RiSearchLine } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import profile from "../images/user.png";
+import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import product from "../images/product.png";
 import { useAuthMutation } from "@/hooks/useAuthMutation";
 import {  useCoursesContext } from "@/App";
@@ -78,7 +78,7 @@ const Header = () => {
               type: "LOGIN",
               payload: {
                 ...context.state,
-                user: data.data,
+                user: [data.data[0]],
               },
             });
             let res:any = await getUserProgress(data.data[0]._id) 
@@ -390,7 +390,7 @@ const Header = () => {
             <Box>
               <Typography aria-describedby={id} onClick={handleClickProfile}>
                 <img
-                  src={profile}
+                  src={context.state.user[0].image.url?context.state.user[0].image.url: profile}
                   width={40}
                   height={40}
                   style={{ borderRadius: "50%" }}
@@ -415,7 +415,7 @@ const Header = () => {
                   <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
                     <Box>
                       <img
-                        src={profile}
+                        src={context.state.user[0].image.url?context.state.user[0].image.url: profile}
                         width={40}
                         height={40}
                         style={{ borderRadius: "50%" }}
@@ -424,7 +424,7 @@ const Header = () => {
                     </Box>
                     <Box>
                       <Typography fontSize={"14px"} fontWeight={"bold"}>
-                        Bùi Văn Toản
+                        {context.state.user[0].user_name}
                       </Typography>
                     </Box>
                   </Stack>

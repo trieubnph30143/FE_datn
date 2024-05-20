@@ -64,9 +64,17 @@ export const updateUSer = async (value: any) => {
     const response = await axios.put(`/auth/${value._id}`, {
       email: value.email,
       role: value.role,
-      user_name:value.user_name
+      user_name:value.user_name,
     });
     return response.data;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
+export const updateProfileUSer = async (value: any) => {
+  try {
+    const response = await axios.put(`/auth/profile/${value._id}`, value);
+    return response;
   } catch (error) {
     console.log(`get_Role`, error);
   }
