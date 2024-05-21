@@ -71,6 +71,7 @@ export const usePostMutation = ({
           },
           author: [user.data[0]._id],
           active: false,
+          notify:false
         });
       }
     } else {

@@ -157,7 +157,9 @@ const LayoutAdmin = () => {
   };
   return (
     <div>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex",".css-123k39-MuiPaper-root-MuiAppBar-root":{
+        zIndex:9
+      } }}>
         <CssBaseline />
         <AppBar
           position='fixed'
@@ -288,6 +290,12 @@ const LayoutAdmin = () => {
             </Menu>
           </Toolbar>
         </AppBar>
+        <Box sx={{
+          ".css-12i7wg6-MuiPaper-root-MuiDrawer-paper":{
+            zIndex:9
+          }
+        }}>
+
         <Drawer
           sx={{
             width: drawerWidth,
@@ -483,6 +491,7 @@ const LayoutAdmin = () => {
               </ListItem>
           </List>
         </Drawer>
+        </Box>
         <Main open={open}>
           <DrawerHeader />
           <Outlet />

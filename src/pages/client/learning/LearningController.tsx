@@ -1,8 +1,12 @@
 import Loading from "@/components/Loading";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { getOneCourses } from "@/service/courses";
-import { getProgress, updateProgress } from "@/service/progress";
-import { calculateProgress } from "@/utils/utils";
+import {
+  getProgress,
+  updateCertificate,
+  updateProgress,
+} from "@/service/progress";
+import { calculateProgress, getCurrentDate } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +14,30 @@ import { toast } from "react-toastify";
 import CommentController from "./CommentController";
 import LearningView from "./LearningView";
 import NoteController from "./NoteController";
+import html2canvas from "html2canvas";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Modal,
+  TextField,
+  Typography,
+} from "@mui/material";
+import certificate from "../../../images/certificate (1).png";
+import confetti from "canvas-confetti";
+import { RiDownloadCloud2Line } from "react-icons/ri";
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1000,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  padding: "50px",
+  borderRadius: "10px",
+};
 const LearningController = () => {
   const queryClient = useQueryClient();
   const { id }: any = useParams();
@@ -20,15 +48,23 @@ const LearningController = () => {
   const [typeCode, setTypeCode]: any = useState(null);
   const [playing, setPlaying] = useState(true);
   const [done, setDone] = useState(false);
-  const playedRef = useRef(0);
+  const playedRef: any = useRef(0);
   const [loading, setLoading]: any = useState(false);
   const [detail, setDetail]: any = useState({});
+  const [timeVideo, setTimeVideo]: any = useState("");
   const [expanded, setExpanded]: any = useState([]);
   const [progressBar, setprogressBar]: any = useState([]);
   const [totalProgressBar, setTotalprogressBar]: any = useState(0);
-  const [openNote,setOpenNote] = useState(false)
+  const [openNote, setOpenNote] = useState(false);
+  const [nameCertificate, setNameCertificate] = useState("");
+  const [checkCertificate, setCheckCertificate] = useState("");
+  const captureRef: any = useRef();
   const toggleDrawerNote = (newOpen: boolean) => () => {
     setOpenNote(newOpen);
+  };
+  const [openDirection, setOpenDirection] = useState(false);
+  const toggleDrawerDirection = (newOpen: boolean) => () => {
+    setOpenDirection(newOpen);
   };
   const player: any = useRef(null);
   const [user, setUser] = useLocalStorage("user", {});
@@ -37,9 +73,15 @@ const LearningController = () => {
     courses: false,
     progress: false,
   });
-  
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const [openCertificate, setOpenCertificate] = useState(false);
+  const handleOpenCertificate = () => {
+    setOpenCertificate(true);
+  };
+  const handleCloseCertificate = () => {
+    setOpenCertificate(false);
+  };
   const { data: progress } = useQuery(["progress", id], {
     queryFn: () => {
       return getProgress(user.data[0]._id, id);
@@ -202,42 +244,45 @@ const LearningController = () => {
 
   const handleProgress = (state: any) => {
     if (playedRef.current !== state.played) {
-      playedRef.current = state.played;
+      const minutes = Math.floor(state.playedSeconds / 60);
+      const seconds = Math.ceil(state.playedSeconds % 60);
+      setTimeVideo(
+        minutes < 10
+          ? `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+          : `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+      );
     }
   };
-  
+
   const handleEnded = () => {
     setDone(true);
     setPlaying(false);
   };
- 
+
   const handleNextLesson = async () => {
     setLoading(true);
-    let check_lesson_passed = false 
-    progress[0].lesson_progress.map((item:any)=>{
-      item.sub_lesson.map((i:any)=>{
-        if(i.sub_lesson_id==activeLesson){
-          if(i.completed&&i.result){
-             check_lesson_passed=true
+    let check_lesson_passed = false;
+    progress[0].lesson_progress.map((item: any) => {
+      item.sub_lesson.map((i: any) => {
+        if (i.sub_lesson_id == activeLesson) {
+          if (i.completed && i.result) {
+            check_lesson_passed = true;
           }
         }
-      })
-    })
+      });
+    });
     try {
       if (progress[0].completed) {
         completionCourse();
         setLoading(false);
       } else {
-        if(check_lesson_passed){
+        if (check_lesson_passed) {
           console.log("toan1");
-          completionCourse()
+          completionCourse();
           setLoading(false);
-        }else{
-          
-          
+        } else {
           if (done) {
             courseNotCompleted();
-            
           } else {
             toast.success("Bạn chưa hoàn thành bài học");
             setLoading(false);
@@ -256,7 +301,7 @@ const LearningController = () => {
           let lengthLesson = progress[0].lesson_progress.length - 1;
           if (lengthLesson == index && length == index2) {
             true;
-            toast.success("Chúc mừng bạn đã hoàn thành khóa học");
+            handleOpenCertificate();
           } else {
             if (length == index2) {
               expanded[index + 1] = true;
@@ -300,7 +345,7 @@ const LearningController = () => {
       });
     });
   };
-  const courseNotCompleted = async() => {
+  const courseNotCompleted = async () => {
     let arr = progress;
     progress[0].lesson_progress.map((item: any, index: number) => {
       item.sub_lesson.map((itemChild: any, index2: number) => {
@@ -311,7 +356,7 @@ const LearningController = () => {
             arr[0].lesson_progress[index].sub_lesson[index2].completed = true;
             arr[0].lesson_progress[index].completed = true;
             arr[0].completed = true;
-            alert("chuc mung ban da hoan thanh khoa hoc");
+            handleOpenCertificate();
           } else {
             if (length == index2) {
               expanded[index + 1] = true;
@@ -323,10 +368,10 @@ const LearningController = () => {
                 arr[0].lesson_progress[index + 1].sub_lesson[0].sub_lesson_id
               );
               setDataLesson(courses.lesson[index + 1].sub_lesson[0]);
-              if(courses.lesson[index+1].sub_lesson[0].type=="blog"){
-                setDone(true)
-              }else{
-                setDone(false)
+              if (courses.lesson[index + 1].sub_lesson[0].type == "blog") {
+                setDone(true);
+              } else {
+                setDone(false);
               }
             } else {
               setActiveLesson(
@@ -336,10 +381,10 @@ const LearningController = () => {
               setDataLesson(courses.lesson[index].sub_lesson[index2 + 1]);
               arr[0].lesson_progress[index].sub_lesson[index2 + 1].result =
                 true;
-              if(courses.lesson[index].sub_lesson[index2+1].type=="blog"){
-                setDone(true)
-              }else{
-                setDone(false)
+              if (courses.lesson[index].sub_lesson[index2 + 1].type == "blog") {
+                setDone(true);
+              } else {
+                setDone(false);
               }
               arr[0].lesson_progress[index].sub_lesson[index2].completed = true;
               if (courses.lesson[index].sub_lesson[index2 + 1].type == "code") {
@@ -376,7 +421,6 @@ const LearningController = () => {
           queryClient.invalidateQueries({
             queryKey: ["progress", "detail"],
           });
-          
         }
       } catch (error) {}
 
@@ -390,7 +434,7 @@ const LearningController = () => {
           queryClient.invalidateQueries({
             queryKey: ["progress", "detail"],
           });
-          
+
           setLoading(false);
         }
       } catch (error) {}
@@ -401,7 +445,7 @@ const LearningController = () => {
       queryClient.invalidateQueries({
         queryKey: ["progress", "detail"],
       });
-     
+
       setLoading(false);
     }
     if (dataLesson.type == "quiz") {
@@ -417,6 +461,63 @@ const LearningController = () => {
         }
       } catch (error) {}
     }
+  };
+
+  const handleCertificate = async () => {
+    try {
+      let data = await updateCertificate({
+        user_name: nameCertificate,
+        date_certificate: getCurrentDate(),
+        status_certificate: checkCertificate,
+        _id: progress[0]._id,
+      });
+      if (data?.status == 0) {
+        var duration = 15 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        function randomInRange(min: any, max: any) {
+          return Math.random() * (max - min) + min;
+        }
+
+        var interval: any = setInterval(function () {
+          var timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          var particleCount = 50 * (timeLeft / duration);
+          // since particles fall down, start a bit higher than random
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          });
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          });
+        }, 250);
+        queryClient.invalidateQueries({
+          queryKey: ["progress"],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCapture = async () => {
+    const element: any = captureRef.current;
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = imgData;
+    link.download = "capture.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   return (
     <>
@@ -447,9 +548,173 @@ const LearningController = () => {
             progressBar={progressBar}
             totalProgressBar={totalProgressBar}
             toggleDrawerNote={toggleDrawerNote}
+            timeVideo={timeVideo}
+            setPlaying={setPlaying}
+            navigate={navigate}
+            toggleDrawerDirection={toggleDrawerDirection}
+            openDirection={openDirection}
+            setOpenDirection={setOpenDirection}
           />
           <CommentController lesson_id={activeLesson} courses_id={id} />
-          <NoteController lesson_id={activeLesson} courses_id={id} toggleDrawerNote={toggleDrawerNote} openNote={openNote} />
+          <NoteController
+            lesson_id={activeLesson}
+            courses_id={id}
+            toggleDrawerNote={toggleDrawerNote}
+            openNote={openNote}
+          />
+          <Modal
+            open={openCertificate}
+            onClose={handleCloseCertificate}
+            aria-labelledby="child-modal-title"
+            aria-describedby="child-modal-description"
+          >
+            <Box sx={{ ...style }}>
+              <Typography variant="h6" fontWeight={"bold"}>
+                Nhận chứng chỉ 🎉
+              </Typography>
+              <Typography my={"10px"}>
+                F8 ghi nhận sự nỗ lực của bạn! Bằng cách nhận chứng chỉ này, bạn
+                chính thức hoàn thành khóa học <b>{courses.title}</b>
+              </Typography>
+              <Box
+                ref={captureRef}
+                position={"relative"}
+                sx={{
+                  pointerEvents: progress[0].status_certificate
+                    ? "none"
+                    : "auto",
+                }}
+              >
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 390,
+                    left: 0,
+                    width: "100%",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      fontSize: "20px",
+                    }}
+                  >
+                    {courses.title}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 484,
+                    left: 208,
+                    width: "100%",
+                  }}
+                >
+                  <Typography>{getCurrentDate()}</Typography>
+                </Box>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 280,
+                    left: 0,
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    height: "80px",
+                    ".css-1eed5fa-MuiInputBase-root-MuiInput-root": {},
+                    ".css-1eed5fa-MuiInputBase-root-MuiInput-root::after": {
+                      border: "none",
+                    },
+                    ".css-1eed5fa-MuiInputBase-root-MuiInput-root::before": {
+                      border: "none",
+                    },
+                    ".css-1x51dt5-MuiInputBase-input-MuiInput-input": {
+                      fontFamily: "'Great Vibes', cursive",
+                      fontSize: "3.5rem",
+                      textAlign: "center",
+                    },
+                    ".css-1eed5fa-MuiInputBase-root-MuiInput-root:hover:not(.Mui-disabled, .Mui-error):before":
+                      {
+                        border: "none",
+                      },
+                  }}
+                >
+                 { progress[0].status_certificate? <Typography sx={{ fontFamily: "'Great Vibes', cursive",
+                      fontSize: "3.5rem",textAlign: "center"}}>{progress[0].user_name}</Typography>:
+                  <TextField
+                    value={
+                     
+                       
+                       nameCertificate
+                    }
+                    onChange={(e) => {
+                      const inputValue = e.target.value;
+                      const words = inputValue.split(" ");
+
+                      for (let i = 0; i < words.length; i++) {
+                        if (words[i].length > 0) {
+                          words[i] =
+                            words[i][0].toUpperCase() +
+                            words[i].substring(1).toLowerCase();
+                        }
+                      }
+                      setNameCertificate(words.join(" "));
+                    }}
+                    placeholder="Nhập họ và tên"
+                    variant="standard"
+                    autoComplete="off"
+                    sx={{
+                      height: "100%",
+                      fontSize: "30px",
+                      textAlign: "center",
+                    }}
+                  />}
+                </Box>
+                <img src={certificate} width={"100%"} alt="" />
+              </Box>
+              {progress[0].status_certificate ? (
+               <Button  sx={{
+                background:
+                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                color: "white",
+
+                height: "34px",
+                mt: 1,
+                mr: 1,
+                float:"right"
+              }} onClick={handleCapture}><RiDownloadCloud2Line size={"20px"} /> Tải xuống</Button>
+              ) : (
+                <Box display={"flex"} flexDirection={"column"} gap={"15px"}>
+                  <FormControlLabel
+                    value={checkCertificate}
+                    onChange={(e: any) => setCheckCertificate(e.target.checked)}
+                    control={<Checkbox />}
+                    label="Bạn không thể chỉnh sửa lại chứng chỉ khi đã ấn xác nhận"
+                    labelPlacement="end"
+                  />
+                  <Button
+                    onClick={handleCertificate}
+                    disabled={
+                      nameCertificate && checkCertificate ? false : true
+                    }
+                    sx={{
+                      background:
+                        "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                      color: "white",
+
+                      height: "34px",
+                      mt: 1,
+                      mr: 1,
+                    }}
+                  >
+                    Xác nhận
+                  </Button>
+                </Box>
+              )}
+               
+            </Box>
+          </Modal>
         </>
       )}
     </>

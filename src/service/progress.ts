@@ -44,3 +44,15 @@ export const updateProgress = async (value: any) => {
     console.log(`update_Categories`, error);
   }
 };
+export const updateCertificate = async (value: any) => {
+  try {
+    const response = await axios.put(`/progress/${value._id}`, {
+      user_name: value.user_name,
+      date_certificate: value.date_certificate,
+      status_certificate: value.status_certificate,
+    });
+    return response;
+  } catch (error) {
+    console.log(`update_Categories`, error);
+  }
+};

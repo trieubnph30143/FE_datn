@@ -59,7 +59,7 @@ const MyArticleView = ({
   return (
     <Box>
       <Drawer open={openDrawer} anchor="right" onClose={toggleDrawer(false)}>
-        <Box padding={"50px"} width={"100%"}>
+        <Box padding={"50px"} width={"1200px"}>
           <form onSubmit={handleSubmit(onFinish)}>
             <Stack direction={"row"} gap={"30px"}>
               <Stack width={"50%"} direction={"column"} gap={"15px"}>

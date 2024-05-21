@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import bgprofile from "../../../images/bgprofile.png";
-import user from "../../../images/user.png";
+import userImage from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import { RiGroupFill } from "react-icons/ri";
 import product from "../../../images/product.png";
 type Props = {
@@ -11,7 +11,7 @@ const ProfileView = ({user,courses}:Props) => {
   return (
     <Box>
       <Box width={"70%"} mx={"auto"}>
-        <Box position={"relative"} top={-20}>
+        <Box position={"relative"} top={-47}>
           <img
             src={bgprofile}
             style={{
@@ -28,7 +28,7 @@ const ProfileView = ({user,courses}:Props) => {
             left={"40px"}>
             <Box display={"flex"} gap={"10px"} alignItems={"end"}>
               <img
-                src={user}
+                src={user[0].image.url?user[0].image.url: userImage}
                 width={155}
                 height={155}
                 style={{
@@ -44,7 +44,7 @@ const ProfileView = ({user,courses}:Props) => {
             </Box>
           </Box>
         </Box>
-        <Stack direction={"row"} mt={"150px"} gap={"5%"}>
+        <Stack direction={"row"} mt={"170px"} gap={"5%"}>
           <Box width={"40%"}>
             <Box
               sx={{

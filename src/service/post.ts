@@ -48,7 +48,8 @@ export const updatePost = async (value: any) => {
       readers:value.readers,
       description:value.description,
       active:value.active,
-      author:value.author
+      author:value.author,
+      notify:value.notify
     });
     return response.data;
   } catch (error) {

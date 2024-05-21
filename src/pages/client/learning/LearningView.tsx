@@ -4,9 +4,14 @@ import {
   CircularProgress,
   Drawer,
   Fade,
+  Paper,
   Popover,
   Stack,
+  Step,
   StepConnector,
+  StepContent,
+  StepLabel,
+  Stepper,
   Tab,
   Tabs,
   Tooltip,
@@ -20,7 +25,13 @@ import "react-circular-progressbar/dist/styles.css";
 import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
 import logo from "../../../images/f8-icon.18cd71cfcfa33566a22b.png";
-
+import direction from "../../../images/Screenshot from 2024-05-21 10-05-13.png";
+import left from "../../../images/left.png";
+import right from "../../../images/right.png";
+import ques from "../../../images/q.png";
+import note2 from "../../../images/note2.png";
+import note1 from "../../../images/n.png";
+import direction2 from "../../../images/direction.png";
 import {
   RiAddFill,
   RiArrowDownSLine,
@@ -79,7 +90,13 @@ type Props = {
   setDone: any;
   progressBar: any;
   totalProgressBar: any;
-  toggleDrawerNote:any
+  toggleDrawerNote: any;
+  timeVideo: any;
+  setPlaying: any;
+  navigate: any;
+  toggleDrawerDirection: any;
+  openDirection: any;
+  setOpenDirection:any
 };
 const LearningView = ({
   courses,
@@ -103,11 +120,14 @@ const LearningView = ({
   setDone,
   progressBar,
   totalProgressBar,
-  toggleDrawerNote
+  toggleDrawerNote,
+  timeVideo,
+  setPlaying,
+  navigate,
+  toggleDrawerDirection,
+  openDirection,
+  setOpenDirection
 }: Props) => {
-
-  
-  
   return (
     <Box>
       <Header
@@ -115,6 +135,10 @@ const LearningView = ({
         courses={courses}
         totalProgressBar={totalProgressBar}
         toggleDrawerNote={toggleDrawerNote}
+        navigate={navigate}
+        toggleDrawerDirection={toggleDrawerDirection}
+        openDirection={openDirection}
+        setOpenDirection={setOpenDirection}
       />
       <Stack direction={"row"}>
         {loading && (
@@ -137,13 +161,15 @@ const LearningView = ({
           <>
             {dataLesson && dataLesson.type == "video" && (
               <ContentLeftVideo
-              courses={courses}
+                courses={courses}
                 handleProgress={handleProgress}
                 handleEnded={handleEnded}
                 player={player}
                 playing={playing}
                 played={played}
                 data={dataLesson}
+                timeVideo={timeVideo}
+                setPlaying={setPlaying}
               />
             )}
             {dataLesson && dataLesson.type == "blog" && (
@@ -185,6 +211,45 @@ export default LearningView;
 const Header = (props: any) => {
   let total = Math.floor(100 / props.totalProgressBar);
   let success = Math.floor(props.progressBar[0] / props.totalProgressBar);
+  const steps = [
+    {
+      label: "Khu vực học tập",
+      description: `Đây là khu vực trung tâm của màn hình này, 
+      toàn bộ nội dung các bài học như là video, hình ảnh,
+       văn bản sẽ được hiển thị ở đây nhé ^^`,
+    },
+    {
+      label: "Danh sách khóa học",
+      description:
+        "Tiếp theo là khu vực quan trọng không kém, đây là danh sách các bài học tại khóa này. Cậu sẽ rất thường xuyên tương tác tại đây để chuyển bài học và làm bài tập đấy >_<",
+    },
+    {
+      label: "Hỏi đáp",
+      description: `Và đây là khu vực dành cho việc hỏi đáp, trao đổi trong mỗi bài học. Nếu có bài học nào hay thì cậu bình luận một lời động viên vào đây cũng được nhé. Miu sẽ rất vui và cảm thấy biết ơn đấy <3`,
+    },
+    {
+      label: "Tạo ghi chú",
+      description: `Tại F8 có một chức năng rất đặc biệt, đó là chức năng "Tạo ghi chú". Khi học sẽ có nhiều lúc cậu muốn ghi chép lại đó, tại F8 cậu sẽ không cần tốn giấy mực để làm việc này đâu. Thả tim nào <3`,
+    },
+    {
+      label: "Xem ghi chú",
+      description: `Ghi chú được note ở bài học sẽ được hiển thị ở đây. Thả tim nào <3`,
+    },
+  ];
+  const [activeStep, setActiveStep] = React.useState(0);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+      props.setOpenDirection(false)
+      setActiveStep(0)
+  };
 
   return (
     <Stack
@@ -201,7 +266,7 @@ const Header = (props: any) => {
         color={"white"}
         gap={"15px"}
       >
-        <RiArrowLeftSLine size={25} />
+        <RiArrowLeftSLine onClick={() => props.navigate("/")} size={25} />
         <img
           src={logo}
           width={30}
@@ -257,18 +322,187 @@ const Header = (props: any) => {
           onClick={props.toggleDrawerNote(true)}
         >
           <RiFile3Fill />
-          <Typography  fontSize={"13px"}>Ghi chú</Typography>
+          <Typography fontSize={"13px"}>Ghi chú</Typography>
         </Stack>
         <Stack
           direction={"row"}
           color={"white"}
           alignItems={"center"}
           gap={0.5}
+          onClick={props.toggleDrawerDirection(true)}
         >
           <RiQuestionFill />
           <Typography fontSize={"13px"}>Hướng dẫn</Typography>
         </Stack>
       </Stack>
+      <Drawer
+        open={props.openDirection}
+        anchor={"right"}
+        onClose={props.toggleDrawerDirection(false)}
+      >
+        <Box width={"1200px"} padding={"50px 100px"}>
+          <Box sx={{ position: "relative" }}>
+            <Box
+              width={"100%"}
+              sx={{ position: "absolute", top: 0, left: 0 }}
+              height={"485px"}
+              bgcolor={"rgba(0,0,0,.5)"}
+            >
+              {" "}
+            </Box>
+            {activeStep == 0 && (
+              <img
+                src={left}
+                style={{
+                  position: "absolute",
+                  objectFit: "cover",
+                  top: "25px",
+                  height: "435px",
+                  boxShadow: '0px 0px 18px white'
+                }}
+                width={"75%"}
+                alt=""
+              />
+            )}
+            {activeStep == 1 && (
+              <img
+                src={right}
+                style={{
+                  position: "absolute",
+                  objectFit: "cover",
+                  top: "25px",
+                  height: "435px",
+                  right: 0,
+                  boxShadow: '0px 0px 18px white'
+                }}
+                width={"25%"}
+                alt=""
+              />
+            )}
+            {activeStep == 2 && (
+              <img
+                src={ques}
+                style={{
+                  position: "absolute",
+                  objectFit: "cover",
+                  bottom: "51px",
+                  height: "22px",
+                  right: 299,
+                  borderRadius: "99px",
+                  boxShadow: '0px 0px 18px white'
+                }}
+                width={"57px"}
+                alt=""
+              />
+            )}
+            {activeStep == 3 && (
+              <img
+                src={note2}
+                style={{
+                  position: "absolute",
+                  objectFit: "cover",
+                  top: "330px",
+                  height: "26.4px",
+                  right: 318,
+                  borderRadius: "4px",
+                  boxShadow: '0px 0px 18px white'
+                }}
+                width={"111px"}
+                alt=""
+              />
+            )}
+            {activeStep == 4 && (
+              <img
+                src={note1}
+                style={{
+                  position: "absolute",
+                  objectFit: "cover",
+                  top: "1px",
+                  height: "27px",
+                  right: 63,
+                  boxShadow: '0px 0px 18px white'
+                }}
+                width={"50px"}
+                alt=""
+              />
+            )}
+
+            <img
+              src={direction}
+              style={{ objectFit: "cover" }}
+              width={"100%"}
+              alt=""
+            />
+          </Box>
+          <Box
+            sx={{
+              ".css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active": {
+                color: "#ff5117",
+              },
+              ".css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed": {
+                color: "#ff5117",
+              },
+            }}
+          >
+            <Stepper activeStep={activeStep} orientation="vertical">
+              {steps.map((step, index) => (
+                <Step key={step.label}>
+                  <StepLabel>{step.label}</StepLabel>
+                  <StepContent>
+                    <Typography>{step.description}</Typography>
+                    <Box sx={{ mb: 2 }}>
+                      <div>
+                        <Button
+                          variant="contained"
+                          onClick={handleNext}
+                          sx={{
+                            background:
+                              "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                            color: "white",
+
+                            height: "34px",
+                            mt: 1,
+                            mr: 1,
+                          }}
+                        >
+                          {index === steps.length - 1
+                            ? "Hoàn thành"
+                            : "Đi tiếp"}
+                        </Button>
+                        <Button
+                          disabled={index === 0}
+                          onClick={handleBack}
+                          sx={{ mt: 1, mr: 1 }}
+                        >
+                          Quay lại
+                        </Button>
+                      </div>
+                    </Box>
+                  </StepContent>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+          {activeStep === steps.length && (
+            <Paper square elevation={0} sx={{ p: 3 }}>
+              <Button
+                sx={{
+                  background:
+                    "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                  color: "white",
+
+                  height: "34px",
+                  mt: 1,
+                  mr: 1,
+                }}
+                onClick={handleReset}
+              >
+                Thoát hướng dẫn
+              </Button>
+            </Paper>
+          )}
+        </Box>
+      </Drawer>
     </Stack>
   );
 };
@@ -316,29 +550,31 @@ const Footer = (props: any) => {
 const ContentLeftVideo = (props: any) => {
   const [user, setUser] = useLocalStorage("user", {});
   const [open, setOpen] = React.useState(false);
-  const [content, setContent] = React.useState('');
+  const [content, setContent] = React.useState("");
   const toggleDrawer = (newOpen: boolean) => () => {
+    props.setPlaying(false);
     setOpen(newOpen);
   };
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
-  const handleNote = async()=>{
+  const handleNote = async () => {
     try {
       let body = {
-        courses_id:[props.courses._id],
-        sub_lesson_id:[props.data._id],
-        content:content,
-        user_id:[user.data[0]._id]
+        courses_id: [props.courses._id],
+        sub_lesson_id: [props.data._id],
+        content: content,
+        user_id: [user.data[0]._id],
+        time: props.timeVideo,
+      };
+      let data = await addNote(body);
+      if (data?.status == 0) {
+        props.setPlaying(true);
+        setOpen(false);
+        setContent("");
       }
-      let data  = await addNote(body);
-      if(data?.status==0){
-        setOpen(false)
-      }
-    } catch (error) {
-      
-    }
-  }
+    } catch (error) {}
+  };
   return (
     <Box
       width={"75%"}
@@ -394,7 +630,7 @@ const ContentLeftVideo = (props: any) => {
             >
               <RiAddFill />{" "}
               <Typography mt={"2px"} fontSize={"15px"} color={"#333"}>
-                Thêm ghi chú
+                Thêm ghi chú tại <b>{props.timeVideo}</b>
               </Typography>{" "}
             </Box>
           </Stack>
@@ -441,10 +677,29 @@ const ContentLeftVideo = (props: any) => {
               width: "100%",
             }}
           >
-            <Typography mb={"20px"}>Thêm ghi chú tại bài <b>{props.data.title}</b></Typography>
+            <Typography
+              mb={"20px"}
+              display={"flex"}
+              alignItems={"center"}
+              gap={"10px"}
+            >
+              Thêm ghi chú tại{" "}
+              <Button
+                sx={{
+                  background:
+                    "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                  color: "white",
+                  borderRadius: "99px",
+                  padding: "2px 5px",
+                }}
+              >
+                {props.timeVideo}
+              </Button>{" "}
+              bài : <b>{props.data.title}</b>
+            </Typography>
             <Editor
-            value={content}
-            onChange={handleEditorChange}
+              value={content}
+              onChange={handleEditorChange}
               apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
               init={{
                 plugins:
@@ -510,15 +765,16 @@ const ContentLeftVideo = (props: any) => {
             />
           </Box>
           <Box display={"flex"} gap={"10px"} justifyContent={"end"} mt={"30px"}>
-            <Button onClick={toggleDrawer(false)} sx={{ color: "black",}}>Hủy bỏ</Button>
+            <Button onClick={toggleDrawer(false)} sx={{ color: "black" }}>
+              Hủy bỏ
+            </Button>
             <Button
-             onClick={handleNote}
+              onClick={handleNote}
               sx={{
                 background:
                   "linear-gradient(to right bottom, #ff8f26, #ff5117)",
                 color: "white",
 
-                
                 height: "34px",
               }}
             >
@@ -858,17 +1114,19 @@ const ContentLeftExercise = (props: any) => {
           )}
 
           {value == 1 && (
-            <Box>
-              <iframe
-                title="result"
-                srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
-                style={{
-                  width: "100%",
-                  height: "85vh",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </Box>
+            <>{props.typeCode=="javascript"?<><Typography textAlign={"center"} color={"grey"} mt={"20px"} fontSize={"14px"}>Nếu có file index.html thì nội dung của nó<br></br>
+            sẽ được hiển thị tại đây.</Typography></>:<Box>
+            <iframe
+              title="result"
+              srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
+              style={{
+                width: "100%",
+                height: "85vh",
+                border: "1px solid #ccc",
+              }}
+            />
+          </Box>}</>
+            
           )}
         </Box>
         <Box width={"55%"}>

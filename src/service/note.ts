@@ -26,8 +26,11 @@ export const addNote = async (value: any) => {
 export const updateNote = async (value: any) => {
   try {
     const response = await axios.put(`/note/${value._id}`, {
-      name: value.name,
-      description: value.description,
+      courses_id: value.courses_id,
+      sub_lesson_id: value.sub_lesson_id,
+      content: value.content,
+      user_id: value.user_id,
+      time: value.time,
     });
     return response;
   } catch (error) {

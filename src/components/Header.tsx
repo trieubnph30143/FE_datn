@@ -24,16 +24,17 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import product from "../images/product.png";
 import { useAuthMutation } from "@/hooks/useAuthMutation";
-import {  useCoursesContext } from "@/App";
+import { useCoursesContext } from "@/App";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { getUserProgress } from "@/service/progress";
 import { getMyCourses } from "@/service/courses";
 import { useLocalStorage } from "@/hooks/useStorage";
-import { signInWithPopup } from 'firebase/auth'
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { signInWithPopup } from "firebase/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, googleProvider } from "@/core/firebase";
 import { calculateProgress } from "@/utils/utils";
+import { getUserPost, updatePost } from "@/service/post";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -55,9 +56,9 @@ const Header = () => {
   const context: any = useCoursesContext();
   const [, setUser] = useLocalStorage("user", {});
   const queryClient = useQueryClient();
-  const [loadingCourses,setLoadingCourses] = useState(false)
-  const [courses,setCourses] = useState([])
-  const [progressBar,setProgressBar] = useState([])
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [progressBar, setProgressBar] = useState([]);
   const handleClose = () => {
     setCheck("");
     setSelect(true);
@@ -66,9 +67,9 @@ const Header = () => {
   };
   const { register, reset, handleSubmit, onFinish }: any = useAuthMutation({
     action: check == "login" ? "SIGNIN" : "SIGNUP",
-    onSuccess: async(data) => {
+    onSuccess: async (data) => {
       if (check !== "login") {
-        if(data.token&&data.refeshToken){
+        if (data.token && data.refeshToken) {
           if (data.status == 0) {
             queryClient.invalidateQueries({
               queryKey: ["my_courses"],
@@ -81,7 +82,7 @@ const Header = () => {
                 user: [data.data[0]],
               },
             });
-            let res:any = await getUserProgress(data.data[0]._id) 
+            let res: any = await getUserProgress(data.data[0]._id);
             context.dispatch({
               type: "PROGRESS",
               payload: {
@@ -89,9 +90,8 @@ const Header = () => {
                 progress: res.data,
               },
             });
-            
           }
-        }else{
+        } else {
           if (data.status == 1) {
             alert(data.message);
           } else {
@@ -100,7 +100,6 @@ const Header = () => {
             setSelect(true);
             setRegisterType(false);
           }
-
         }
       } else {
         if (data.status == 0) {
@@ -115,7 +114,7 @@ const Header = () => {
               user: data.data,
             },
           });
-          let res:any = await getUserProgress(data.data[0]._id) 
+          let res: any = await getUserProgress(data.data[0]._id);
           context.dispatch({
             type: "PROGRESS",
             payload: {
@@ -123,17 +122,21 @@ const Header = () => {
               progress: res.data,
             },
           });
-          
         }
       }
     },
   });
   const signInWithGoogle = async () => {
     try {
-      setCheck("register")
-      const result:any = await signInWithPopup(auth, googleProvider);
-      if(Object.keys(result)[0]){
-        onFinish({email:result.user.email,user_name:result.user.displayName,uid:result.user.uid,type:"google"})
+      setCheck("register");
+      const result: any = await signInWithPopup(auth, googleProvider);
+      if (Object.keys(result)[0]) {
+        onFinish({
+          email: result.user.email,
+          user_name: result.user.displayName,
+          uid: result.user.uid,
+          type: "google",
+        });
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
@@ -149,25 +152,27 @@ const Header = () => {
       setOpen(true);
     }
   };
-  
-  const handleClickCourses = async(event: React.MouseEvent<HTMLButtonElement>) => {
-    setLoadingCourses(true)
+
+  const handleClickCourses = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setLoadingCourses(true);
     setAnchorEl(event.currentTarget);
-    try { 
-      let data:any = await getMyCourses(context.state.user[0]._id)
-      let progress:any = await getUserProgress(context.state.user[0]._id)
-      
-      if(data.status ==0&&progress.status==0){
-        let arr = calculateProgress(progress.data)
-         setProgressBar(arr)
-        setCourses(data.data)
-        setLoadingCourses(false)
+    try {
+      let data: any = await getMyCourses(context.state.user[0]._id);
+      let progress: any = await getUserProgress(context.state.user[0]._id);
+
+      if (data.status == 0 && progress.status == 0) {
+        let arr = calculateProgress(progress.data);
+        setProgressBar(arr);
+        setCourses(data.data);
+        setLoadingCourses(false);
       }
     } catch (error) {
-      setLoadingCourses(false)
+      setLoadingCourses(false);
     }
   };
- 
+
   const handleClickNotify = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElNotify(event.currentTarget);
   };
@@ -185,14 +190,46 @@ const Header = () => {
     setAnchorElProfile(null);
   };
 
-  const handleLogout = ()=>{
-    setUser({})
+  const handleLogout = () => {
+    setUser({});
     context.dispatch({
-      type:"LOGOUT"
-    })
+      type: "LOGOUT",
+    });
     setAnchorElProfile(null);
-  }
- 
+  };
+
+  const { data: data_post_user } = useQuery(
+    ["post_user", context.state.user[0]],
+    {
+      queryFn: () => {
+        return getUserPost(context.state.user[0]._id);
+      },
+
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const handleNotify = async (data: any) => {
+    try {
+      if (data.notify) {
+        navigate(`/detail_blog/${data._id}`);
+        handleCloseNotify();
+      } else {
+        let res = await updatePost({
+          ...data,
+          author: [data.author[0]._id],
+          notify: true,
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["post_user"],
+        });
+        navigate(`/detail_blog/${data._id}`);
+        handleCloseNotify();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -287,35 +324,70 @@ const Header = () => {
                     maxHeight={"400px"}
                     sx={{ overflowY: "scroll" }}
                   >
-                    {loadingCourses&&<Box height={40} width={"100%"} display={"flex"} justifyContent={"center"} alignItems={"center"}>
-                      <CircularProgress  size={"20px"}  />
-                      </Box>}
-                    {!loadingCourses&&<> {courses==undefined||courses.length==0?<>
-                    <Typography textAlign={"center"}>Not found data</Typography>
-                    </>:<>
-                    {courses&&courses.map((item:any,index) => {
-                      return (
-                        <Stack direction={"row"} gap={"20px"}>
-                          <Box>
-                            <img
-                              src={item.image.url}
-                              width={120}
-                              height={67}
-                              style={{ borderRadius: "6px" }}
-                              alt=""
-                            />
-                          </Box>
-                          <Box>
-                            <Typography fontSize={"14px"} fontWeight={"bold"}>{item.title}</Typography>
-                            
-                            <ProgressBar percentage={progressBar[index]} />
-                          </Box>
-                        </Stack>
-                      );
-                    })}
-                    </>}</>}
-                   
-                    
+                    {loadingCourses && (
+                      <Box
+                        height={40}
+                        width={"100%"}
+                        display={"flex"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                      >
+                        <CircularProgress size={"20px"} />
+                      </Box>
+                    )}
+                    {!loadingCourses && (
+                      <>
+                        {" "}
+                        {courses == undefined || courses.length == 0 ? (
+                          <>
+                            <Typography textAlign={"center"}>
+                              Not found data
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            {courses &&
+                              courses.map((item: any, index) => {
+                                return (
+                                  <Stack
+                                    direction={"row"}
+                                    p={'5px'}
+                                    borderRadius={"5px"}
+                                    sx={{
+                                      "&:hover": {
+                                        backgroundColor: "#dddddd",
+                                      },
+                                    }}
+                                    gap={"20px"}
+                                  >
+                                    <Box>
+                                      <img
+                                        src={item.image.url}
+                                        width={120}
+                                        height={67}
+                                        style={{ borderRadius: "6px" }}
+                                        alt=""
+                                      />
+                                    </Box>
+                                    <Box>
+                                      <Typography
+                                        fontSize={"14px"}
+                                        fontWeight={"bold"}
+                                      >
+                                        {item.title}
+                                      </Typography>
+
+                                      <ProgressBar
+                                        percentage={progressBar[index]}
+                                      />
+                                    </Box>
+                                  </Stack>
+                                );
+                              })}
+                          </>
+                        )}
+                      </>
+                    )}
                   </Stack>
                 </Box>
               </Popover>
@@ -325,7 +397,15 @@ const Header = () => {
                 aria-describedby={idNotify}
                 onClick={handleClickNotify}
               >
-                <Badge badgeContent={4} color="primary">
+                <Badge
+                  badgeContent={
+                    data_post_user?.status == 0 &&
+                    data_post_user.data.filter(
+                      (item: any) => item.active && !item.notify
+                    ).length
+                  }
+                  color="primary"
+                >
                   <NotificationsIcon />
                 </Badge>
               </Typography>
@@ -343,7 +423,7 @@ const Header = () => {
                   horizontal: "right",
                 }}
               >
-                <Box p={"15px"} width={"380px"}>
+                <Box p={"15px"} width={"450px"}>
                   <Stack
                     direction={"row"}
                     justifyContent={"space-between"}
@@ -363,25 +443,51 @@ const Header = () => {
                     maxHeight={"400px"}
                     sx={{ overflowY: "scroll" }}
                   >
-                    {[1, 2, 3, 4, 5, 6].map(() => {
-                      return (
-                        <Stack direction={"row"} gap={"20px"}>
-                          <Box>
-                            <img
-                              src={logo}
-                              width={40}
-                              height={40}
-                              style={{ borderRadius: "50%" }}
-                              alt=""
-                            />
-                          </Box>
-                          <Box>
-                            <Typography>Kiến Thức Nhập Môn IT</Typography>
-                            <ProgressBar percentage={75} />
-                          </Box>
-                        </Stack>
-                      );
-                    })}
+                    {data_post_user?.status == 0 &&
+                      data_post_user.data.length &&
+                      data_post_user.data.map((item: any) => {
+                        if (item.active) {
+                          return (
+                            <Stack
+                              direction={"row"}
+                              onClick={() => handleNotify(item)}
+                              sx={{
+                                "&:hover": {
+                                  backgroundColor: "#dddddd",
+                                },
+                              }}
+                              bgcolor={item.notify ? undefined : "#dddddd"}
+                              p={"5px"}
+                              borderRadius={"5px"}
+                              gap={"15px"}
+                            >
+                              <Box>
+                                <img
+                                  src={item.image.url}
+                                  width={80}
+                                  height={60}
+                                  style={{
+                                    borderRadius: "5px",
+                                    objectFit: "cover",
+                                  }}
+                                  alt=""
+                                />
+                              </Box>
+                              <Box p={"5px"}>
+                                <Badge
+                                  color="secondary"
+                                  invisible={item.notify}
+                                  variant="dot"
+                                >
+                                  <Typography sx={{ width: "300px" }}>
+                                    {item.title}
+                                  </Typography>
+                                </Badge>
+                              </Box>
+                            </Stack>
+                          );
+                        }
+                      })}
                   </Stack>
                 </Box>
               </Popover>
@@ -390,7 +496,11 @@ const Header = () => {
             <Box>
               <Typography aria-describedby={id} onClick={handleClickProfile}>
                 <img
-                  src={context.state.user[0].image.url?context.state.user[0].image.url: profile}
+                  src={
+                    context.state.user[0].image.url
+                      ? context.state.user[0].image.url
+                      : profile
+                  }
                   width={40}
                   height={40}
                   style={{ borderRadius: "50%" }}
@@ -415,7 +525,11 @@ const Header = () => {
                   <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
                     <Box>
                       <img
-                        src={context.state.user[0].image.url?context.state.user[0].image.url: profile}
+                        src={
+                          context.state.user[0].image.url
+                            ? context.state.user[0].image.url
+                            : profile
+                        }
                         width={40}
                         height={40}
                         style={{ borderRadius: "50%" }}
@@ -472,7 +586,11 @@ const Header = () => {
                       </Typography>
                     </Box>
 
-                    <Typography onClick={handleLogout} fontSize={"14px"} color={"#333"}>
+                    <Typography
+                      onClick={handleLogout}
+                      fontSize={"14px"}
+                      color={"#333"}
+                    >
                       Đăng xuất{" "}
                     </Typography>
                   </Stack>
@@ -720,7 +838,6 @@ const Header = () => {
                       </Box>
                       <Box>
                         <Button
-                         
                           type="submit"
                           sx={{
                             width: "100%",
@@ -1023,9 +1140,7 @@ const ProgressBar = ({ percentage }: any) => {
           transition: "width 0.5s ease",
           width: `${percentage}%`,
         }}
-      >
-       
-      </div>
+      ></div>
     </div>
   );
 };

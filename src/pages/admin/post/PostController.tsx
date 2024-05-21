@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 import { getCategories } from "@/service/categories";
 import { useCategoriesMutation } from "@/hooks/useCategoriesMutation";
@@ -15,6 +15,7 @@ const PostController = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
+  
   const [openModal, setOpenModal] = React.useState(false);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>,data:any) => {
     setAnchorEl(event.currentTarget);
@@ -59,6 +60,7 @@ const PostController = () => {
   const { onActive } = usePostMutation({
     action: "ACTIVE",
     onSuccess: () => {
+     
       setLoading(false)
     },
   });

@@ -9,6 +9,7 @@ import RoleController from "@/pages/admin/role/RoleController";
 import RolePermissionController from "@/pages/admin/role_permission/RolePermissionController";
 import SubLessonController from "@/pages/admin/sublesson/SubLessonController";
 import UserController from "@/pages/admin/user/UserController";
+import CaptureComponent from "@/pages/client/Test";
 import DetailBlogController from "@/pages/client/detail_blog/DetailBlogController";
 import DetailCourseController from "@/pages/client/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/client/featured_article/FeaturedArticleController";
@@ -39,6 +40,7 @@ const Router = () => {
           <Route path='my_article' element={<MyArticleController />} />
           <Route path='setting' element={<SettingProfileController />} />
         <Route path='/detail_blog/:id' element={<DetailBlogController />} />
+        <Route path='/test' element={<CaptureComponent />} />
         </Route>
         <Route path='/learning/:id' element={<LearningController />} />
         <Route path='/dashboard' element={<LayoutAdmin />}>
