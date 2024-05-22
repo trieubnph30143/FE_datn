@@ -1,16 +1,19 @@
 import { useState } from "react";
 import WiteBlogPostView from "./WiteBlogPostView";
 import { usePostMutation } from "@/hooks/usePostMutation";
+import Loading from "@/components/Loading";
+import { toast } from "react-toastify";
 
 const WiteBlogPostController = () => {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
 
-  console.log(content);
+  
 
   const handleImageChange = (e: any) => {
     let file = e.target.files[0];
@@ -33,13 +36,23 @@ const WiteBlogPostController = () => {
     onSuccess: () => {
       reset();
       setTimeout(() => {
+        toast.success("Tạo bài viết thành công.")
+        setLoading(false)
         setFile(null);
         setImageUrl("");
       }, 1000);
     },
   });
+  
+  const onSubmit = ()=>{
+    if(Object.keys(errors)[0]&&content!=""&&file!=null){
+      setLoading(true)
+
+    }
+  }
   return (
     <>
+      {loading&&<Loading/>}
       <WiteBlogPostView
         content={content}
         imageUrl={imageUrl}
@@ -48,6 +61,9 @@ const WiteBlogPostController = () => {
         register={register}
         handleSubmit={handleSubmit}
         onFinish={onFinish}
+        onSubmit={onSubmit}
+        errors={errors}
+        file={file}
       />
     </>
   );

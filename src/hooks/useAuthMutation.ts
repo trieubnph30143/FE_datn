@@ -9,6 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Signin, Signup, updateUSer } from "@/service/auth";
 import { useLocalStorage } from "./useStorage";
+import { io } from "socket.io-client";
 type useAuthMutationProps = {
   action: "SIGNIN" | "SIGNUP" | "UPDATE" | "DELETE";
   defaultValues?: any;
@@ -37,6 +38,7 @@ export const useAuthMutation = ({
   } = useForm({
     resolver: yupResolver(action == "SIGNIN" ? schemaSignin : schemaSignup),
   });
+  const socket = io("ws://localhost:4000");
   const { mutate, ...rest } = useMutation({
     mutationFn: async (auth: any) => {
       switch (action) {
@@ -56,6 +58,8 @@ export const useAuthMutation = ({
         queryKey: ["user"],
       });
       if (action == "UPDATE") {
+       
+        socket.emit("editPermission", { id: data._id });
       } else {
         if (action == "SIGNIN") {
           if (Object.keys(data)[0]) {

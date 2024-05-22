@@ -97,6 +97,7 @@ type Props = {
   toggleDrawerDirection: any;
   openDirection: any;
   setOpenDirection:any
+ 
 };
 const LearningView = ({
   courses,
@@ -126,7 +127,8 @@ const LearningView = ({
   navigate,
   toggleDrawerDirection,
   openDirection,
-  setOpenDirection
+  setOpenDirection,
+  
 }: Props) => {
   return (
     <Box>
@@ -170,6 +172,7 @@ const LearningView = ({
                 data={dataLesson}
                 timeVideo={timeVideo}
                 setPlaying={setPlaying}
+               
               />
             )}
             {dataLesson && dataLesson.type == "blog" && (
@@ -531,6 +534,8 @@ const Footer = (props: any) => {
           Bài trước
         </Button>
         <Button
+          className={props.done&&"animation"}
+          disabled={!props.done}
           onClick={props.handleNextLesson}
           sx={{
             color: "#ff5117",
@@ -555,6 +560,7 @@ const ContentLeftVideo = (props: any) => {
     props.setPlaying(false);
     setOpen(newOpen);
   };
+  console.log(props.handleSeek);
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };

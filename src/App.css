@@ -151,3 +151,29 @@ footer {
   font-size: 15px;
   /* line-height: 30px; */
 }
+.animation{
+  transform: translateY(0px);
+  animation: buttom .8s ease-in;
+}
+@keyframes buttom {
+  0%{
+    transform: translateY(-30px);
+  }
+  20%{
+    
+    transform: translateY(-30px) rotate(15deg);
+  }
+  40%{
+    transform:translateY(-30px) rotate(-15deg);
+  }
+  60%{
+    
+    transform: translateY(-30px) rotate(15deg);
+  }
+  80%{
+    transform:translateY(-30px) rotate(-15deg);
+  }
+  100%{
+    transform: translateY(0px);
+  }
+}

@@ -13,6 +13,9 @@ type Props = {
   register: any;
   handleSubmit: any;
   onFinish: any;
+  onSubmit:any
+  errors:any
+  file:any
 };
 const WiteBlogPostView = ({
   content,
@@ -22,6 +25,9 @@ const WiteBlogPostView = ({
   register,
   handleSubmit,
   onFinish,
+  onSubmit,
+  errors,
+  file
 }: Props) => {
   return (
     <Box>
@@ -44,7 +50,7 @@ const WiteBlogPostView = ({
           <Stack width={"28%"} direction={"column"} gap={"15px"}>
             <Box>
               <Typography fontSize={"12px"} color={"#333"}>
-                <TextField fullWidth {...register("title")} label="Tiêu đề" id="fullWidth" />
+                <TextField fullWidth {...register("title")} error={errors.title}  label="Tiêu đề" id="fullWidth" />
                 <b>Lưu ý</b>: Viết đúng với nội dung
               </Typography>
             </Box>
@@ -55,6 +61,7 @@ const WiteBlogPostView = ({
                 fullWidth
                 label="Mô tả khi tin được hiển thị"
                 id="fullWidth"
+                error={errors.description}
               />
 
               <Typography fontSize={"12px"} color={"#333"}>
@@ -69,6 +76,7 @@ const WiteBlogPostView = ({
                 fullWidth
                 label="Thêm tối đa 5 thẻ để độc giả biết bài viết của bạn nói về điều gì."
                 id="fullWidth"
+                error={errors.readers}
               />
               <Typography fontSize={"12px"} color={"#333"}>
                 <b>Ví dụ</b>: Front-end,ReactJs,NodeJs
@@ -242,7 +250,9 @@ const WiteBlogPostView = ({
         </Box>
         <Box mt={"20px"}>
           <Button
+          disabled={content==""||file==null?true:false}
             type="submit"
+            onClick={onSubmit}
             sx={{
               background: "linear-gradient(to right bottom, #ff8f26, #ff5117)",
               color: "white",

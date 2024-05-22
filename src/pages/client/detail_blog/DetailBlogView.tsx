@@ -56,7 +56,7 @@ const DetailBlogView = ({ post }: Props) => {
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
-                <Typography variant="h6" fontWeight={"bold"}>
+                <Typography variant="h5" fontWeight={"bold"}>
                   {post && post.title}
                 </Typography>
                 <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
@@ -70,9 +70,7 @@ const DetailBlogView = ({ post }: Props) => {
               </Stack>
               <Stack direction={"row"}>
                 <Box width={"60%"}>
-                  <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
-                    {post && post.description}
-                  </Typography>
+                 
                   <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
                     <img
                       width={26}

@@ -68,7 +68,10 @@ const LearningController = () => {
   };
   const player: any = useRef(null);
   const [user, setUser] = useLocalStorage("user", {});
-
+  const [currentTime, setCurrentTime] = useState(0);
+  const [previousTime, setPreviousTime] = useState(0);
+  const [seeking, setSeeking] = useState(false);
+  const seekLimit = 10;
   const [loadingAll, setLoadingAll] = useState({
     courses: false,
     progress: false,
@@ -243,17 +246,19 @@ const LearningController = () => {
   }, [player.current]);
 
   const handleProgress = (state: any) => {
+   
     if (playedRef.current !== state.played) {
       const minutes = Math.floor(state.playedSeconds / 60);
-      const seconds = Math.ceil(state.playedSeconds % 60);
-      setTimeVideo(
-        minutes < 10
-          ? `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
-          : `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
-      );
+        const seconds = Math.ceil(state.playedSeconds % 60);
+        setTimeVideo(
+          minutes < 10
+            ? `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+            : `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+        );
+      
     }
   };
-
+  
   const handleEnded = () => {
     setDone(true);
     setPlaying(false);
@@ -554,6 +559,7 @@ const LearningController = () => {
             toggleDrawerDirection={toggleDrawerDirection}
             openDirection={openDirection}
             setOpenDirection={setOpenDirection}
+            
           />
           <CommentController lesson_id={activeLesson} courses_id={id} />
           <NoteController
@@ -640,50 +646,61 @@ const LearningController = () => {
                       },
                   }}
                 >
-                 { progress[0].status_certificate? <Typography sx={{ fontFamily: "'Great Vibes', cursive",
-                      fontSize: "3.5rem",textAlign: "center"}}>{progress[0].user_name}</Typography>:
-                  <TextField
-                    value={
-                     
-                       
-                       nameCertificate
-                    }
-                    onChange={(e) => {
-                      const inputValue = e.target.value;
-                      const words = inputValue.split(" ");
+                  {progress[0].status_certificate ? (
+                    <Typography
+                      sx={{
+                        fontFamily: "'Great Vibes', cursive",
+                        fontSize: "3.5rem",
+                        textAlign: "center",
+                      }}
+                    >
+                      {progress[0].user_name}
+                    </Typography>
+                  ) : (
+                    <TextField
+                      value={nameCertificate}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        const words = inputValue.split(" ");
 
-                      for (let i = 0; i < words.length; i++) {
-                        if (words[i].length > 0) {
-                          words[i] =
-                            words[i][0].toUpperCase() +
-                            words[i].substring(1).toLowerCase();
+                        for (let i = 0; i < words.length; i++) {
+                          if (words[i].length > 0) {
+                            words[i] =
+                              words[i][0].toUpperCase() +
+                              words[i].substring(1).toLowerCase();
+                          }
                         }
-                      }
-                      setNameCertificate(words.join(" "));
-                    }}
-                    placeholder="Nhập họ và tên"
-                    variant="standard"
-                    autoComplete="off"
-                    sx={{
-                      height: "100%",
-                      fontSize: "30px",
-                      textAlign: "center",
-                    }}
-                  />}
+                        setNameCertificate(words.join(" "));
+                      }}
+                      placeholder="Nhập họ và tên"
+                      variant="standard"
+                      autoComplete="off"
+                      sx={{
+                        height: "100%",
+                        fontSize: "30px",
+                        textAlign: "center",
+                      }}
+                    />
+                  )}
                 </Box>
                 <img src={certificate} width={"100%"} alt="" />
               </Box>
               {progress[0].status_certificate ? (
-               <Button  sx={{
-                background:
-                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
-                color: "white",
+                <Button
+                  sx={{
+                    background:
+                      "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                    color: "white",
 
-                height: "34px",
-                mt: 1,
-                mr: 1,
-                float:"right"
-              }} onClick={handleCapture}><RiDownloadCloud2Line size={"20px"} /> Tải xuống</Button>
+                    height: "34px",
+                    mt: 1,
+                    mr: 1,
+                    float: "right",
+                  }}
+                  onClick={handleCapture}
+                >
+                  <RiDownloadCloud2Line size={"20px"} /> Tải xuống
+                </Button>
               ) : (
                 <Box display={"flex"} flexDirection={"column"} gap={"15px"}>
                   <FormControlLabel
@@ -712,7 +729,6 @@ const LearningController = () => {
                   </Button>
                 </Box>
               )}
-               
             </Box>
           </Modal>
         </>
