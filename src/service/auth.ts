@@ -1,9 +1,16 @@
+import { toast } from "react-toastify";
 import axios from "../core/api";
+
 export const Signup = async (email: typeAuth) => {
   try {
     delete email.password;
     const response = await axios.post(`/auth/signup`, email);
-    return response;
+    if(response.status==0){
+      return response;
+    }else{
+      toast.error("Đăng ký thất bại")
+      return {};
+    }
   } catch (error) {
     console.log(`signup`, error);
   }
@@ -16,7 +23,7 @@ export const Signin = async (email: typeAuth) => {
       password: email.password,
     });
     if (response.status === 1) {
-      alert(response.message);
+      toast.error(response.message)
       return {};
     }
     return response;

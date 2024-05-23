@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import axios from "../core/api";
 export const getPost = async () => {
   try {
@@ -58,10 +59,23 @@ export const updatePost = async (value: any) => {
 };
 export const updateActivePost = async (value: any) => {
   try {
-    const response = await axios.put(`/post/active/${value._id}`, {
-    });
-    return response.data;
-  } catch (error) {
+    let user = localStorage.getItem('user')
+    if(user){
+      const response:any = await axios.put(`/post/active/${value._id}`,{}, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(user).token}`,
+        }});
+      if(response.status==1){
+        toast.error(response.message)
+        return undefined
+      }
+      return response.data;
+      
+    }
+  } catch (error:any) {
+    if(error.response.status==403){
+      toast.error("Bạn không có quyền")
+    }
     console.log(`update_Post`, error);
   }
 };

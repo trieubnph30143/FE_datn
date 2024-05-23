@@ -1,5 +1,7 @@
+import PrivateRouter from "@/components/PrivateRouter";
 import LayoutAdmin from "@/components/layouts/LayoutAdmin";
 import LayoutWebsite from "@/components/layouts/LayoutWebsite";
+import { useLocalStorage } from "@/hooks/useStorage";
 import CategoriesController from "@/pages/admin/categories/CategoriesController";
 import CoursesController from "@/pages/admin/courses/CoursesController";
 import LessonController from "@/pages/admin/lesson/LessonController";
@@ -9,7 +11,7 @@ import RoleController from "@/pages/admin/role/RoleController";
 import RolePermissionController from "@/pages/admin/role_permission/RolePermissionController";
 import SubLessonController from "@/pages/admin/sublesson/SubLessonController";
 import UserController from "@/pages/admin/user/UserController";
-import CaptureComponent from "@/pages/client/Test";
+import Cv from "@/pages/client/Cv";
 import DetailBlogController from "@/pages/client/detail_blog/DetailBlogController";
 import DetailCourseController from "@/pages/client/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/client/featured_article/FeaturedArticleController";
@@ -24,6 +26,8 @@ import WiteBlogPostController from "@/pages/client/wite_blog_post/WiteBlogPostCo
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 const Router = () => {
+  const [user, setUser] = useLocalStorage("user", {});
+  console.log(user);
   return (
     <BrowserRouter>
       <Routes>
@@ -36,14 +40,15 @@ const Router = () => {
           />
           <Route path='article' element={<FeaturedArticleController />} />
           <Route path='posts' element={<WiteBlogPostController />} />
-          <Route path='profile' element={<ProfileController />} />
-          <Route path='my_article' element={<MyArticleController />} />
-          <Route path='setting' element={<SettingProfileController />} />
+          <Route path='profile' element={<PrivateRouter user={user.data}><ProfileController /></PrivateRouter>} />
+          <Route path='my_article' element={<PrivateRouter user={user.data}><MyArticleController /></PrivateRouter>} />
+          <Route path='setting' element={<PrivateRouter user={user.data}><SettingProfileController /></PrivateRouter>} />
         <Route path='/detail_blog/:id' element={<DetailBlogController />} />
-        <Route path='/test' element={<CaptureComponent />} />
+        <Route path='/cv' element={<Cv />} />
+        
         </Route>
-        <Route path='/learning/:id' element={<LearningController />} />
-        <Route path='/dashboard' element={<LayoutAdmin />}>
+        <Route path='/learning/:id' element={<PrivateRouter user={user.data}><LearningController /></PrivateRouter>} />
+        <Route path='/dashboard' element={<PrivateRouter user={user.data}><LayoutAdmin /></PrivateRouter>}>
           <Route path='courses' element={<CoursesController />} />
           <Route path='lesson' element={<LessonController />} />
           <Route path='sublesson' element={<SubLessonController />} />

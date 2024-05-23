@@ -20,6 +20,7 @@ import { useEffect } from "react";
           '.token.punctuation': {
             color: '#999',
           },
+          lineHeight:2
         }}
         dangerouslySetInnerHTML={{ __html: content }}
       />

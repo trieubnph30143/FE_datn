@@ -65,7 +65,7 @@ const Header = () => {
     setRegisterType(false);
     setOpen(false);
   };
-  const { register, reset, handleSubmit, onFinish }: any = useAuthMutation({
+  const { register, reset, handleSubmit, onFinish,errors }: any = useAuthMutation({
     action: check == "login" ? "SIGNIN" : "SIGNUP",
     onSuccess: async (data) => {
       if (check !== "login") {
@@ -230,6 +230,7 @@ const Header = () => {
       console.log(error);
     }
   };
+  
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -794,9 +795,11 @@ const Header = () => {
                         </Stack>
                         <TextField
                           {...register("email")}
+                          error={errors.email}
                           sx={{
                             width: "100%",
                             height: "42px",
+
                             mt: "5px",
                             borderRadius: "30px",
                             ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
@@ -815,6 +818,7 @@ const Header = () => {
                         />
                         <TextField
                           {...register("password")}
+                          error={errors.password}
                           sx={{
                             width: "100%",
                             height: "42px",
@@ -1006,6 +1010,7 @@ const Header = () => {
                           Tên của bạn?
                         </Typography>
                         <TextField
+                        error={errors.user_name}
                           sx={{
                             width: "100%",
                             height: "42px",
@@ -1045,6 +1050,7 @@ const Header = () => {
 
                         <TextField
                           {...register("email")}
+                          error={errors.email}
                           sx={{
                             width: "100%",
                             height: "42px",

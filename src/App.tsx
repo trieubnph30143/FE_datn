@@ -10,6 +10,7 @@ import { Authentication, RefeshToken } from "./service/auth";
 import { getUserProgress } from "./service/progress";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { io } from "socket.io-client";
 const queryClient = new QueryClient();
 export const coursesContext = createContext({});
 
@@ -41,18 +42,16 @@ const App = () => {
     user: {},
     progress: undefined,
   });
-  console.log(state);
   const [user, setUser] = useLocalStorage("user", {});
-
   useEffect(() => {
-    // const socket = io("ws://localhost:8000");
+    const socket = io("ws://localhost:4000");
     let intervalId: any;
-    // socket.on("confirmEditPermission", (data) => {
-    //   if (data.email === user.data[0].email) {
-    //     handleRefreshToken();
+    socket.on("confirmEditPermission", (data) => {
+      if (data.email === user.data[0].email) {
+        handleRefreshToken();
 
-    //   }
-    // });
+      }
+    });
 
     const handleProtectedRequest = async () => {
       try {
