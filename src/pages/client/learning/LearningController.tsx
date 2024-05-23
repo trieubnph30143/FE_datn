@@ -37,6 +37,7 @@ const style = {
   boxShadow: 24,
   padding: "50px",
   borderRadius: "10px",
+  height: "90vh",
 };
 const LearningController = () => {
   const queryClient = useQueryClient();
@@ -565,11 +566,10 @@ const LearningController = () => {
           <Modal
             open={openCertificate}
             onClose={handleCloseCertificate}
-            aria-labelledby="child-modal-title"
-            aria-describedby="child-modal-description"
-          >
-            <Box sx={{ ...style }}>
-              <Typography variant="h6" fontWeight={"bold"}>
+            aria-labelledby='child-modal-title'
+            aria-describedby='child-modal-description'>
+            <Box sx={{ ...style, overflowY: "scroll", overflowX: "hidden" }}>
+              <Typography variant='h6' fontWeight={"bold"}>
                 Nhận chứng chỉ 🎉
               </Typography>
               <Typography my={"10px"}>
@@ -583,34 +583,30 @@ const LearningController = () => {
                   pointerEvents: progress[0].status_certificate
                     ? "none"
                     : "auto",
-                }}
-              >
+                }}>
                 <Box
                   sx={{
                     position: "absolute",
                     top: 390,
                     left: 0,
                     width: "100%",
-                  }}
-                >
+                  }}>
                   <Typography
                     sx={{
                       textAlign: "center",
                       fontWeight: "bold",
                       fontSize: "20px",
-                    }}
-                  >
+                    }}>
                     {courses.title}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
                     position: "absolute",
-                    top: 484,
+                    top: 480,
                     left: 208,
                     width: "100%",
-                  }}
-                >
+                  }}>
                   <Typography>{getCurrentDate()}</Typography>
                 </Box>
                 <Box
@@ -638,60 +634,68 @@ const LearningController = () => {
                       {
                         border: "none",
                       },
-                  }}
-                >
-                 { progress[0].status_certificate? <Typography sx={{ fontFamily: "'Great Vibes', cursive",
-                      fontSize: "3.5rem",textAlign: "center"}}>{progress[0].user_name}</Typography>:
-                  <TextField
-                    value={
-                     
-                       
-                       nameCertificate
-                    }
-                    onChange={(e) => {
-                      const inputValue = e.target.value;
-                      const words = inputValue.split(" ");
+                  }}>
+                  {progress[0].status_certificate ? (
+                    <Typography
+                      sx={{
+                        fontFamily: "'Great Vibes', cursive",
+                        fontSize: "3.5rem",
+                        textAlign: "center",
+                      }}>
+                      {progress[0].user_name}
+                    </Typography>
+                  ) : (
+                    <TextField
+                      value={nameCertificate}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        const words = inputValue.split(" ");
 
-                      for (let i = 0; i < words.length; i++) {
-                        if (words[i].length > 0) {
-                          words[i] =
-                            words[i][0].toUpperCase() +
-                            words[i].substring(1).toLowerCase();
+                        for (let i = 0; i < words.length; i++) {
+                          if (words[i].length > 0) {
+                            words[i] =
+                              words[i][0].toUpperCase() +
+                              words[i].substring(1).toLowerCase();
+                          }
                         }
-                      }
-                      setNameCertificate(words.join(" "));
-                    }}
-                    placeholder="Nhập họ và tên"
-                    variant="standard"
-                    autoComplete="off"
-                    sx={{
-                      height: "100%",
-                      fontSize: "30px",
-                      textAlign: "center",
-                    }}
-                  />}
+                        setNameCertificate(words.join(" "));
+                      }}
+                      placeholder='Nhập họ và tên'
+                      variant='standard'
+                      autoComplete='off'
+                      sx={{
+                        height: "100%",
+                        fontSize: "30px",
+                        textAlign: "center",
+                      }}
+                    />
+                  )}
                 </Box>
-                <img src={certificate} width={"100%"} alt="" />
+                <img src={certificate} width={"100%"} alt='' />
               </Box>
               {progress[0].status_certificate ? (
-               <Button  sx={{
-                background:
-                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
-                color: "white",
+                <Button
+                  sx={{
+                    background:
+                      "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                    color: "white",
 
-                height: "34px",
-                mt: 1,
-                mr: 1,
-                float:"right"
-              }} onClick={handleCapture}><RiDownloadCloud2Line size={"20px"} /> Tải xuống</Button>
+                    height: "34px",
+                    mt: 1,
+                    mr: 1,
+                    float: "right",
+                  }}
+                  onClick={handleCapture}>
+                  <RiDownloadCloud2Line size={"20px"} /> Tải xuống
+                </Button>
               ) : (
                 <Box display={"flex"} flexDirection={"column"} gap={"15px"}>
                   <FormControlLabel
                     value={checkCertificate}
                     onChange={(e: any) => setCheckCertificate(e.target.checked)}
                     control={<Checkbox />}
-                    label="Bạn không thể chỉnh sửa lại chứng chỉ khi đã ấn xác nhận"
-                    labelPlacement="end"
+                    label='Bạn không thể chỉnh sửa lại chứng chỉ khi đã ấn xác nhận'
+                    labelPlacement='end'
                   />
                   <Button
                     onClick={handleCertificate}
@@ -706,13 +710,11 @@ const LearningController = () => {
                       height: "34px",
                       mt: 1,
                       mr: 1,
-                    }}
-                  >
+                    }}>
                     Xác nhận
                   </Button>
                 </Box>
               )}
-               
             </Box>
           </Modal>
         </>

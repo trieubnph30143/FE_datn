@@ -35,9 +35,9 @@ const Product = ({
             <img
               src={item.image.url}
               width={"100%"}
-              height={"228px"}
+              height={"167px"}
               style={{ borderRadius: "18px", objectFit: "cover" }}
-              alt=""
+              alt=''
             />
             <Box
               sx={{
@@ -59,8 +59,7 @@ const Product = ({
                 "&:hover button": {
                   transform: "translateY(0px)",
                 },
-              }}
-            >
+              }}>
               <Button
                 onClick={() => handleRouter(item._id, String(type))}
                 sx={{
@@ -75,13 +74,14 @@ const Product = ({
                     color: "black", // Thay đổi màu chữ khi hover
                     backgroundColor: "white",
                   },
-                }}
-              >
-                { type == "free" ? (
+                }}>
+                {type == "free" ? (
                   <>{check ? "Tiếp tục học" : "Xem khóa học"}</>
                 ) : (
                   <>
-                    {type === "takecharge" && <>{check ? "Tiếp tục học" : "Xem khóa học"}</>}
+                    {type === "takecharge" && (
+                      <>{check ? "Tiếp tục học" : "Xem khóa học"}</>
+                    )}
                     {type === "video" && "Xem video"}
                     {type === "blog" && "Xem Bài viết"}
                   </>
@@ -90,7 +90,7 @@ const Product = ({
             </Box>
           </Box>
           <Box mt={"10px"}>
-            <Typography variant="h6" fontWeight={"bold"} fontSize={"16px"}>
+            <Typography variant='h6' fontWeight={"bold"} fontSize={"16px"}>
               {item.title}
             </Typography>
             <Box>
@@ -104,18 +104,21 @@ const Product = ({
               )}
               {type === "takecharge" && (
                 <Stack direction={"row"} gap={1.5}>
-                 
-                  <Typography sx={{ color: "red" }}>{convertToVND(item.price)}</Typography>
+                  <Typography sx={{ color: "red" }}>
+                    {convertToVND(item.price)}
+                  </Typography>
                 </Stack>
               )}
               {type === "blog" && (
                 <Stack direction={"row"} alignItems={"center"} gap={1.5}>
                   <img
-                    src={item.author[0].image.url?item.author[0].image.url:user}
+                    src={
+                      item.author[0].image.url ? item.author[0].image.url : user
+                    }
                     width={30}
                     height={30}
                     style={{ borderRadius: "50%" }}
-                    alt=""
+                    alt=''
                   />
                   <Typography fontWeight={"600"} fontSize={"14px"}>
                     {item.author[0].user_name}
@@ -157,7 +160,7 @@ const Product = ({
               src={product}
               width={"100%"}
               style={{ borderRadius: "18px" }}
-              alt=""
+              alt=''
             />
             <Box
               sx={{
@@ -179,8 +182,7 @@ const Product = ({
                 "&:hover button": {
                   transform: "translateY(0px)",
                 },
-              }}
-            >
+              }}>
               <Button
                 sx={{
                   background: "white",
@@ -194,8 +196,7 @@ const Product = ({
                     color: "black", // Thay đổi màu chữ khi hover
                     backgroundColor: "white",
                   },
-                }}
-              >
+                }}>
                 {type === "video" && "Xem video"}
                 {type !== "video" && type !== "blog" && "Xem khóa học"}
                 {type === "blog" && "Xem Bài viết"}
@@ -203,7 +204,7 @@ const Product = ({
             </Box>
           </Box>
           <Box mt={"10px"}>
-            <Typography variant="h6" fontWeight={"bold"} fontSize={"16px"}>
+            <Typography variant='h6' fontWeight={"bold"} fontSize={"16px"}>
               HTML CSS Pro
             </Typography>
             <Box>
@@ -230,7 +231,7 @@ const Product = ({
                     width={30}
                     height={30}
                     style={{ borderRadius: "50%" }}
-                    alt=""
+                    alt=''
                   />
                   <Typography fontWeight={"600"} fontSize={"14px"}>
                     Bùi Văn Toản
