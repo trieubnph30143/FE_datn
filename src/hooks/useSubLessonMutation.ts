@@ -4,6 +4,7 @@ import {
   deleteSubLesson,
   updateSubLesson,
 } from "@/service/sub_lesson";
+import { deleteVideo, uploadVideo } from "@/service/upload";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "react-query";
@@ -20,6 +21,7 @@ type useSubLessonMutationProps = {
   exercise?: any;
   typeOld?: any;
   typeOldLesson?: any;
+  fileVideo?:any
 };
 
 export const useSubLessonMutation = ({
@@ -34,6 +36,7 @@ export const useSubLessonMutation = ({
   exerciseHtml,
   typeOld,
   typeOldLesson,
+  fileVideo
 }: useSubLessonMutationProps) => {
   const queryClient = useQueryClient();
 
@@ -67,14 +70,22 @@ export const useSubLessonMutation = ({
   const onFinish = async (values: any) => {
     if (action == "CREATE") {
       if (type == 0) {
-        mutate({
-          description: values.description,
-          duration: values.duration,
-          title: values.title,
-          type: "video",
-          lesson: [values.lesson_id],
-          video_id: values.video_id,
-        });
+        const formData = new FormData();
+        formData.append("video", fileVideo);
+        const upload: any = await uploadVideo(formData);
+        if (Object.keys(upload).length > 0) {
+          mutate({
+            description: values.description,
+            duration: values.duration,
+            title: values.title,
+            type: "video",
+            lesson: [values.lesson_id],
+            video_id: {
+              url: upload.videoUrl.secure_url,
+              public_id: upload.videoUrl.public_id,
+            },
+          });
+        }
         // video
       } else if (type == 1) {
         let question = [
@@ -140,14 +151,38 @@ export const useSubLessonMutation = ({
       let changeTypeLesson = typeOldLesson !== values.lesson_id;
       let body: any;
       if (type == 0) {
-        body = {
-          description: values.description,
-          duration: values.duration,
-          title: values.title,
-          type: "video",
-          lesson: [values.lesson_id],
-          video_id: values.video_id,
-        };
+        if(fileVideo){
+          let image: any = await deleteVideo(values.video_id.public_id);
+          if (image.message == "Video deleted successfully") {
+            const formData = new FormData();
+            formData.append("video", fileVideo);
+            const upload: any = await uploadVideo(formData);
+            if (Object.keys(upload).length > 0) {
+              body = {
+                description: values.description,
+                duration: values.duration,
+                title: values.title,
+                type: "video",
+                lesson: [values.lesson_id],
+                video_id: {
+                  url: upload.videoUrl.secure_url,
+                  public_id: upload.videoUrl.public_id,
+                },
+              };
+            }
+
+          }
+          
+        }else{
+          body = {
+            description: values.description,
+            duration: values.duration,
+            title: values.title,
+            type: "video",
+            lesson: [values.lesson_id],
+            video_id: values.video_id,
+          };
+        }
 
         // video
       } else if (type == 1) {
@@ -209,8 +244,8 @@ export const useSubLessonMutation = ({
           });
         }
       }
+     
       body._id = values._id;
-
       if (changeType) {
         if (changeTypeLesson) {
           mutate({

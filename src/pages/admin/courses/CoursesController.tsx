@@ -5,7 +5,7 @@ import { useQuery } from "react-query";
 import { getCourses } from "@/service/courses";
 import Loading from "@/components/Loading";
 import { getCategories } from "@/service/categories";
-import { deleteImage } from "@/service/upload";
+import { deleteImage, deleteVideo } from "@/service/upload";
 import { deleteCourses } from "../../../service/courses";
 
 const CoursesController = () => {
@@ -105,9 +105,17 @@ const CoursesController = () => {
   };
   const handleDelete = async (value: any) => {
     setLoading(true);
+
     try {
       let image: any = await deleteImage(value.image.public_id);
       if (image.imageUrl.result == "ok") {
+        value.lesson.map((item: any) => {
+          item.sub_lesson.map(async (i: any) => {
+            if (i.type == "video") {
+              await deleteVideo(i.video_id.public_id);
+            }
+          });
+        });
         onRemove(value);
       }
     } catch (error) {
@@ -142,7 +150,7 @@ const CoursesController = () => {
       let arr = coursesRequirements.map((item: any, index: number) =>
         index == CoursesRequirementsEdit ? textCoursesRequirements : item
       );
-      
+
       setCoursesRequirements(arr);
       setTextCoursesRequirements("");
       setCoursesRequirementsEdit(null);

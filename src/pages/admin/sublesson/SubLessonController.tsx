@@ -37,8 +37,17 @@ const SubLessonController = () => {
   const id = open ? "simple-popover" : undefined;
   const [dataEdit, setDataEdit]: any = useState(null);
   const [arrange, setArrange] = React.useState(null);
+  const [fileVideo, setFileVideo] = React.useState(null);
   const [openDrawer, setOpenDrawer] = React.useState(false);
-
+  const [videoUrl, setVideoUrl] = useState('');
+  const handleImageChange = (e: any) => {
+    let file = e.target.files[0];
+    setFileVideo(file)
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setVideoUrl(url);
+    }
+  };
   const toggleDrawer = (newOpen: boolean, sub_lesson?: any) => {
     if (sub_lesson) {
       setArrange(sub_lesson);
@@ -94,6 +103,7 @@ const SubLessonController = () => {
     reset,
     setValue: setValueForm,
   } = useSubLessonMutation({
+    fileVideo,
     action: action,
     type: value,
     content,
@@ -113,6 +123,11 @@ const SubLessonController = () => {
         });
         if (action == "UPDATE") {
           setDataEdit(null);
+          setFileVideo(null)
+          setVideoUrl("")
+        }else{
+          setFileVideo(null)
+          setVideoUrl("")
         }
       }, 1000);
     },
@@ -140,10 +155,13 @@ const SubLessonController = () => {
       setexerciseHtml("");
       reset({ title: "", duration: "", description: "" });
       setOpenModal(true);
+      setVideoUrl("")
+      setFileVideo(null)
     } else {
       setLesson(lessonEdit);
       setTypeOldLesson(data.lesson[0]);
       if (data.type == "video") {
+        setVideoUrl(data.video_id.url)
         setValue(0);
         setTypeOld(0);
         reset({ ...data, lesson_id: data.lesson[0] });
@@ -282,6 +300,8 @@ const SubLessonController = () => {
         toggleDrawer={toggleDrawer}
         openDrawer={openDrawer}
         arrange={arrange}
+        handleImageChange={handleImageChange}
+        videoUrl={videoUrl}
       />
     </>
   );
