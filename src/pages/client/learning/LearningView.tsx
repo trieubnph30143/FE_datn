@@ -605,7 +605,7 @@ const ContentLeftVideo = (props: any) => {
               className="react-player"
               width="80%"
               height="100%"
-              url={`https://www.youtube.com/watch?v=${props.data.video_id}`}
+              url={props.data.video_id.url}
               playing={props.playing}
               controls
               played={props.played}

@@ -11,7 +11,7 @@ import RoleController from "@/pages/admin/role/RoleController";
 import RolePermissionController from "@/pages/admin/role_permission/RolePermissionController";
 import SubLessonController from "@/pages/admin/sublesson/SubLessonController";
 import UserController from "@/pages/admin/user/UserController";
-import Cv from "@/pages/client/Cv";
+
 import DetailBlogController from "@/pages/client/detail_blog/DetailBlogController";
 import DetailCourseController from "@/pages/client/detail_course/DetailCourseController";
 import FeaturedArticleController from "@/pages/client/featured_article/FeaturedArticleController";
@@ -24,6 +24,8 @@ import ProfileController from "@/pages/client/profile/ProfileController";
 import SettingProfileController from "@/pages/client/setting_profile/SettingProfileController";
 import WiteBlogPostController from "@/pages/client/wite_blog_post/WiteBlogPostController";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Information from "@/pages/client/cv/Information";
+import CvController from "@/pages/client/cv/CvController";
 
 const Router = () => {
   const [user, setUser] = useLocalStorage("user", {});
@@ -44,7 +46,8 @@ const Router = () => {
           <Route path='my_article' element={<PrivateRouter user={user.data}><MyArticleController /></PrivateRouter>} />
           <Route path='setting' element={<PrivateRouter user={user.data}><SettingProfileController /></PrivateRouter>} />
         <Route path='/detail_blog/:id' element={<DetailBlogController />} />
-        <Route path='/cv' element={<Cv />} />
+        <Route path='/cv' element={<CvController />} />
+      
         
         </Route>
         <Route path='/learning/:id' element={<PrivateRouter user={user.data}><LearningController /></PrivateRouter>} />
