@@ -269,6 +269,7 @@ const DetailCourseController = () => {
             order_id: data.data._id,
             amount: courses.price,
             courses_id: courses._id,
+            type:"payment"
           });
           if (url) {
             window.location.href = url;

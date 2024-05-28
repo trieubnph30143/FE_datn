@@ -65,7 +65,14 @@ export const getUser = async () => {
     console.log(`get_User`, error);
   }
 };
-
+export const getOneUser = async (email:any) => {
+  try {
+    const response = await axios.get(`/auth/search/${email}`);
+    return response;
+  } catch (error) {
+    console.log(`get_User`, error);
+  }
+};
 export const updateUSer = async (value: any) => {
   try {
     const response = await axios.put(`/auth/${value._id}`, {

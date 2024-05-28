@@ -26,6 +26,7 @@ import WiteBlogPostController from "@/pages/client/wite_blog_post/WiteBlogPostCo
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Information from "@/pages/client/cv/Information";
 import CvController from "@/pages/client/cv/CvController";
+import MyWalletController from "@/pages/client/my_wallet/MyWalletController";
 
 const Router = () => {
   const [user, setUser] = useLocalStorage("user", {});
@@ -45,6 +46,7 @@ const Router = () => {
           <Route path='profile' element={<PrivateRouter user={user.data}><ProfileController /></PrivateRouter>} />
           <Route path='my_article' element={<PrivateRouter user={user.data}><MyArticleController /></PrivateRouter>} />
           <Route path='setting' element={<PrivateRouter user={user.data}><SettingProfileController /></PrivateRouter>} />
+          <Route path='my_wallet' element={<PrivateRouter user={user.data}><MyWalletController /></PrivateRouter>} />
         <Route path='/detail_blog/:id' element={<DetailBlogController />} />
         <Route path='/cv' element={<CvController />} />
       

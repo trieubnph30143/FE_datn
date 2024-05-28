@@ -557,10 +557,16 @@ const ContentLeftVideo = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [content, setContent] = React.useState("");
   const toggleDrawer = (newOpen: boolean) => () => {
-    props.setPlaying(false);
-    setOpen(newOpen);
+    if(newOpen){
+      props.setPlaying(false);
+      setOpen(newOpen);
+
+    }else{
+       props.setPlaying(true);
+      setOpen(newOpen);
+    }
   };
-  console.log(props.handleSeek);
+  
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
