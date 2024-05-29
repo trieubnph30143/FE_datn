@@ -1,8 +1,8 @@
 import { Box, Button, Paper, Popover, Stack, Typography } from "@mui/material";
 import { Editor } from "@tinymce/tinymce-react";
 import { useEffect, useRef, useState } from "react";
-import user from "../../../images/user.png";
-import article from "../../../images/article.png";
+
+import article from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import parse from "html-react-parser";
 import b from "../../../images/b.png";
 import {
@@ -14,14 +14,22 @@ import {
   RiMoreFill,
   RiTwitterFill,
 } from "react-icons/ri";
-import hljs from 'highlight.js';
+import hljs from "highlight.js";
 import styled from "styled-components";
 import BlogContent from "@/components/BlogContent";
-
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  TwitterShareButton,
+  TwitterIcon,
+} from "react-share";
 type Props = {
   post: any;
+  handleLikePost: any;
+  likes: any;
+  user: any;
 };
-const DetailBlogView = ({ post }: Props) => {
+const DetailBlogView = ({ post, handleLikePost, likes, user }: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,10 +42,44 @@ const DetailBlogView = ({ post }: Props) => {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
+  const shareUrl: any =
+    "https://fullstack.edu.vn/blog/la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua.html"; // Thay thế bằng URL bạn muốn chia sẻ
+  const title: any = post && post.title;
+
   return (
     <Box>
-      <Stack direction={"row"} ml={"50px"} gap={"5%"}>
-        <Box width={"65%"}>
+      <Stack direction={"row"} gap={"5%"}>
+        <Box width={"10%"} display={"flex"} justifyContent={"center"}>
+          <Box>
+            <Typography fontWeight={500} fontSize={"18px"}>
+              {post && post.author[0].user_name}
+            </Typography>
+            <hr style={{ width: "120%", margin: "25px 0" }} />
+            <Box display={"flex"} gap={"20px"}>
+              <Stack
+                color={"#757575"}
+                direction={"row"}
+                onClick={handleLikePost}
+                gap={"7px"}
+              >
+                <RiHeartLine
+                  style={{
+                    color:
+                      user !== false && likes.includes(user.data[0]._id)
+                        ? "red"
+                        : undefined,
+                  }}
+                  size={"23px"}
+                />{" "}
+                {likes.length}
+              </Stack>
+              <Stack color={"#757575"} direction={"row"} gap={"7px"}>
+                <RiMessage3Line size={"23px"} /> 1
+              </Stack>
+            </Box>
+          </Box>
+        </Box>
+        <Box width={"60%"}>
           <Box
             sx={{
               " .tox-editor-header": {
@@ -70,13 +112,16 @@ const DetailBlogView = ({ post }: Props) => {
               </Stack>
               <Stack direction={"row"}>
                 <Box width={"60%"}>
-                 
                   <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
                     <img
                       width={26}
                       height={26}
                       style={{ borderRadius: "50%" }}
-                      src={user}
+                      src={
+                        post && post.author[0].image.url
+                          ? post.author[0].image.url
+                          : article
+                      }
                       alt=""
                     />
                     <Typography mt={"5px"} fontSize={"12px"}>
@@ -93,7 +138,6 @@ const DetailBlogView = ({ post }: Props) => {
             <Box mt={"30px"}>
               <BlogContent content={post && post.content} />
             </Box>
-            
           </Box>
         </Box>
         <Stack width={"25%"}>
@@ -161,24 +205,21 @@ const DetailBlogView = ({ post }: Props) => {
       >
         <Paper>
           <Stack padding={"18px"} direction={"column"} gap={"20px"}>
-            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-              <RiFacebookCircleFill />
-              <Typography fontSize={"14px"} color={"#333"}>
-                Chia sẻ lên Facebook
-              </Typography>{" "}
-            </Stack>
-            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-              <RiTwitterFill />
-              <Typography fontSize={"14px"} color={"#333"}>
-                Chia sẻ lên Twiter
-              </Typography>{" "}
-            </Stack>
-            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-              <RiMailFill />
-              <Typography fontSize={"14px"} color={"#333"}>
-                Chia sẻ lên Email
-              </Typography>{" "}
-            </Stack>
+            <FacebookShareButton
+              url={shareUrl}
+              
+              hashtag="#yourHashtag"
+            >
+              <FacebookIcon size={32} round={true} />
+            </FacebookShareButton>
+            <TwitterShareButton
+              url={shareUrl}
+              title={title}
+              via="yourTwitterHandle"
+              hashtags={["yourHashtag1", "yourHashtag2"]}
+            >
+              <TwitterIcon size={32} round={true} />
+            </TwitterShareButton>
           </Stack>
         </Paper>
       </Popover>
@@ -187,4 +228,3 @@ const DetailBlogView = ({ post }: Props) => {
 };
 
 export default DetailBlogView;
-

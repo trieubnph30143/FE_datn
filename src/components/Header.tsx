@@ -18,7 +18,7 @@ import user from "../images/personal-18px.svg";
 import google from "../images/google-18px.svg";
 import github from "../images/github-18px.svg";
 import fb from "../images/facebook-18px.svg";
-import { RiArrowLeftSLine, RiCloseLine, RiSearchLine } from "react-icons/ri";
+import { RiArrowLeftSLine, RiCloseLine, RiSearchLine, RiWalletLine } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
@@ -35,6 +35,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, googleProvider } from "@/core/firebase";
 import { calculateProgress } from "@/utils/utils";
 import { getUserPost, updatePost } from "@/service/post";
+import { getUserNotify, updateUserReadNotify } from "@/service/notify";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -198,11 +199,11 @@ const Header = () => {
     setAnchorElProfile(null);
   };
 
-  const { data: data_post_user } = useQuery(
-    ["post_user", context.state.user[0]],
+  const { data: notify } = useQuery(
+    ["notify", context.state.user[0]],
     {
       queryFn: () => {
-        return getUserPost(context.state.user[0]._id);
+        return getUserNotify(context.state.user[0]._id);
       },
 
       refetchOnWindowFocus: false,
@@ -211,19 +212,15 @@ const Header = () => {
 
   const handleNotify = async (data: any) => {
     try {
-      if (data.notify) {
-        navigate(`/detail_blog/${data._id}`);
+      if (data.read) {
+        navigate(data.url);
         handleCloseNotify();
       } else {
-        let res = await updatePost({
-          ...data,
-          author: [data.author[0]._id],
-          notify: true,
-        });
+        await updateUserReadNotify(data._id)
         queryClient.invalidateQueries({
-          queryKey: ["post_user"],
+          queryKey: ["notify"],
         });
-        navigate(`/detail_blog/${data._id}`);
+        navigate(data.url);
         handleCloseNotify();
       }
     } catch (error) {
@@ -282,7 +279,7 @@ const Header = () => {
           />
         </Box>
         {Object.keys(context.state.user)[0] ? (
-          <Stack direction={"row"} gap={"30px"} alignItems={"center"}>
+          <Stack direction={"row"} sx={{cursor:"pointer"}} gap={"30px"} alignItems={"center"}>
             <Box>
               <Typography
                 aria-describedby={id}
@@ -393,6 +390,9 @@ const Header = () => {
                 </Box>
               </Popover>
             </Box>
+            <Box onClick={()=>{navigate("/my_wallet")}}>
+            <RiWalletLine size={22}  /> 
+            </Box>
             <Box>
               <Typography
                 aria-describedby={idNotify}
@@ -400,9 +400,9 @@ const Header = () => {
               >
                 <Badge
                   badgeContent={
-                    data_post_user?.status == 0 &&
-                    data_post_user.data.filter(
-                      (item: any) => item.active && !item.notify
+                    notify?.status == 0 &&
+                    notify.data.filter(
+                      (item: any) => item.read==false
                     ).length
                   }
                   color="primary"
@@ -444,10 +444,10 @@ const Header = () => {
                     maxHeight={"400px"}
                     sx={{ overflowY: "scroll" }}
                   >
-                    {data_post_user?.status == 0 &&
-                      data_post_user.data.length &&
-                      data_post_user.data.map((item: any) => {
-                        if (item.active) {
+                    {notify?.status == 0 &&
+                      notify.data.length &&
+                      notify.data.reverse().map((item: any) => {
+                       
                           return (
                             <Stack
                               direction={"row"}
@@ -457,37 +457,33 @@ const Header = () => {
                                   backgroundColor: "#dddddd",
                                 },
                               }}
-                              bgcolor={item.notify ? undefined : "#dddddd"}
+                              
+                              borderBottom={"1px dashed #dddddd"}
                               p={"5px"}
                               borderRadius={"5px"}
                               gap={"15px"}
                             >
-                              <Box>
-                                <img
-                                  src={item.image.url}
-                                  width={80}
-                                  height={60}
-                                  style={{
-                                    borderRadius: "5px",
-                                    objectFit: "cover",
-                                  }}
-                                  alt=""
-                                />
-                              </Box>
+                             
                               <Box p={"5px"}>
                                 <Badge
                                   color="secondary"
-                                  invisible={item.notify}
+                                  invisible={item.read}
                                   variant="dot"
-                                >
-                                  <Typography sx={{ width: "300px" }}>
+
+                                ><Box>
+                                  <Typography fontWeight={"bold"} sx={{ width:"100%" }}>
                                     {item.title}
                                   </Typography>
+                                  <Typography mt={"5px"} fontSize={"14px"} color={"#333"} sx={{ width:"100%" }}>
+                                    {item.message}
+                                  </Typography>
+
+                                </Box>
                                 </Badge>
                               </Box>
                             </Stack>
                           );
-                        }
+                       
                       })}
                   </Stack>
                 </Box>

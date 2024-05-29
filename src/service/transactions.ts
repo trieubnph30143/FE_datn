@@ -1,5 +1,5 @@
 import axios from "../core/api";
-export const getOneTransaction = async (id:any) => {
+export const getOneTransaction = async (id: any) => {
   try {
     const response = await axios.get(`/transaction/${id}`);
     return response;
@@ -7,7 +7,15 @@ export const getOneTransaction = async (id:any) => {
     console.log(`get_Categories`, error);
   }
 };
-export const getUserTransaction = async (id:any) => {
+export const getWithdraw = async () => {
+  try {
+    const response = await axios.get(`/transaction`);
+    return response;
+  } catch (error) {
+    console.log(`get_transaction`, error);
+  }
+};
+export const getUserTransaction = async (id: any) => {
   try {
     const response = await axios.get(`/transaction/user/${id}`);
     return response;
@@ -25,10 +33,30 @@ export const addTransactions = async (value: any) => {
 };
 export const updateTransaction = async (value: any) => {
   try {
-    const response = await axios.put(`/transaction/status/${value._id}`,{status:value.status});
+    const response = await axios.put(`/transaction/status/${value._id}`, {
+      status: value.status,
+    });
     return response;
   } catch (error) {
     console.log(`update_Categories`, error);
   }
 };
-
+export const updateTransactionWithDrawFaild = async (value: any) => {
+  try {
+    const response = await axios.put(
+      `/transaction/withdraw_faild/${value._id}`,
+      {
+        type: value.type,
+        amount: value.amount,
+        status: value.status,
+        stk: value.stk,
+        bankAccount: value.bankAccount,
+        user_id: value.user_id,
+        note: value.note,
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log(`update_Categories`, error);
+  }
+};

@@ -535,7 +535,7 @@ const Footer = (props: any) => {
         </Button>
         <Button
           className={props.done&&"animation"}
-          disabled={!props.done}
+         
           onClick={props.handleNextLesson}
           sx={{
             color: "#ff5117",

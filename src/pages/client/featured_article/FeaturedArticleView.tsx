@@ -10,6 +10,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  TwitterShareButton,
+  TwitterIcon,
+} from "react-share";
 import article from "../../../images/article.png";
 import user from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import b from "../../../images/b.png";
@@ -45,6 +51,9 @@ const FeaturedArticleView = ({
   handleChangePagination,
   page
 }: Props) => {
+  const shareUrl: any =
+  "https://fullstack.edu.vn/blog/la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua.html"; // Thay thế bằng URL bạn muốn chia sẻ
+const title: any = "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua";
   return (
     <Box>
       <Typography variant="h4" fontWeight={"bold"}>
@@ -221,25 +230,21 @@ const FeaturedArticleView = ({
         }}
       >
         <Paper>
-          <Stack padding={"18px"} direction={"column"} gap={"20px"}>
-            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-              <RiFacebookCircleFill />
-              <Typography fontSize={"14px"} color={"#333"}>
-                Chia sẻ lên Facebook
-              </Typography>{" "}
-            </Stack>
-            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-              <RiTwitterFill />
-              <Typography fontSize={"14px"} color={"#333"}>
-                Chia sẻ lên Twiter
-              </Typography>{" "}
-            </Stack>
-            <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
-              <RiMailFill />
-              <Typography fontSize={"14px"} color={"#333"}>
-                Chia sẻ lên Email
-              </Typography>{" "}
-            </Stack>
+        <Stack padding={"18px"} direction={"column"} gap={"20px"}>
+            <FacebookShareButton
+              url={shareUrl}
+              hashtag="#yourHashtag"
+            >
+              <FacebookIcon size={32} round={true} />
+            </FacebookShareButton>
+            <TwitterShareButton
+              url={shareUrl}
+              title={title}
+              via="yourTwitterHandle"
+              hashtags={["yourHashtag1", "yourHashtag2"]}
+            >
+              <TwitterIcon size={32} round={true} />
+            </TwitterShareButton>
           </Stack>
         </Paper>
       </Popover>

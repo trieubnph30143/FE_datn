@@ -22,6 +22,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Tabs,
   TextField,
@@ -29,14 +30,17 @@ import {
   styled,
   tableCellClasses,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import bg from "../../../images/cong-thanh-toan-vnpay-va-cach-tich-hop-vao-website-wordpress.jpg";
-
+import vnpay from "../../../images/vnp.png"
 import {
   RiArrowLeftRightFill,
   RiArrowRightSLine,
   RiBankCardFill,
+  RiDownload2Line,
+  RiGift2Line,
   RiSearchLine,
+  RiSparkling2Line,
   RiWalletLine,
 } from "react-icons/ri";
 import { convertToVND, formatDate } from "@/utils/utils";
@@ -59,9 +63,16 @@ type Props = {
   searchEmail: any;
   handleSearchEmail: any;
   dataEmail: any;
-  setTransfer:any
-    transfer:any
-        handleTrander:any
+  setTransfer: any;
+  transfer: any;
+  handleTrander: any;
+  stk: any;
+  setStk: any;
+  amount: any;
+  setAmount: any;
+  bank: any;
+  setBank: any;
+  handleWithdraw: any;
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -134,17 +145,40 @@ const MyWalletView = ({
   dataEmail,
   transfer,
   setTransfer,
-  handleTrander
+  handleTrander,
+  stk,
+  setStk,
+  amount,
+  setAmount,
+  bank,
+  setBank,
+  handleWithdraw,
 }: Props) => {
-    const [user, setUser]: any = useLocalStorage("user", {});
-    console.log(user.data[0].email);
+  const [user, setUser]: any = useLocalStorage("user", {});
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [paginatedRows, setPaginatedRows] = useState([]);
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
+  useEffect(() => {
+    if (transtions) {
+      setPaginatedRows(
+        transtions.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      );
+    }
+  }, [page, rowsPerPage, transtions]);
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <Box>
       <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
         <Box width={"600px"} padding={"60px 30px"}>
-          <Typography variant="h5" fontWeight={"bold"}>
-            Nạp tiền
-          </Typography>
+          <img src={vnpay} width={"90%"} alt="" />
+         
           <TextField
             value={rechanrge}
             onChange={(e) => setRechanrge(e.target.value)}
@@ -170,7 +204,12 @@ const MyWalletView = ({
               />
             </RadioGroup>
           </FormControl>
-
+          <Box p={"15px"} border={"1px solid #dddddd"} borderRadius={"10px"}>
+            <Typography fontWeight={"bold"}>Ghi chú</Typography>
+            <Typography fontSize={"14px"}>
+              Số tiền nạp không dưới 10.000Đ
+            </Typography>
+          </Box>
           <Button
             onClick={handleRechanrge}
             sx={{
@@ -193,8 +232,8 @@ const MyWalletView = ({
             justifyContent={"space-between"}
             alignItems={"end"}
           >
-            <Typography variant="h4" fontWeight={"bold"}>
-              Ví của tôi
+            <Typography variant="h4" fontWeight={"bold"} display={"flex"} alignItems={"center"}>
+            <RiWalletLine style={{ marginRight: "10px" }}  /> Ví của tôi
             </Typography>
 
             <Stack>
@@ -267,228 +306,406 @@ const MyWalletView = ({
                 </Tabs>
               </Box>
             </Box>
-            <Stack direction={"row"} justifyContent={"center"}>
+            <Stack direction={"column"} justifyContent={"center"}>
               {value == 0 && (
-                <TableContainer sx={{ mt: "30px" }} component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                      <TableRow>
-                        <StyledTableCell>Kiểu</StyledTableCell>
-                        <StyledTableCell>Số tiền</StyledTableCell>
-                        <StyledTableCell>Trạng thái</StyledTableCell>
-                        <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
-                        <StyledTableCell>Email</StyledTableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {transtions &&
-                        transtions.length > 0 &&
-                        transtions.map((row: any) => {
-                            console.log(row.email_transfer);
+                <>
+                  <TableContainer sx={{ mt: "30px" }} component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <StyledTableCell>Kiểu</StyledTableCell>
+                          <StyledTableCell>Số tiền</StyledTableCell>
+                          <StyledTableCell>Trạng thái</StyledTableCell>
+                          <StyledTableCell>Email</StyledTableCell>
+                          <StyledTableCell>note</StyledTableCell>
+                          <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {paginatedRows &&
+                          paginatedRows.length > 0 &&
+                          paginatedRows.map((row: any) => {
+                            let message =""
+                            let style={}
+                            if(row.type == "withdraw" && row.status=="completed"){
+                              message+="Rút tiền thành công"
+                            }
+                            if(row.type == "withdraw" && row.status=="pending"){
+                              message+="Chờ thanh toán"
+                            }
+                            if(row.type == "withdraw" && row.status=="failed"){
+                              message+="Rút tiền thất bại.Ghi chú : "+row.note
+                            }
+                            if(row.type == "transfer" && row.status=="completed"){
+                              message+="Chuyển tiền thành công"
+                            }
+                            if(row.type == "transfer" && row.status=="failed"){
+                              message+="Chuyển tiền thất bại"
+                            }
+                            
+                            if(row.type == "rechanrge" && row.status=="completed"){
+                              message+="Nạp tiền thành công"
+                            }
+                            if(row.type == "reward" && row.status=="completed"){
+                              message+=row.note
+                            }
+                            if(row.type == "rechanrge" && row.status=="pending"){
+                              message+="Chờ thanh toán"
+                            }
+                            if(row.type == "rechanrge" && row.status=="failed"){
+                              message+="Nạp tiền thất bại"
+                            }
+                            if(row.type == "purchase" && row.status=="completed"){
+                              message+="Thanh toán khóa học thành công"
+                            }
+                            if(row.status=="completed"){
+                              style ={border:"1px solid green" ,borderRadius:"80px",fontSize:"10px" ,color:"green"}
+                            }
+                            if(row.status=="failed"){
+                              style ={border:"1px solid red" ,borderRadius:"80px",fontSize:"10px" ,color:"red"}
+                            }
+                            if(row.status=="pending"){
+                              style ={border:"1px solid yellow" ,borderRadius:"80px",fontSize:"10px" ,color:"yellow"}
+                            }
+                            
                             return (
-                                <TableRow
-                                  sx={{
-                                    "&:last-child td, &:last-child th": { border: 0 },
-                                  }}
-                                >
-                                  <TableCell component="th" scope="row">
-                                    {row.type}
-                                  </TableCell>
-                                  <TableCell>{convertToVND(row.amount)}</TableCell>
-                                  <TableCell>{row.status}</TableCell>
-                                  
-                                  <TableCell>{formatDate(row.createdAt)}</TableCell>
-                                  {row.type=="transfer"&&<TableCell>{row.email_transfer==user.data[0].email?row.email_transfer:row.email_transfer}</TableCell>}
-                                </TableRow>
-                              )
-                        })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
+                              <TableRow
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
+                                }}
+                              >
+                                <TableCell component="th"  scope="row">
+                                  <Box sx={{display:"flex" ,alignItems:"center",gap:"10px",border:"1px solid grey",padding:"5px",borderRadius:"8px",justifyContent:"center"}}>
+                                  {row.type=="transfer"&&<RiArrowLeftRightFill />}
+                                  {row.type=="rechanrge"&&<RiBankCardFill />}
+                                  {row.type=="withdraw"&&<RiDownload2Line />}
+                                  {row.type=="purchase"&&<RiSparkling2Line />}
+                                  {row.type=="reward"&&<RiGift2Line />}
+                                  {row.type}
 
-              {value == 1 && (
-                <Box
-                  display={"flex"}
-                  mt={"20px"}
-                  flexDirection={"column"}
-                  alignItems={"start"}
-                  width={"100%"}
-                >
-                  <Box>
-                    <TextField
-                      value={searchEmail}
-                      size="small"
-                      onChange={(e) => setSearchEmail(e.target.value)}
-                      type={"email"}
-                      sx={{
-                        width: "420px",
+                                  </Box>
+                                </TableCell>
+                                <TableCell>
+                                  {convertToVND(row.amount)}
+                                </TableCell>
+                                <TableCell><Button sx={style}>{row.status}</Button></TableCell>
 
-                        ".css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input":
-                          {
-                            padding: "5px",
-                          },
-                        ".css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root":
-                          {
-                            borderRadius: "20px",
-                            height: "40px",
-                          },
-                      }}
-                      placeholder="Tìm kiếm người dùng bằng email..."
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="start">
-                            <Box
-                              onClick={handleSearchEmail}
-                              sx={{ cursor: "pointer" }}
-                            >
-                              <RiSearchLine />
-                            </Box>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Box>
-                  {dataEmail.length > 0 ? (
-                    <Accordion
-                      sx={{ width: "100%", marginTop: "20px" }}
-                      expanded={expanded === "panel1"}
-                      onChange={handleChange("panel1")}
-                    >
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1bh-content"
-                        id="panel1bh-header"
-                      >
-                        <Stack
-                          direction={"row"}
-                          alignItems={"center"}
-                          gap={"10px"}
-                        >
-                          <img
-                            src={dataEmail[0].image.url?dataEmail[0].image.url:profile}
-                            width={"30px"}
-                            height={"30px"}
-                            style={{ borderRadius: "50%" }}
-                            alt=""
-                          />
-                          <Typography>{dataEmail[0].user_name}</Typography>
-                        </Stack>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        <Stack direction={"row"} gap={"20px"}>
-                          <TextField
-                          value={transfer}
-                            id="outlined-basic"
-                            size="small"
-                            placeholder="Nhập số tiền cần chuyển"
-                            variant="outlined"
-                            onChange={(e)=>setTransfer(e.target.value)}
-                          />
-                          <Button
-                            onClick={handleTrander}
-                            sx={{
-                              color: "#ff5117",
-                              border: "2px solid #ff5117",
+                                <TableCell>
+                                  {row.email_transfer == user.data[0].email
+                                    ? row.email_transfer
+                                    : row.email_transfer}
+                                </TableCell>
 
-                              px: "15px",
-                            }}
-                          >
-                            Chuyển tiền
-                            <RiArrowLeftRightFill
-                              style={{ marginLeft: "5px" }}
-                              size={20}
-                            />
-                          </Button>
-                        </Stack>
-                      </AccordionDetails>
-                    </Accordion>
-                  ) : (
-                    <Typography textAlign={"center"} mt={"20px"}>Not found data</Typography>
-                  )}
-                </Box>
-              )}
-              {value == 2 && (
-                <Box
-                  display={"flex"}
-                  width={"100%"}
-                  mt={"20px"}
-                  justifyContent={"center"}
-                >
+                                <TableCell>
+                                  {message}
+                                </TableCell>
+                                <TableCell>
+                                  {formatDate(row.createdAt)}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={transtions.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
                   <Box
-                    width={"100%"}
+                    p={"15px"}
                     border={"1px solid #dddddd"}
                     borderRadius={"10px"}
                   >
-                    <Stack
-                      p={"15px"}
-                      borderBottom={"1px solid #dddddd"}
-                      direction={"row"}
-                      gap={"30px"}
-                      alignItems={"end"}
+                    <Typography fontWeight={"bold"}>Ghi chú</Typography>
+                    <Typography
+                      ml={"10px"}
+                      fontWeight={"bold"}
+                      fontSize={"15px"}
                     >
-                      <RiBankCardFill size={30} style={{ color: "#333" }} />
-                      <Typography>Thanh toán bằng thẻ</Typography>
-                    </Stack>
-                    <Stack
-                      direction={"row"}
-                      p={"15px"}
-                      width={"100%"}
-                      borderBottom={"1px solid #dddddd"}
-                      gap={"30px"}
+                      1.Kiểu
+                    </Typography>
+                    <ul
+                      style={{
+                        margin: " 0",
+                        fontSize: "14px",
+                        color: "#423a3a",
+                      }}
                     >
-                      <img
-                        width={"50%"}
-                        src="http://cafefcdn.com/thumb_w/650/2019/1/15/logo-cac-ngan-hang-o1-1504769513088-1-15426822036241306429105-crop-15426822135161921260068-15475498874711162616360-crop-15475498929411148016221.jpg"
-                        alt=""
-                      />
-                      <Box width={"50%"} mt={"15px"}>
-                        <FormControl sx={{ m: 1, width: "95%" }}>
-                          <InputLabel id="demo-select-small-label">
-                            Chọn ngân hàng
-                          </InputLabel>
-                          <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            label="Chọn ngân hàng"
-                            fullWidth
-                          >
-                            {tenVietTatNganHangVN.map((item) => {
-                              return <MenuItem value={item}>{item}</MenuItem>;
-                            })}
-                          </Select>
-                        </FormControl>
-                        <TextField
-                          id="outlined-basic"
-                          sx={{ width: "95%", m: 1 }}
-                          label="Số tài khoản"
-                          variant="outlined"
-                        />
-                        <TextField
-                          id="outlined-basic"
-                          sx={{ width: "95%", m: 1 }}
-                          label="Số tiền"
-                          variant="outlined"
-                        />
-                        <Button
-                          size="small"
-                          sx={{
-                            color: "#ff5117",
-                            border: "2px solid #ff5117",
-                            m: 1,
-                            width: "95%",
-                          }}
-                        >
-                          Rút tiền
-                          <RiArrowLeftRightFill
-                            style={{ marginLeft: "5px" }}
-                            size={17}
-                          />
-                        </Button>
-                      </Box>
-                    </Stack>
+                      <li style={{ margin: "0" }}>
+                        Rechanrge : Nạp tiền vào ví{" "}
+                      </li>
+                      <li style={{ margin: "0" }}>
+                        Transfer : Chuyển tiền từ ví của mình sang ví nguời khác
+                        bằng Email{" "}
+                      </li>
+                      <li style={{ margin: "0" }}>
+                        Withdraw : Rút tiền từ ví của mình về tài khoản ngân
+                        hàng{" "}
+                      </li>
+                      <li style={{ margin: "0" }}>
+                        Purchase : Thanh toán tiền khi mua khóa học
+                      </li>
+                      <li style={{ margin: "0" }}>
+                        reward : Phần thưởng
+                      </li>
+                    </ul>
+                    <Typography
+                      ml={"10px"}
+                      fontWeight={"bold"}
+                      fontSize={"15px"}
+                    >
+                      2.Trạng thái
+                    </Typography>
+                    <ul
+                      style={{
+                        margin: " 0",
+                        fontSize: "14px",
+                        color: "#423a3a",
+                      }}
+                    >
+                      <li style={{ margin: "0" }}>Completed : Thành công </li>
+                      <li style={{ margin: "0" }}>Pending : Đang xử lý </li>
+                      <li style={{ margin: "0" }}>Failed : Thất bại </li>
+                    </ul>
                   </Box>
-                </Box>
+                </>
+              )}
+
+              {value == 1 && (
+                <>
+                  <Box
+                    display={"flex"}
+                    mt={"20px"}
+                    flexDirection={"column"}
+                    alignItems={"start"}
+                    width={"100%"}
+                  >
+                    <Box>
+                      <TextField
+                        value={searchEmail}
+                        size="small"
+                        onChange={(e) => setSearchEmail(e.target.value)}
+                        type={"email"}
+                        sx={{
+                          width: "420px",
+
+                          ".css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input":
+                            {
+                              padding: "5px",
+                            },
+                          ".css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root":
+                            {
+                              borderRadius: "20px",
+                              height: "40px",
+                            },
+                        }}
+                        placeholder="Tìm kiếm người dùng bằng email..."
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="start">
+                              <Box
+                                onClick={handleSearchEmail}
+                                sx={{ cursor: "pointer" }}
+                              >
+                                <RiSearchLine />
+                              </Box>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </Box>
+                    {dataEmail.length > 0 && (
+                      <Accordion
+                        sx={{ width: "100%", marginTop: "20px" }}
+                        expanded={expanded === "panel1"}
+                        onChange={handleChange("panel1")}
+                      >
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="panel1bh-content"
+                          id="panel1bh-header"
+                        >
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            gap={"10px"}
+                          >
+                            <img
+                              src={
+                                dataEmail[0].image.url
+                                  ? dataEmail[0].image.url
+                                  : profile
+                              }
+                              width={"30px"}
+                              height={"30px"}
+                              style={{ borderRadius: "50%" }}
+                              alt=""
+                            />
+                            <Typography>{dataEmail[0].user_name}</Typography>
+                          </Stack>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                          <Stack direction={"row"} gap={"20px"}>
+                            <TextField
+                              value={transfer}
+                              id="outlined-basic"
+                              size="small"
+                              placeholder="Nhập số tiền cần chuyển"
+                              variant="outlined"
+                              onChange={(e) => setTransfer(e.target.value)}
+                            />
+                            <Button
+                              onClick={handleTrander}
+                              sx={{
+                                color: "#ff5117",
+                                border: "2px solid #ff5117",
+
+                                px: "15px",
+                              }}
+                            >
+                              Chuyển tiền
+                              <RiArrowLeftRightFill
+                                style={{ marginLeft: "5px" }}
+                                size={20}
+                              />
+                            </Button>
+                          </Stack>
+                        </AccordionDetails>
+                      </Accordion>
+                    )}
+                  </Box>
+                  <Box
+                    mt={"15px"}
+                    p={"15px"}
+                    border={"1px solid #dddddd"}
+                    borderRadius={"10px"}
+                  >
+                    <Typography fontWeight={"bold"}>
+                      Ghi chú
+                    </Typography>
+                    <Typography fontSize={"14px"}>
+                      Tìm kiếm đúng Email nguời dùng
+                    </Typography>
+                  </Box>
+                </>
+              )}
+              {value == 2 && (
+                <>
+                  <Box
+                    display={"flex"}
+                    width={"100%"}
+                    mt={"20px"}
+                    justifyContent={"center"}
+                  >
+                    <Box
+                      width={"100%"}
+                      border={"1px solid #dddddd"}
+                      borderRadius={"10px"}
+                    >
+                      <Stack
+                        p={"15px"}
+                        borderBottom={"1px solid #dddddd"}
+                        direction={"row"}
+                        gap={"30px"}
+                        alignItems={"end"}
+                      >
+                        <RiBankCardFill size={30} style={{ color: "#333" }} />
+                        <Typography>Thanh toán bằng thẻ</Typography>
+                      </Stack>
+                      <Stack
+                        direction={"row"}
+                        p={"15px"}
+                        width={"100%"}
+                        borderBottom={"1px solid #dddddd"}
+                        gap={"30px"}
+                      >
+                        <img
+                          width={"50%"}
+                          src="http://cafefcdn.com/thumb_w/650/2019/1/15/logo-cac-ngan-hang-o1-1504769513088-1-15426822036241306429105-crop-15426822135161921260068-15475498874711162616360-crop-15475498929411148016221.jpg"
+                          alt=""
+                        />
+                        <Box width={"50%"} mt={"15px"}>
+                          <FormControl sx={{ m: 1, width: "95%" }}>
+                            <InputLabel id="demo-select-small-label">
+                              Chọn ngân hàng
+                            </InputLabel>
+                            <Select
+                              value={bank}
+                              onChange={(e) => setBank(e.target.value)}
+                              labelId="demo-select-small-label"
+                              id="demo-select-small"
+                              label="Chọn ngân hàng"
+                              fullWidth
+                            >
+                              {tenVietTatNganHangVN.map((item) => {
+                                return <MenuItem value={item}>{item}</MenuItem>;
+                              })}
+                            </Select>
+                          </FormControl>
+                          <TextField
+                            value={stk}
+                            onChange={(e) => setStk(e.target.value)}
+                            id="outlined-basic"
+                            sx={{ width: "95%", m: 1 }}
+                            label="Số tài khoản"
+                            variant="outlined"
+                          />
+                          <TextField
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            id="outlined-basic"
+                            sx={{ width: "95%", m: 1 }}
+                            label="Số tiền"
+                            variant="outlined"
+                          />
+                          <Button
+                            onClick={handleWithdraw}
+                            size="small"
+                            sx={{
+                              color: "#ff5117",
+                              border: "2px solid #ff5117",
+                              m: 1,
+                              width: "95%",
+                            }}
+                          >
+                            Rút tiền
+                            <RiArrowLeftRightFill
+                              style={{ marginLeft: "5px" }}
+                              size={17}
+                            />
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </Box>
+                  </Box>
+                  <Box
+                    mt={"15px"}
+                    p={"15px"}
+                    border={"1px solid #dddddd"}
+                    borderRadius={"10px"}
+                  >
+                    <Typography  fontWeight={"bold"}>
+                      Ghi chú
+                    </Typography>
+                    <Typography fontSize={"14px"}>
+                      Chọn đúng ngân hàng
+                    </Typography>
+                    <Typography fontSize={"14px"}>
+                      Nhập đúng số tài khoản
+                    </Typography>
+                    <Typography fontSize={"14px"}>
+                      Số tiền rút không dưòi 10.000Đ
+                    </Typography>
+                  </Box>
+                </>
               )}
             </Stack>
           </Stack>

@@ -5,7 +5,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { addProgress, getProgress, getUserProgress } from "@/service/progress";
 import { useCoursesContext } from "@/App";
-import { Box, Button, Drawer, Stack, Typography } from "@mui/material";
+import { Box, Button, Drawer, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
 import { RiCheckFill } from "react-icons/ri";
 import { convertToVND } from "@/utils/utils";
 import {
@@ -16,11 +16,14 @@ import {
 } from "@/service/order";
 import { getVnpay } from "@/service/vnpay";
 import { toast } from "react-toastify";
+import { getUserWallet, updateWallet } from "@/service/wallet";
+import { addTransactions } from "@/service/transactions";
 
 const DetailCourseController = () => {
   const { id }: any = useParams();
   const [toggle, setToggle] = useState(true);
   const [totalLesson, setTotalLesson] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
   const [expanded, setExpanded]: any = useState([]);
   const context: any = useCoursesContext();
@@ -93,7 +96,6 @@ const DetailCourseController = () => {
     try {
       if (Object.keys(context.state.user)[0]) {
         let data = await getOrderUserAndCourses(id, context.state.user[0]._id);
-        console.log(data);
         if (data?.status == 0) {
           if(data.data[0]){
             setPaymentSuccess(true);
@@ -171,7 +173,6 @@ const DetailCourseController = () => {
             }),
           };
         });
-
         if (Object.keys(context.state.user)[0]) {
           let body = {
             courses_id: courses._id,
@@ -253,26 +254,60 @@ const DetailCourseController = () => {
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
-  const handlePayment = async () => {
+  const handlePayment = async () => { 
     try {
       if(Object.keys(context.state.user).length==0){
        toast.warning("Bạn cần đăng nhập")
       }else{
-        console.log("day");
-        let data = await addOrder({
-          status: false,
-          courses_id: [courses._id],
-          user_id: [context.state.user[0]._id],
-        });
-        if (data?.status == 0) {
-          let url: any = await getVnpay({
-            order_id: data.data._id,
-            amount: courses.price,
-            courses_id: courses._id,
-            type:"payment"
+        if(paymentMethod=="wallet"){
+          let wallet = await  getUserWallet(context.state.user[0]._id)
+      if(wallet?.status==0){
+        if(Number(wallet.data[0].balance)-Number(courses.price)>=0){
+          let res = await updateWallet({
+            _id: wallet.data[0]._id,
+            user_id: [wallet.data[0].user_id[0]],
+            balance: Number(wallet.data[0].balance)-Number(courses.price),
           });
-          if (url) {
-            window.location.href = url;
+          await addTransactions({
+            user_id: [context.state.user[0]._id],
+            type: "purchase",
+            status: "completed",
+            amount:courses.price,
+          })
+          if(res?.status==0){
+            let data = await addOrder({
+              status: true,
+              courses_id: [courses._id],
+              user_id: [context.state.user[0]._id],
+            });
+            if(data?.status==0){
+              setOpen(false)
+              setPaymentSuccess(true)
+              toast.success("Bạn đã thanh toán thành công")
+            }
+          }
+        }else{
+          toast.warning("Bạn không đủ số dư trong ví")
+        }
+      
+      }
+          
+        }else{
+          let data = await addOrder({
+            status: false,
+            courses_id: [courses._id],
+            user_id: [context.state.user[0]._id],
+          });
+          if (data?.status == 0) {
+            let url: any = await getVnpay({
+              order_id: data.data._id,
+              amount: courses.price,
+              courses_id: courses._id,
+              type:"payment"
+            });
+            if (url) {
+              window.location.href = url;
+            }
           }
         }
       }
@@ -281,6 +316,7 @@ const DetailCourseController = () => {
       console.log(error);
     }
   };
+  
   return (
     <>
       <DetailCourseView
@@ -352,6 +388,30 @@ const DetailCourseController = () => {
                 <Box>Tổng tiền : </Box>
                 <Box>{courses && convertToVND(courses.price)}</Box>
               </Stack>
+              <FormControl  sx={{ mt: "20px", display: "block" }}>
+            <FormLabel id="demo-radio-buttons-group-label">
+              Phương thức thanh toán
+            </FormLabel>
+           
+            <RadioGroup
+              value={paymentMethod}
+              onChange={(e)=>setPaymentMethod(e.target.value)}
+              aria-labelledby="demo-radio-buttons-group-label"
+              name="radio-buttons-group"
+            >
+               <FormControlLabel
+                value="wallet"
+                control={<Radio />}
+                label="Thanh toán bằng ví"
+              />
+              <FormControlLabel
+                value="vnpay"
+                control={<Radio />}
+                label="Cổng thanh toán VNPAY"
+              />
+            </RadioGroup>
+          
+          </FormControl>
             </Box>
             <Box mt={"20px"}>
               <Button

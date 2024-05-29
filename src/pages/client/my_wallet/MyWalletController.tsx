@@ -19,6 +19,10 @@ const MyWalletController = () => {
   const [open, setOpen] = useState(false);
   const [rechanrge, setRechanrge] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
+  const [stk, setStk] = useState("");
+  const [amount, setAmount] = useState("");
+  const [bank, setBank] = useState("");
+
   const [dataEmail, setDataEmail]:any = useState([]);
   const [transfer, setTransfer] = useState("");
   const handleChangeTabs = (event: React.SyntheticEvent, newValue: string) => {
@@ -239,6 +243,36 @@ const MyWalletController = () => {
       console.log(error);
     }
   }
+
+  const handleWithdraw = async ()=>{
+    try {
+      if(Number(data.data[0].balance)-Number(amount)>=0){
+
+        let transactions = await addTransactions({
+          user_id: [user.data[0]._id],
+          type: "withdraw",
+          status: "pending",
+          amount:amount,
+          stk:stk,
+          bankAccount:bank
+        })
+        if(transactions?.status==0){
+          updateWalletSuccess(Number(data.data[0].balance) - Number(amount),user.data[0]._id,true)
+          queryClient.invalidateQueries({
+            queryKey: ["wallet"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["transtion"],
+          });
+          toast.success("Thành công")
+        }
+      }else{
+        toast.warning("Bạn không đủ số dư")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <>
       <MyWalletView
@@ -253,7 +287,7 @@ const MyWalletController = () => {
           transtion !== undefined &&
           Object.keys(transtion)[0] &&
           transtion.status == 0 &&
-          transtion.data
+          transtion.data.reverse()
         }
         handleChangeTabs={handleChangeTabs}
         handleChange={handleChange}
@@ -270,6 +304,13 @@ const MyWalletController = () => {
         setTransfer={setTransfer}
         transfer={transfer}
         handleTrander={handleTrander}
+        stk={stk}
+        setStk={setStk}
+        amount={amount}
+        setAmount={setAmount}
+        bank={bank}
+        setBank={setBank}
+        handleWithdraw={handleWithdraw}
       />
     </>
   );

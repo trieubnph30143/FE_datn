@@ -40,6 +40,14 @@ export const addPost = async (value: any) => {
     console.log(`add_Post`, error);
   }
 };
+export const likePost = async (value: any) => {
+  try {
+    const response = await axios.post(`/post/likes/${value._id}/${value.user_id}`);
+    return response;
+  } catch (error) {
+    console.log(`add_Post`, error);
+  }
+};
 export const updatePost = async (value: any) => {
   try {
     const response = await axios.put(`/post/${value._id}`, {

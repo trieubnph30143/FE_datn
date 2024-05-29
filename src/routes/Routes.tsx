@@ -27,6 +27,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Information from "@/pages/client/cv/Information";
 import CvController from "@/pages/client/cv/CvController";
 import MyWalletController from "@/pages/client/my_wallet/MyWalletController";
+import WalletController from "@/pages/admin/wallet/WalletController";
 
 const Router = () => {
   const [user, setUser] = useLocalStorage("user", {});
@@ -63,6 +64,7 @@ const Router = () => {
           <Route path='permission' element={<PermissionController />} />
           <Route path='role_permission' element={<RolePermissionController />} />
           <Route path='user' element={<UserController />} />
+          <Route path='wallet' element={<WalletController />} />
         </Route>
         <Route path='*' element={<PageNotFound />} />
       </Routes>

@@ -6,7 +6,7 @@ import {
   updateCertificate,
   updateProgress,
 } from "@/service/progress";
-import { calculateProgress, getCurrentDate } from "@/utils/utils";
+import { calculateProgress, convertToVND, getCurrentDate } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,6 +27,8 @@ import {
 import certificate from "../../../images/certificate (1).png";
 import confetti from "canvas-confetti";
 import { RiDownloadCloud2Line } from "react-icons/ri";
+import { addNotify } from "@/service/notify";
+import { addTransactions } from "@/service/transactions";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -477,6 +479,17 @@ const LearningController = () => {
         _id: progress[0]._id,
       });
       if (data?.status == 0) {
+        if(courses.price>0){
+          let price = (10/100)* courses.price
+          await addNotify({user_id:[user.data[0]._id],title:`Bạn nhận đựơc ${convertToVND(price)} vào ví.`,message:"Chúc mừng bạn đã hoàn thành xuất sắc khóa học bạn được hoàn lại 10% giá trị tiền khóa học.",url:"/my_wallet",read:false})
+          await addTransactions({
+            user_id: [user.data[0]._id],
+            type: "reward",
+            status: "completed",
+            amount: price,
+            note:`Phần thuởng hoàn thành khóa học ${courses.title}.`
+          })
+        }
         var duration = 15 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };

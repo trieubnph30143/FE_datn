@@ -1,5 +1,6 @@
 import axios from "../core/api";
 
+
 export const getUserWallet = async (id:any) => {
   try {
     const response = await axios.get(`/wallet/${id}`);
