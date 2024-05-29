@@ -22,3 +22,14 @@ export const updateWallet = async (value: any) => {
     console.log(`update_Categories`, error);
   }
 };
+
+export const updateRewardWallet = async (value: any) => {
+  try {
+    const response = await axios.put(`/wallet/reward/${value.user_id}`, {
+      amount: value.amount,
+    });
+    return response;
+  } catch (error) {
+    console.log(`update_Categories`, error);
+  }
+};

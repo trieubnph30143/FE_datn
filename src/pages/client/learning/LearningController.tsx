@@ -29,6 +29,7 @@ import confetti from "canvas-confetti";
 import { RiDownloadCloud2Line } from "react-icons/ri";
 import { addNotify } from "@/service/notify";
 import { addTransactions } from "@/service/transactions";
+import { updateRewardWallet } from "@/service/wallet";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -481,6 +482,8 @@ const LearningController = () => {
       if (data?.status == 0) {
         if(courses.price>0){
           let price = (10/100)* courses.price
+          let wallet =  await updateRewardWallet({user_id:user.data[0]._id,amount:price})
+          console.log(wallet);
           await addNotify({user_id:[user.data[0]._id],title:`Bạn nhận đựơc ${convertToVND(price)} vào ví.`,message:"Chúc mừng bạn đã hoàn thành xuất sắc khóa học bạn được hoàn lại 10% giá trị tiền khóa học.",url:"/my_wallet",read:false})
           await addTransactions({
             user_id: [user.data[0]._id],
