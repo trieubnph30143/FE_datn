@@ -28,10 +28,13 @@ import Information from "@/pages/client/cv/Information";
 import CvController from "@/pages/client/cv/CvController";
 import MyWalletController from "@/pages/client/my_wallet/MyWalletController";
 import WalletController from "@/pages/admin/wallet/WalletController";
-
+import CoursesClient from "@/pages/client/courses/CoursesController"
+import { useCoursesContext } from "@/App";
 const Router = () => {
-  const [user, setUser] = useLocalStorage("user", {});
-  console.log(user);
+  
+  const context: any = useCoursesContext();
+ 
+  
   return (
     <BrowserRouter>
       <Routes>
@@ -44,17 +47,18 @@ const Router = () => {
           />
           <Route path='article' element={<FeaturedArticleController />} />
           <Route path='posts' element={<WiteBlogPostController />} />
-          <Route path='profile' element={<PrivateRouter user={user.data}><ProfileController /></PrivateRouter>} />
-          <Route path='my_article' element={<PrivateRouter user={user.data}><MyArticleController /></PrivateRouter>} />
-          <Route path='setting' element={<PrivateRouter user={user.data}><SettingProfileController /></PrivateRouter>} />
-          <Route path='my_wallet' element={<PrivateRouter user={user.data}><MyWalletController /></PrivateRouter>} />
+          <Route path='courses' element={<CoursesClient />} />
+          <Route path='profile' element={<PrivateRouter user={context.state.user}><ProfileController /></PrivateRouter>} />
+          <Route path='my_article' element={<PrivateRouter user={context.state.user}><MyArticleController /></PrivateRouter>} />
+          <Route path='setting' element={<PrivateRouter user={context.state.user}><SettingProfileController /></PrivateRouter>} />
+          <Route path='my_wallet' element={<PrivateRouter user={context.state.user}><MyWalletController /></PrivateRouter>} />
         <Route path='/detail_blog/:id' element={<DetailBlogController />} />
         <Route path='/cv' element={<CvController />} />
       
         
         </Route>
-        <Route path='/learning/:id' element={<PrivateRouter user={user.data}><LearningController /></PrivateRouter>} />
-        <Route path='/dashboard' element={<PrivateRouter user={user.data}><LayoutAdmin /></PrivateRouter>}>
+        <Route path='/learning/:id' element={<PrivateRouter user={context.state.user}><LearningController /></PrivateRouter>} />
+        <Route path='/dashboard' element={<PrivateRouter user={context.state.user}><LayoutAdmin /></PrivateRouter>}>
           <Route path='courses' element={<CoursesController />} />
           <Route path='lesson' element={<LessonController />} />
           <Route path='sublesson' element={<SubLessonController />} />

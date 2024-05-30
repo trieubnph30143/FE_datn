@@ -98,7 +98,6 @@ const App = () => {
   const handleRefreshToken = async () => {
     try {
       const response: any = await RefeshToken(user.refeshToken);
-      console.log(response);
       if (response?.status === 0) {
         setUser({ ...user,data:[response.datanew], token: response.accessToken });
         dispatch({
@@ -113,6 +112,7 @@ const App = () => {
       console.error("Refresh token error:", error);
     }
   };
+  console.log(state);
   return (
     <div>
       <QueryClientProvider client={queryClient}>

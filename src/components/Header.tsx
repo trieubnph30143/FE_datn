@@ -18,7 +18,13 @@ import user from "../images/personal-18px.svg";
 import google from "../images/google-18px.svg";
 import github from "../images/github-18px.svg";
 import fb from "../images/facebook-18px.svg";
-import { RiArrowLeftSLine, RiCloseLine, RiSearchLine, RiWalletLine } from "react-icons/ri";
+
+import {
+  RiArrowLeftSLine,
+  RiCloseLine,
+  RiSearchLine,
+  RiWalletLine,
+} from "react-icons/ri";
 import { useEffect, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
@@ -36,7 +42,9 @@ import { auth, googleProvider } from "@/core/firebase";
 import { calculateProgress } from "@/utils/utils";
 import { getUserPost, updatePost } from "@/service/post";
 import { getUserNotify, updateUserReadNotify } from "@/service/notify";
-
+import { forgotPassword, otpEmail } from "@/service/auth";
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [anchorElNotify, setAnchorElNotify] =
@@ -44,7 +52,13 @@ const Header = () => {
   const [anchorElProfile, setAnchorElProfile] =
     useState<HTMLButtonElement | null>(null);
   const [open, setOpen] = useState(false);
+  const [disableForgot, setDisableForgot] = useState(true);
   const [check, setCheck] = useState("");
+   const [tokenOtp, setTokenOtp]:any = useState("");
+  const [email, setEmail] = useState("");
+  const [passwordNew, setPasswordNew] = useState("");
+  const [confirmPasswordNew, setConfirmPasswordNew] = useState("");
+  const [otp, setOtp] = useState("");
   const [select, setSelect] = useState(true);
   const [registerType, setRegisterType] = useState(false);
   const openCourses = Boolean(anchorEl);
@@ -66,11 +80,44 @@ const Header = () => {
     setRegisterType(false);
     setOpen(false);
   };
-  const { register, reset, handleSubmit, onFinish,errors }: any = useAuthMutation({
-    action: check == "login" ? "SIGNIN" : "SIGNUP",
-    onSuccess: async (data) => {
-      if (check !== "login") {
-        if (data.token && data.refeshToken) {
+  const { register, reset, handleSubmit, onFinish, errors }: any =
+    useAuthMutation({
+      action: check == "login" ? "SIGNIN" : "SIGNUP",
+      onSuccess: async (data) => {
+        if (check !== "login") {
+          if (data.token && data.refeshToken) {
+            if (data.status == 0) {
+              queryClient.invalidateQueries({
+                queryKey: ["my_courses"],
+              });
+              handleClose();
+              context.dispatch({
+                type: "LOGIN",
+                payload: {
+                  ...context.state,
+                  user: [data.data[0]],
+                },
+              });
+              let res: any = await getUserProgress(data.data[0]._id);
+              context.dispatch({
+                type: "PROGRESS",
+                payload: {
+                  ...context.state,
+                  progress: res.data,
+                },
+              });
+            }
+          } else {
+            if (data.status == 1) {
+              alert(data.message);
+            } else {
+              reset();
+              setCheck("login");
+              setSelect(true);
+              setRegisterType(false);
+            }
+          }
+        } else {
           if (data.status == 0) {
             queryClient.invalidateQueries({
               queryKey: ["my_courses"],
@@ -80,7 +127,7 @@ const Header = () => {
               type: "LOGIN",
               payload: {
                 ...context.state,
-                user: [data.data[0]],
+                user: data.data,
               },
             });
             let res: any = await getUserProgress(data.data[0]._id);
@@ -92,41 +139,9 @@ const Header = () => {
               },
             });
           }
-        } else {
-          if (data.status == 1) {
-            alert(data.message);
-          } else {
-            reset();
-            setCheck("login");
-            setSelect(true);
-            setRegisterType(false);
-          }
         }
-      } else {
-        if (data.status == 0) {
-          queryClient.invalidateQueries({
-            queryKey: ["my_courses"],
-          });
-          handleClose();
-          context.dispatch({
-            type: "LOGIN",
-            payload: {
-              ...context.state,
-              user: data.data,
-            },
-          });
-          let res: any = await getUserProgress(data.data[0]._id);
-          context.dispatch({
-            type: "PROGRESS",
-            payload: {
-              ...context.state,
-              progress: res.data,
-            },
-          });
-        }
-      }
-    },
-  });
+      },
+    });
   const signInWithGoogle = async () => {
     try {
       setCheck("register");
@@ -196,19 +211,17 @@ const Header = () => {
     context.dispatch({
       type: "LOGOUT",
     });
+    navigate("/");
     setAnchorElProfile(null);
   };
 
-  const { data: notify } = useQuery(
-    ["notify", context.state.user[0]],
-    {
-      queryFn: () => {
-        return getUserNotify(context.state.user[0]._id);
-      },
+  const { data: notify } = useQuery(["notify", context.state.user[0]], {
+    queryFn: () => {
+      return getUserNotify(context.state.user[0]._id);
+    },
 
-      refetchOnWindowFocus: false,
-    }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const handleNotify = async (data: any) => {
     try {
@@ -216,7 +229,7 @@ const Header = () => {
         navigate(data.url);
         handleCloseNotify();
       } else {
-        await updateUserReadNotify(data._id)
+        await updateUserReadNotify(data._id);
         queryClient.invalidateQueries({
           queryKey: ["notify"],
         });
@@ -227,7 +240,48 @@ const Header = () => {
       console.log(error);
     }
   };
-  
+
+  const handleOtpForgotPassword = async (type:any) => {
+    try {
+      if(type==0){
+        let data: any = await otpEmail({ email: email });
+        if (data?.status == 0) {
+          setDisableForgot(false);
+          setTokenOtp(data.otp)
+          toast.success(data.message);
+        } else {
+          toast.warning(data.message);
+        }
+
+      }else{
+        const decodedToken: any = jwtDecode(tokenOtp);
+        
+        if (decodedToken.password == otp.trim()) {
+          setTokenOtp(null)
+          toast.success("Mời bạn tạo mật khẩu mới.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleForgotPassword = async ()=>{
+    try {
+      if(passwordNew==confirmPasswordNew){
+        let data  = await forgotPassword({email:email,passwordNew:passwordNew})
+        if(data?.status==0){
+          toast.success("Đổi mật khẩu thành công")
+          setCheck("login");
+          setSelect(true);
+          setRegisterType(false);
+        }
+      }else{
+        toast.warning("Mật khẩu không trùng khớp.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -279,7 +333,12 @@ const Header = () => {
           />
         </Box>
         {Object.keys(context.state.user)[0] ? (
-          <Stack direction={"row"} sx={{cursor:"pointer"}} gap={"30px"} alignItems={"center"}>
+          <Stack
+            direction={"row"}
+            sx={{ cursor: "pointer" }}
+            gap={"30px"}
+            alignItems={"center"}
+          >
             <Box>
               <Typography
                 aria-describedby={id}
@@ -349,7 +408,7 @@ const Header = () => {
                                 return (
                                   <Stack
                                     direction={"row"}
-                                    p={'5px'}
+                                    p={"5px"}
                                     borderRadius={"5px"}
                                     sx={{
                                       "&:hover": {
@@ -390,8 +449,12 @@ const Header = () => {
                 </Box>
               </Popover>
             </Box>
-            <Box onClick={()=>{navigate("/my_wallet")}}>
-            <RiWalletLine size={22}  /> 
+            <Box
+              onClick={() => {
+                navigate("/my_wallet");
+              }}
+            >
+              <RiWalletLine size={22} />
             </Box>
             <Box>
               <Typography
@@ -401,9 +464,7 @@ const Header = () => {
                 <Badge
                   badgeContent={
                     notify?.status == 0 &&
-                    notify.data.filter(
-                      (item: any) => item.read==false
-                    ).length
+                    notify.data.filter((item: any) => item.read == false).length
                   }
                   color="primary"
                 >
@@ -446,44 +507,47 @@ const Header = () => {
                   >
                     {notify?.status == 0 &&
                       notify.data.length &&
-                      notify.data.reverse().map((item: any) => {
-                       
-                          return (
-                            <Stack
-                              direction={"row"}
-                              onClick={() => handleNotify(item)}
-                              sx={{
-                                "&:hover": {
-                                  backgroundColor: "#dddddd",
-                                },
-                              }}
-                              
-                              borderBottom={"1px dashed #dddddd"}
-                              p={"5px"}
-                              borderRadius={"5px"}
-                              gap={"15px"}
-                            >
-                             
-                              <Box p={"5px"}>
-                                <Badge
-                                  color="secondary"
-                                  invisible={item.read}
-                                  variant="dot"
-
-                                ><Box>
-                                  <Typography fontWeight={"bold"} sx={{ width:"100%" }}>
+                      notify.data.map((item: any) => {
+                        return (
+                          <Stack
+                            direction={"row"}
+                            onClick={() => handleNotify(item)}
+                            sx={{
+                              "&:hover": {
+                                backgroundColor: "#dddddd",
+                              },
+                            }}
+                            borderBottom={"1px dashed #dddddd"}
+                            p={"5px"}
+                            borderRadius={"5px"}
+                            gap={"15px"}
+                          >
+                            <Box p={"5px"}>
+                              <Badge
+                                color="secondary"
+                                invisible={item.read}
+                                variant="dot"
+                              >
+                                <Box>
+                                  <Typography
+                                    fontWeight={"bold"}
+                                    sx={{ width: "100%" }}
+                                  >
                                     {item.title}
                                   </Typography>
-                                  <Typography mt={"5px"} fontSize={"14px"} color={"#333"} sx={{ width:"100%" }}>
+                                  <Typography
+                                    mt={"5px"}
+                                    fontSize={"14px"}
+                                    color={"#333"}
+                                    sx={{ width: "100%" }}
+                                  >
                                     {item.message}
                                   </Typography>
-
                                 </Box>
-                                </Badge>
-                              </Box>
-                            </Stack>
-                          );
-                       
+                              </Badge>
+                            </Box>
+                          </Stack>
+                        );
                       })}
                   </Stack>
                 </Box>
@@ -646,7 +710,7 @@ const Header = () => {
           >
             <RiCloseLine size={"20px"} />
           </Box>
-          {check === "login" ? (
+          {check === "login" && (
             <Box
               sx={{
                 textAlign: "center",
@@ -724,40 +788,6 @@ const Header = () => {
                     <Box width={"80%"} onClick={signInWithGoogle}>
                       <Typography fontSize={"13px"} fontWeight={"600"}>
                         Đăng nhập với Google
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Stack
-                    direction={"row"}
-                    alignItems={"center"}
-                    width={"320px"}
-                    border={"2px solid #ddd"}
-                    borderRadius={"30px"}
-                    padding={"10px 0"}
-                  >
-                    <Box width={"15%"}>
-                      <img src={fb} width={20} height={20} alt="" />
-                    </Box>
-                    <Box width={"80%"}>
-                      <Typography fontSize={"13px"} fontWeight={"600"}>
-                        Đăng nhập với Facebook
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Stack
-                    direction={"row"}
-                    alignItems={"center"}
-                    width={"320px"}
-                    border={"2px solid #ddd"}
-                    borderRadius={"30px"}
-                    padding={"10px 0"}
-                  >
-                    <Box width={"15%"}>
-                      <img src={github} width={20} height={20} alt="" />
-                    </Box>
-                    <Box width={"80%"}>
-                      <Typography fontSize={"13px"} fontWeight={"600"}>
-                        Đăng nhập với Github
                       </Typography>
                     </Box>
                   </Stack>
@@ -869,6 +899,15 @@ const Header = () => {
                 >
                   Đăng ký
                 </b>
+                <br></br>
+                <b
+                  onClick={() => {
+                    setCheck("forgotpassword");
+                  }}
+                  style={{ color: "#f05123" }}
+                >
+                  Quên mật khẩu
+                </b>
               </Typography>
               <Typography fontSize={"11px"} color={"#666"} mt={"20px"}>
                 Việc bạn tiếp tục sử dụng trang web này đồng nghĩa bạn đồng ý
@@ -879,7 +918,9 @@ const Header = () => {
                 của chúng tôi.
               </Typography>
             </Box>
-          ) : (
+          )}
+
+          {check === "register" && (
             <Box sx={{ textAlign: "center", padding: "80px 20px 60px" }}>
               {!select ? (
                 <Box
@@ -940,57 +981,6 @@ const Header = () => {
                       </Typography>
                     </Box>
                   </Stack>
-                  <Stack
-                    direction={"row"}
-                    alignItems={"center"}
-                    width={"320px"}
-                    border={"2px solid #ddd"}
-                    borderRadius={"30px"}
-                    padding={"10px 0"}
-                  >
-                    <Box width={"15%"}>
-                      <img src={google} width={20} height={20} alt="" />
-                    </Box>
-                    <Box width={"80%"}>
-                      <Typography fontSize={"13px"} fontWeight={"600"}>
-                        Đăng ký với Google
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Stack
-                    direction={"row"}
-                    alignItems={"center"}
-                    width={"320px"}
-                    border={"2px solid #ddd"}
-                    borderRadius={"30px"}
-                    padding={"10px 0"}
-                  >
-                    <Box width={"15%"}>
-                      <img src={fb} width={20} height={20} alt="" />
-                    </Box>
-                    <Box width={"80%"}>
-                      <Typography fontSize={"13px"} fontWeight={"600"}>
-                        Đăng ký với Facebook
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Stack
-                    direction={"row"}
-                    alignItems={"center"}
-                    width={"320px"}
-                    border={"2px solid #ddd"}
-                    borderRadius={"30px"}
-                    padding={"10px 0"}
-                  >
-                    <Box width={"15%"}>
-                      <img src={github} width={20} height={20} alt="" />
-                    </Box>
-                    <Box width={"80%"}>
-                      <Typography fontSize={"13px"} fontWeight={"600"}>
-                        Đăng ký với Github
-                      </Typography>
-                    </Box>
-                  </Stack>
                 </Stack>
               ) : (
                 <Box my={"20px"}>
@@ -1006,7 +996,7 @@ const Header = () => {
                           Tên của bạn?
                         </Typography>
                         <TextField
-                        error={errors.user_name}
+                          error={errors.user_name}
                           sx={{
                             width: "100%",
                             height: "42px",
@@ -1090,6 +1080,239 @@ const Header = () => {
               )}
               <Typography fontSize={"14px"} color={"#333"}>
                 Bạn đã có tài khoản?{" "}
+                <b
+                  onClick={() => {
+                    setCheck("login");
+                    setSelect(true);
+                    setRegisterType(false);
+                  }}
+                  style={{ color: "#f05123" }}
+                >
+                  Đăng nhập
+                </b>
+              </Typography>
+              <Typography fontSize={"11px"} color={"#666"} mt={"20px"}>
+                Việc bạn tiếp tục sử dụng trang web này đồng nghĩa bạn đồng ý
+                <br></br> với{" "}
+                <a style={{ textDecoration: "underline" }}>
+                  điều khoản sử dụng
+                </a>{" "}
+                của chúng tôi.
+              </Typography>
+            </Box>
+          )}
+          {check === "forgotpassword" && (
+            <Box sx={{ textAlign: "center", padding: "80px 20px 60px" }}>
+              <Box
+                onClick={() => setSelect(!select)}
+                sx={{ position: "absolute", top: "14%", left: "25px" }}
+              >
+                <RiArrowLeftSLine size={"30px"} />
+              </Box>
+
+              <Box>
+                <img
+                  width={40}
+                  height={40}
+                  style={{ borderRadius: "10px" }}
+                  src={logo}
+                  alt=""
+                />
+              </Box>
+              <Typography
+                my={"10px"}
+                fontWeight={"700"}
+                variant="h5"
+                fontSize={"27px"}
+              >
+                Lấy lại mật khẩu
+              </Typography>
+              <Typography my={"10px"} fontSize={"13px"} color={"#f33a58"}>
+                Mỗi người nên sử dụng riêng một tài khoản, tài khoản nhiều người
+                sử <br></br>dụng chung có thể sẽ bị khóa.
+              </Typography>
+
+              <Box my={"20px"}>
+                <form onSubmit={handleSubmit(onFinish)}>
+                  <Box padding={"0 65px"}>
+                    <Box mt={"10px"}>
+                      <TextField
+                        value={email}
+                        onChange={(e: any) => setEmail(e.target.value)}
+                        sx={{
+                          width: "100%",
+                          height: "42px",
+                          mt: "5px",
+                          borderRadius: "30px",
+                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                            {
+                              borderRadius: "30px",
+                            },
+                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                            {
+                              height: "28px",
+                            },
+                        }}
+                        helperText=" "
+                        placeholder={"Email"}
+                        id="demo-helper-text-aligned-no-helper"
+                        size="small"
+                      />
+                    </Box>
+                    <Box
+                      mt={"10px"}
+                      sx={{
+                        ".css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root": {
+                          borderRadius: "25px",
+                          py: "3px",
+                        },
+                        ".css-1e6y48t-MuiButtonBase-root-MuiButton-root": {
+                          width: "115px",
+                        },
+                      }}
+                    >
+                      <TextField
+                        disabled={disableForgot}
+                        value={otp}
+                        onChange={(e: any) => setOtp(e.target.value)}
+                        sx={{
+                          width: "100%",
+                          height: "42px",
+                          mt: "5px",
+                          borderRadius: "30px",
+                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                            {
+                              borderRadius: "30px",
+                              paddingRight: "4px",
+                            },
+                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                            {
+                              height: "28px",
+                            },
+                        }}
+                        helperText=" "
+                        placeholder={"Nhập mã OTP"}
+                        id="demo-helper-text-aligned-no-helper"
+                        size="small"
+                        InputProps={{
+                          endAdornment: (
+                            <>
+                              {disableForgot ? (
+                                <Button
+                                  onClick={()=>handleOtpForgotPassword(0)}
+                                  disabled={!email}
+                                  sx={{
+                                    background:
+                                      "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                                    color: "white",
+                                    borderRadius: "99px",
+                                     width: "92px",
+                                    height: "38px",
+                                  }}
+                                >
+                                  Gửi mã
+                                </Button>
+                              ) : (
+                                <Button
+                                onClick={()=>handleOtpForgotPassword(1)}
+                                  disabled={!email}
+                                  sx={{
+                                    background:
+                                      "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                                    color: "white",
+                                    borderRadius: "99px",
+                                    width: "200px",
+                                    height: "38px",
+                                  }}
+                                >
+                                  Kiểm tra mã
+                                </Button>
+                              )}
+                            </>
+                          ),
+                        }}
+                      />
+                    </Box>
+                   
+                    {tokenOtp==null&&<>
+                      <Box mt={"10px"}>
+                      <TextField
+                      type="password"
+                    
+                        value={passwordNew}
+                        onChange={(e: any) => setPasswordNew(e.target.value)}
+                        sx={{
+                          width: "100%",
+                          height: "42px",
+                          mt: "5px",
+                          borderRadius: "30px",
+                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                            {
+                              borderRadius: "30px",
+                            },
+                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                            {
+                              height: "28px",
+                            },
+                        }}
+                        helperText=" "
+                        placeholder={"Mật khẩu mới"}
+                        id="demo-helper-text-aligned-no-helper"
+                        size="small"
+                      />
+                    </Box>
+                    <Box mt={"10px"}>
+                      <TextField
+                       type="password"
+                        value={confirmPasswordNew}
+                        onChange={(e: any) => setConfirmPasswordNew(e.target.value)}
+                        sx={{
+                          width: "100%",
+                          height: "42px",
+                          mt: "5px",
+                          borderRadius: "30px",
+                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                            {
+                              borderRadius: "30px",
+                            },
+                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                            {
+                              height: "28px",
+                            },
+                        }}
+                        helperText=" "
+                        placeholder={"Nhập lại mật khẩu mới"}
+                        id="demo-helper-text-aligned-no-helper"
+                        size="small"
+                      />
+                    </Box>
+                    
+                    </>}
+                    <Box>
+                      <Button
+                        onClick={handleForgotPassword}
+                        disabled={!passwordNew||!confirmPasswordNew}
+                        
+                        sx={{
+                          width: "100%",
+                          height: "44px",
+                          background:
+                            "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
+                          color: "white",
+                          borderRadius: "30px",
+                          mt: "20px",
+                          fontWeight: "700",
+                        }}
+                      >
+                       Đặt lại mật khẩu
+                      </Button>
+                    </Box>
+                  </Box>
+                </form>
+              </Box>
+
+              <Typography fontSize={"14px"} color={"#333"}>
+                Quay lại trang
                 <b
                   onClick={() => {
                     setCheck("login");

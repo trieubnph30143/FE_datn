@@ -27,6 +27,7 @@ import {
 import React, { useState } from "react";
 import {
   RiArticleLine,
+  RiBankCardFill,
   RiCloseCircleFill,
   RiFileListFill,
   RiGitBranchFill,
@@ -375,7 +376,7 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/categories"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
@@ -395,13 +396,33 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/post"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
                   <RiArticleLine />
                   </ListItemIcon>
                   <ListItemText primary={"Blog"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+          </List>
+          <Divider />
+          <List>
+            
+          <Typography ml={"5px"}>Wallet</Typography>
+          <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/wallet"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiBankCardFill />
+                  </ListItemIcon>
+                  <ListItemText primary={"Wallet"} />
                 </CustomListItemButton>
                 
                 </Link>
@@ -433,7 +454,7 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/user"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
@@ -448,7 +469,7 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/permission"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
@@ -463,7 +484,7 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/role"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
@@ -478,7 +499,7 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/role_permission"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>

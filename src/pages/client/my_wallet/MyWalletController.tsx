@@ -97,7 +97,7 @@ const MyWalletController = () => {
           if (message == "Giao dịch thành công") {
             if (count == 0) {
               let amount: any = await updateStatusTransaction("completed");
-              console.log(amount);
+             
               if (amount) {
                 await updateWalletSuccess(amount,user.data[0]._id);
                 toast.success(message);
@@ -107,6 +107,12 @@ const MyWalletController = () => {
           } else {
             if (count == 0) {
               await updateStatusTransaction("failed")
+              queryClient.invalidateQueries({
+                queryKey: ["wallet"],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["transtion"],
+              });
               toast.error(message);
               count++;
             }
@@ -287,7 +293,7 @@ const MyWalletController = () => {
           transtion !== undefined &&
           Object.keys(transtion)[0] &&
           transtion.status == 0 &&
-          transtion.data.reverse()
+          transtion.data
         }
         handleChangeTabs={handleChangeTabs}
         handleChange={handleChange}

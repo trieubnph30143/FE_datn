@@ -17,6 +17,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RiBookReadFill } from "react-icons/ri";
 
 const SideBar = () => {
   const StyledSpeedDial = styled(SpeedDial)(({ theme }) => ({
@@ -106,8 +107,29 @@ const SideBar = () => {
           height={"72px"}
           bgcolor={active == 1 ? "#e8ebed" : undefined}
           onClick={() => {
-            navigate("/learning_roadmap");
+            navigate("/courses");
             setActive(1);
+          }}
+          borderRadius={"16px"}
+          direction={"row"}
+          justifyContent={"center"}
+          alignItems={"center"}>
+          <Stack direction={"column"} alignItems={"center"} gap={0.5}>
+            <Box width={"20px"} height={"16px"}>
+            <RiBookReadFill size={20} />
+            </Box>
+            <Typography fontWeight={700} fontSize={"12px"}>
+              Khóa học
+            </Typography>
+          </Stack>
+        </Stack>
+        <Stack
+          width={"72px"}
+          height={"72px"}
+          bgcolor={active == 2 ? "#e8ebed" : undefined}
+          onClick={() => {
+            navigate("/learning_roadmap");
+            setActive(2);
           }}
           borderRadius={"16px"}
           direction={"row"}
@@ -139,10 +161,10 @@ const SideBar = () => {
         <Stack
           width={"72px"}
           height={"72px"}
-          bgcolor={active == 2 ? "#e8ebed" : undefined}
+          bgcolor={active == 3 ? "#e8ebed" : undefined}
           onClick={() => {
             navigate("/article");
-            setActive(2);
+            setActive(3);
           }}
           borderRadius={"16px"}
           direction={"row"}

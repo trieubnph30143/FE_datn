@@ -27,6 +27,7 @@ const Product = ({
       navigate(`/detail_blog/${id}`);
     }
   };
+  console.log(item);
   return (
     <>
       {item ? (
@@ -191,7 +192,7 @@ const Product = ({
                   transition: ".5s",
                   transform: "translateY(20px)",
                   "&:hover": {
-                    color: "black", // Thay đổi màu chữ khi hover
+                    color: "black", 
                     backgroundColor: "white",
                   },
                 }}

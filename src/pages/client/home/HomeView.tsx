@@ -17,8 +17,9 @@ import { useEffect, useState } from "react";
 import Product from "@/components/Product";
 import ProductList from "@/components/ProductList";
 import { RiVolumeUpLine } from "react-icons/ri";
-import certificate from "../../../images/capture (2).png"
-import postImage from "../../../images/Screenshot from 2024-05-29 14-06-07.png"
+import certificate from "../../../images/capture (2).png";
+import postImage from "../../../images/Screenshot from 2024-05-29 14-06-07.png";
+import contact from "../../../images/contact.jpg"
 type Props = {
   courses: typeCourses[];
   progress: any;
@@ -47,11 +48,11 @@ const HomeView = ({ courses, progress, post }: Props) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
-  useEffect(()=>{
+  useEffect(() => {
     setOpen(true);
-  },[])
+  }, []);
   const [open, setOpen] = useState(false);
-  
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -62,6 +63,7 @@ const HomeView = ({ courses, progress, post }: Props) => {
 
   return (
     <>
+    
       <Box
         sx={{
           ".slick-slider": {
@@ -273,7 +275,56 @@ const HomeView = ({ courses, progress, post }: Props) => {
         title="Khóa học miễn phí"
       />
       <ProductList type={"blog"} data={post} title="Bài viết nổi bật" />
-      <ProductList type={"video"} title="Videos nổi bật" />
+      <Box className="contact" sx={{p:"0 40px",width:"98%",mt:"40px",backgroundImage:`url('${contact}')`,backgroundRepeat:"no-repeat"}}>
+      
+        <div className="container " style={{display:"flex",alignItems:"center",justifyContent:"end",gap:"30px"}}>  
+          
+
+          <form onClick={(e)=>e.preventDefault()} style={{display:"flex" ,flexDirection:"column",gap:"15px"}}>
+            
+            
+            <div className="form-group position-relative">
+              <label htmlFor="formName" className="d-block">
+                <i className="icon" data-feather="user" />
+              </label>
+              <input
+                type="text"
+                id="formName"
+                className="form-control form-control-lg thick width"
+                placeholder="Name"
+              />
+            </div>
+         
+            <div className="form-group position-relative">
+              <label htmlFor="formEmail" className="d-block">
+                <i className="icon" data-feather="mail" />
+              </label>
+              <input
+                type="email"
+                id="formEmail"
+                className="form-control form-control-lg thick width"
+                placeholder="E-mail"
+              />
+            </div>
+            {/* Message */}
+            <div className="form-group message">
+              <textarea
+                id="formMessage"
+                className="form-control form-control-lg width"
+                rows={7}
+                placeholder="Mensagem"
+                defaultValue={""}
+              />
+            </div>
+            {/* Submit btn */}
+            <div className="text-center">
+              <button  className="btn btn-primary" tabIndex={-1}>
+                Send message
+              </button>
+            </div>
+          </form>
+        </div>
+      </Box>
       <Box
         onClick={handleClickOpen}
         sx={{
@@ -297,53 +348,89 @@ const HomeView = ({ courses, progress, post }: Props) => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        sx={{".css-1t1j96h-MuiPaper-root-MuiDialog-paper":{
-          maxWidth:"none"
-        }}}
+        sx={{
+          ".css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+            maxWidth: "none",
+          },
+        }}
       >
-        <Box className="see-more" sx={{width:"900px" ,padding:"30px",overflowY:"scroll"}}>
-        <DialogTitle id="alert-dialog-title">
-        <Typography variant="h5" fontWeight={"bold"}>FDemy Thông báo</Typography>
-        </DialogTitle>
-        <DialogContent>
-          
+        <Box
+          className="see-more"
+          sx={{ width: "900px", padding: "30px", overflowY: "scroll" }}
+        >
+          <DialogTitle id="alert-dialog-title">
+            <Typography variant="h5" fontWeight={"bold"}>
+              FDemy Thông báo
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
             <Box>
-              <Typography variant="h6" fontWeight={"bold"} fontSize={"20px"}>1. Thông Báo Hoàn Tiền 10% Khi Hoàn Thành Khóa Học mất phí</Typography>
-              <DialogContentText sx={{my:"10px"}}>
-              <Typography>Chúng tôi rất vui mừng thông báo về chương trình khuyến mãi đặc biệt dành cho học viên của chúng tôi. Khi bạn hoàn thành bất kỳ khóa học mất phí nào trên nền tảng, bạn sẽ được hoàn lại 10% số tiền đã trả cho khóa học đó vào ví của bạn!</Typography>
+              <Typography variant="h6" fontWeight={"bold"} fontSize={"20px"}>
+                1. Thông Báo Hoàn Tiền 10% Khi Hoàn Thành Khóa Học mất phí
+              </Typography>
+              <DialogContentText sx={{ my: "10px" }}>
+                <Typography>
+                  Chúng tôi rất vui mừng thông báo về chương trình khuyến mãi
+                  đặc biệt dành cho học viên của chúng tôi. Khi bạn hoàn thành
+                  bất kỳ khóa học mất phí nào trên nền tảng, bạn sẽ được hoàn
+                  lại 10% số tiền đã trả cho khóa học đó vào ví của bạn!
+                </Typography>
               </DialogContentText>
-              <Typography fontWeight={"bold"}>Cách Thức Nhận Hoàn Tiền:</Typography>
-              <DialogContentText sx={{my:"10px"}}>
-              <img src={certificate} width={"100%"} alt="" />
-              <Box ml={"10px"}>
-              <Typography sx={{my:"4px"}}>1.Hoàn thành khóa học bạn đã đăng ký.</Typography>
-              <Typography sx={{my:"4px"}}>2.Số tiền hoàn lại sẽ tự động được chuyển vào ví của bạn trong vòng 24 giờ sau khi hoàn thành khóa học và nhận.</Typography>
-              </Box>
+              <Typography fontWeight={"bold"}>
+                Cách Thức Nhận Hoàn Tiền:
+              </Typography>
+              <DialogContentText sx={{ my: "10px" }}>
+                <img src={certificate} width={"100%"} alt="" />
+                <Box ml={"10px"}>
+                  <Typography sx={{ my: "4px" }}>
+                    1.Hoàn thành khóa học bạn đã đăng ký.
+                  </Typography>
+                  <Typography sx={{ my: "4px" }}>
+                    2.Số tiền hoàn lại sẽ tự động được chuyển vào ví của bạn
+                    trong vòng 24 giờ sau khi hoàn thành khóa học và nhận.
+                  </Typography>
+                </Box>
               </DialogContentText>
             </Box>
             <Box mt={"15px"}>
-              <Typography variant="h6" fontWeight={"bold"} fontSize={"20px"}>2. Thông Báo Thưởng 10,000 VND Vào Ví Khi Bài Viết Đạt 1,000 Lượt Thích</Typography>
-              <DialogContentText sx={{my:"10px"}}>
-              <Typography>Để khuyến khích các bạn tích cực chia sẻ kiến thức và kinh nghiệm học tập, chúng tôi xin giới thiệu chương trình thưởng hấp dẫn: Khi bài viết của bạn đạt 1,000 lượt thích, bạn sẽ được thưởng ngay 10,000 VND vào ví!</Typography>
+              <Typography variant="h6" fontWeight={"bold"} fontSize={"20px"}>
+                2. Thông Báo Thưởng 10,000 VND Vào Ví Khi Bài Viết Đạt 1,000
+                Lượt Thích
+              </Typography>
+              <DialogContentText sx={{ my: "10px" }}>
+                <Typography>
+                  Để khuyến khích các bạn tích cực chia sẻ kiến thức và kinh
+                  nghiệm học tập, chúng tôi xin giới thiệu chương trình thưởng
+                  hấp dẫn: Khi bài viết của bạn đạt 1,000 lượt thích, bạn sẽ
+                  được thưởng ngay 10,000 VND vào ví!
+                </Typography>
               </DialogContentText>
-              <Typography fontWeight={"bold"}>Cách Thức Nhận Thưởng:</Typography>
-              <DialogContentText sx={{my:"10px"}}>
-              <img src={postImage} width={"100%"} alt="" />
-              <Box ml={"10px"}>
-              <Typography sx={{my:"4px"}}>1.Viết và đăng bài viết chia sẻ kiến thức hoặc kinh nghiệm học tập lên blog của nền tảng.</Typography>
-              <Typography sx={{my:"4px"}}>2.Khi bài viết đạt đủ 1,000 lượt thích, số tiền thưởng 10,000 VND sẽ tự động được chuyển vào ví của bạn.</Typography>
-              </Box>
+              <Typography fontWeight={"bold"}>
+                Cách Thức Nhận Thưởng:
+              </Typography>
+              <DialogContentText sx={{ my: "10px" }}>
+                <img src={postImage} width={"100%"} alt="" />
+                <Box ml={"10px"}>
+                  <Typography sx={{ my: "4px" }}>
+                    1.Viết và đăng bài viết chia sẻ kiến thức hoặc kinh nghiệm
+                    học tập lên blog của nền tảng.
+                  </Typography>
+                  <Typography sx={{ my: "4px" }}>
+                    2.Khi bài viết đạt đủ 1,000 lượt thích, số tiền thưởng
+                    10,000 VND sẽ tự động được chuyển vào ví của bạn.
+                  </Typography>
+                </Box>
               </DialogContentText>
               <Typography fontWeight={"bold"}>Lưu Ý:</Typography>
               <ul>
-                <li>Số tiền thưởng sẽ được chuyển vào ví của bạn và có thể sử dụng để đăng ký các khóa học mới hoặc rút về tài khoản ngân hàng.</li>
+                <li>
+                  Số tiền thưởng sẽ được chuyển vào ví của bạn và có thể sử dụng
+                  để đăng ký các khóa học mới hoặc rút về tài khoản ngân hàng.
+                </li>
               </ul>
             </Box>
-          
-        </DialogContent>
+          </DialogContent>
         </Box>
-        
-       
       </Dialog>
     </>
   );

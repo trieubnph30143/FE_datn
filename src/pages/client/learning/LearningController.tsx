@@ -93,16 +93,22 @@ const LearningController = () => {
       return getProgress(user.data[0]._id, id);
     },
     onSuccess(data) {
-      let total = 0;
-      data[0].lesson_progress.map((item: any) => {
-        item.sub_lesson.map(() => total++);
-      });
-      const percentagePerItem = Math.round(100 / total);
-      setTotalprogressBar(percentagePerItem);
-      let arr = calculateProgress(data);
+      console.log(data);
+      if(data[0]){
+        let total = 0;
+        data[0].lesson_progress.map((item: any) => {
+          item.sub_lesson.map(() => total++);
+        });
+        const percentagePerItem = Math.round(100 / total);
+        setTotalprogressBar(percentagePerItem);
+        let arr = calculateProgress(data);
+  
+        setprogressBar(arr);
+        setLoadingAll({ ...loadingAll, progress: true });
 
-      setprogressBar(arr);
-      setLoadingAll({ ...loadingAll, progress: true });
+      }else{
+        navigate("/")
+      }
     },
     refetchOnWindowFocus: false,
   });

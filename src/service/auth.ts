@@ -85,6 +85,30 @@ export const updateUSer = async (value: any) => {
     console.log(`get_Role`, error);
   }
 };
+export const changePassword = async (value: any) => {
+  try {
+    const response = await axios.put(`/auth/change_password/user`, value);
+    return response;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
+export const forgotPassword = async (value: any) => {
+  try {
+    const response = await axios.put(`/auth/forgot_password/user`, value);
+    return response;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
+export const otpEmail = async (value: any) => {
+  try {
+    const response = await axios.post(`/auth/otp_email/user`, value);
+    return response;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
 export const updateProfileUSer = async (value: any) => {
   try {
     const response = await axios.put(`/auth/profile/${value._id}`, value);
