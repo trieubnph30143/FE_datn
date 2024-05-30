@@ -393,9 +393,9 @@ const MyWalletView = ({
                                 <TableCell><Button sx={style}>{row.status}</Button></TableCell>
 
                                 <TableCell>
-                                  {row.email_transfer == user.data[0].email
-                                    ? row.email_transfer
-                                    : row.email_transfer}
+                                  
+                                   
+                                   {row.email_transfer}
                                 </TableCell>
 
                                 <TableCell>

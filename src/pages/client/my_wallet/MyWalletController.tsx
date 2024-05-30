@@ -220,14 +220,15 @@ const MyWalletController = () => {
             type: "transfer",
             status: "completed",
             amount:transfer,
-            email_transfer:user.data[0].email
+            email_transfer:`Email Chuyển : ${dataEmail[0].email}`,
+
           })
           let transactionsTranfer = await addTransactions({
             user_id: [dataEmail[0]._id],
             type: "transfer",
             status: "completed",
             amount: transfer,
-            email_transfer:dataEmail[0].email
+            email_transfer:`Email nhận : ${user.data[0].email}`
           })
           let wallet = await  getUserWallet(dataEmail[0]._id)
           if(transactionsUser?.status==0&&transactionsTranfer?.status==0){
