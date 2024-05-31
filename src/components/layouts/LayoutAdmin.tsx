@@ -435,7 +435,7 @@ const LayoutAdmin = () => {
                 color:"black",
                 textDecoration:"none"
               }}} disablePadding>
-                <Link to={"/dashboard/courses"}> 
+                <Link to={"/dashboard/comment"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>

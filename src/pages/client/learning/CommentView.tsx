@@ -73,6 +73,7 @@ type Props = {
   feedBackChild: any;
   handleEditChild: any;
   handleDeleteChild: any;
+  handleClickOpenReport:any
 };
 const CommentView = ({
   id,
@@ -106,6 +107,7 @@ const CommentView = ({
   feedBackChild,
   handleEditChild,
   handleDeleteChild,
+  handleClickOpenReport
 }: Props) => {
   return (
     <>
@@ -412,7 +414,19 @@ const CommentView = ({
                                   </Typography>
                                 </>
                               ) : (
-                                ""
+                                <> •
+                                <Typography
+                                  onClick={() => handleClickOpenReport(item,0)}
+                                  
+                                  fontSize={"13px"}
+                                  sx={{
+                                    display: "flex ",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                  }}
+                                >
+                                 Báo cáo
+                                </Typography></>
                               )}
                             </Stack>
 
@@ -467,6 +481,7 @@ const CommentView = ({
                               {item.comments_child.map(
                                 (it: any, index2: number) => {
                                   let commentChild = feedBackChild == index2;
+                                 console.log(it);
                                   return (
                                     <Box>
                                       <Stack
@@ -478,7 +493,7 @@ const CommentView = ({
                                           <Stack direction={"row"} gap={"10px"}>
                                             <Box>
                                               <img
-                                                src={image}
+                                                src={it.user_id[0].image.url?it.user_id[0].image.url:image}
                                                 width={40}
                                                 height={40}
                                                 style={{ borderRadius: "50%" }}
@@ -591,7 +606,7 @@ const CommentView = ({
                                                     5 tháng trước
                                                   </Typography>
                                                   {user.data[0]._id ==
-                                                  it.user_id ? (
+                                                  it.user_id[0]._id ? (
                                                     <>
                                                       •
                                                       <Typography
@@ -632,7 +647,19 @@ const CommentView = ({
                                                       </Typography>
                                                     </>
                                                   ) : (
-                                                    ""
+                                                    <> •
+                                                    <Typography
+                                                      onClick={() => handleClickOpenReport(item,1,it._id)}
+                                                      
+                                                      fontSize={"13px"}
+                                                      sx={{
+                                                        display: "flex ",
+                                                        alignItems: "center",
+                                                        gap: "6px",
+                                                      }}
+                                                    >
+                                                     Báo cáo
+                                                    </Typography></>
                                                   )}
                                                 </Stack>
                                               </Box>

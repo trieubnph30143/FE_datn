@@ -30,6 +30,7 @@ import MyWalletController from "@/pages/client/my_wallet/MyWalletController";
 import WalletController from "@/pages/admin/wallet/WalletController";
 import CoursesClient from "@/pages/client/courses/CoursesController"
 import { useCoursesContext } from "@/App";
+import CommentControllerAdmin from "@/pages/admin/comment/CommentController";
 const Router = () => {
   
   const context: any = useCoursesContext();
@@ -69,6 +70,7 @@ const Router = () => {
           <Route path='role_permission' element={<RolePermissionController />} />
           <Route path='user' element={<UserController />} />
           <Route path='wallet' element={<WalletController />} />
+          <Route path='comment' element={<CommentControllerAdmin />} />
         </Route>
         <Route path='*' element={<PageNotFound />} />
       </Routes>
