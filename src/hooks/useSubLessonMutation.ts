@@ -77,6 +77,7 @@ export const useSubLessonMutation = ({
           mutate({
             description: values.description,
             duration: values.duration,
+            source:values.source,
             title: values.title,
             type: "video",
             lesson: [values.lesson_id],
@@ -110,6 +111,7 @@ export const useSubLessonMutation = ({
           content_quizz: content,
           questions: JSON.stringify(question),
           lesson: [values.lesson_id],
+          source:values.source,
         });
         // quizz
       } else if (type == 2) {
@@ -121,6 +123,7 @@ export const useSubLessonMutation = ({
           type: "blog",
           content_blog: content,
           lesson: [values.lesson_id],
+          source:values.source,
         });
       } else {
         let body: any = {
@@ -131,6 +134,7 @@ export const useSubLessonMutation = ({
           content_code: content,
           solution_key: values.solution_key,
           lesson: [values.lesson_id],
+          source:values.source,
         };
         if (typeExersice == "html") {
           body.type_exercise = JSON.stringify({ html: exerciseHtml });
@@ -162,6 +166,7 @@ export const useSubLessonMutation = ({
                 description: values.description,
                 duration: values.duration,
                 title: values.title,
+                source:values.source,
                 type: "video",
                 lesson: [values.lesson_id],
                 video_id: {
@@ -178,6 +183,7 @@ export const useSubLessonMutation = ({
             description: values.description,
             duration: values.duration,
             title: values.title,
+            source:values.source,
             type: "video",
             lesson: [values.lesson_id],
             video_id: values.video_id,
@@ -206,6 +212,7 @@ export const useSubLessonMutation = ({
           title: values.title,
           type: "quiz",
           content_quizz: content,
+          source:values.source,
           questions: JSON.stringify(question),
           lesson: [values.lesson_id],
         };
@@ -217,6 +224,7 @@ export const useSubLessonMutation = ({
           description: values.description,
           duration: values.duration,
           title: values.title,
+          source:values.source,
           type: "blog",
           content_blog: content,
           lesson: [values.lesson_id],
@@ -228,6 +236,7 @@ export const useSubLessonMutation = ({
           title: values.title,
           type: "code",
           content_code: content,
+          source:values.source,
           solution_key: values.solution_key,
           lesson: [values.lesson_id],
         };

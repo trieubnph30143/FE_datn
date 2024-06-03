@@ -9,6 +9,7 @@ import {
   DialogTitle,
   InputAdornment,
   Popover,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -45,6 +46,7 @@ import { getUserNotify, updateUserReadNotify } from "@/service/notify";
 import { forgotPassword, otpEmail } from "@/service/auth";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import { io } from "socket.io-client";
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [anchorElNotify, setAnchorElNotify] =
@@ -54,7 +56,7 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const [disableForgot, setDisableForgot] = useState(true);
   const [check, setCheck] = useState("");
-   const [tokenOtp, setTokenOtp]:any = useState("");
+  const [tokenOtp, setTokenOtp]: any = useState("");
   const [email, setEmail] = useState("");
   const [passwordNew, setPasswordNew] = useState("");
   const [confirmPasswordNew, setConfirmPasswordNew] = useState("");
@@ -69,11 +71,13 @@ const Header = () => {
   const idProfile = openProfile ? "simple-popover" : undefined;
   const navigate = useNavigate();
   const context: any = useCoursesContext();
-  const [, setUser] = useLocalStorage("user", {});
+  const [userLocal, setUser] = useLocalStorage("user", {});
   const queryClient = useQueryClient();
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [dataNotify, setDataNotify] = useState([]);
   const [progressBar, setProgressBar] = useState([]);
+  const socket = io("http://localhost:4000");
   const handleClose = () => {
     setCheck("");
     setSelect(true);
@@ -215,14 +219,27 @@ const Header = () => {
     setAnchorElProfile(null);
   };
 
-  const { data: notify } = useQuery(["notify", context.state.user[0]], {
+  const {} = useQuery(["notify", context.state.user[0]], {
     queryFn: () => {
       return getUserNotify(context.state.user[0]._id);
     },
-
+    onSuccess(data) {
+      if (data?.status == 0) {
+        setDataNotify(data.data);
+      }
+    },
     refetchOnWindowFocus: false,
   });
-
+  useEffect(() => {
+    socket.on("notifyNew", (res) => {
+      console.log(userLocal);
+      console.log(res.user_id);
+      if (res.user_id == userLocal.data[0]._id) {
+        console.log("tona");
+        setDataNotify(res.data);
+      }
+    });
+  }, []);
   const handleNotify = async (data: any) => {
     try {
       if (data.read) {
@@ -241,23 +258,22 @@ const Header = () => {
     }
   };
 
-  const handleOtpForgotPassword = async (type:any) => {
+  const handleOtpForgotPassword = async (type: any) => {
     try {
-      if(type==0){
+      if (type == 0) {
         let data: any = await otpEmail({ email: email });
         if (data?.status == 0) {
           setDisableForgot(false);
-          setTokenOtp(data.otp)
+          setTokenOtp(data.otp);
           toast.success(data.message);
         } else {
           toast.warning(data.message);
         }
-
-      }else{
+      } else {
         const decodedToken: any = jwtDecode(tokenOtp);
-        
+
         if (decodedToken.password == otp.trim()) {
-          setTokenOtp(null)
+          setTokenOtp(null);
           toast.success("Mời bạn tạo mật khẩu mới.");
         }
       }
@@ -265,23 +281,26 @@ const Header = () => {
       console.log(error);
     }
   };
-  const handleForgotPassword = async ()=>{
+  const handleForgotPassword = async () => {
     try {
-      if(passwordNew==confirmPasswordNew){
-        let data  = await forgotPassword({email:email,passwordNew:passwordNew})
-        if(data?.status==0){
-          toast.success("Đổi mật khẩu thành công")
+      if (passwordNew == confirmPasswordNew) {
+        let data = await forgotPassword({
+          email: email,
+          passwordNew: passwordNew,
+        });
+        if (data?.status == 0) {
+          toast.success("Đổi mật khẩu thành công");
           setCheck("login");
           setSelect(true);
           setRegisterType(false);
         }
-      }else{
+      } else {
         toast.warning("Mật khẩu không trùng khớp.");
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -333,354 +352,384 @@ const Header = () => {
           />
         </Box>
         {Object.keys(context.state.user)[0] ? (
-          <Stack
-            direction={"row"}
-            sx={{ cursor: "pointer" }}
-            gap={"30px"}
-            alignItems={"center"}
-          >
-            <Box>
-              <Typography
-                aria-describedby={id}
-                onClick={handleClickCourses}
-                fontSize={"14px"}
+          <>
+            {Object.keys(context.state.user)[0] ? (
+              <Stack
+                direction={"row"}
+                sx={{ cursor: "pointer" }}
+                gap={"30px"}
+                alignItems={"center"}
               >
-                Khóa học của tôi
-              </Typography>
-              <Popover
-                id={id}
-                open={openCourses}
-                anchorEl={anchorEl}
-                onClose={handleCloseCourses}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                <Box p={"15px"} width={"380px"}>
-                  <Stack
-                    direction={"row"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
+                <Box>
+                  <Typography
+                    aria-describedby={id}
+                    onClick={handleClickCourses}
+                    fontSize={"14px"}
                   >
-                    <Typography fontWeight={"600"}>Khóa học của tôi</Typography>
-                    <Typography fontSize={"13px"} color={"#ff5117"}>
-                      {" "}
-                      Xem tất cả
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    className="see-more"
-                    mt={"20px"}
-                    direction={"column"}
-                    gap={"14px"}
-                    maxHeight={"400px"}
-                    sx={{ overflowY: "scroll" }}
+                    Khóa học của tôi
+                  </Typography>
+                  <Popover
+                    id={id}
+                    open={openCourses}
+                    anchorEl={anchorEl}
+                    onClose={handleCloseCourses}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
                   >
-                    {loadingCourses && (
-                      <Box
-                        height={40}
-                        width={"100%"}
-                        display={"flex"}
-                        justifyContent={"center"}
+                    <Box p={"15px"} width={"380px"}>
+                      <Stack
+                        direction={"row"}
+                        justifyContent={"space-between"}
                         alignItems={"center"}
                       >
-                        <CircularProgress size={"20px"} />
-                      </Box>
-                    )}
-                    {!loadingCourses && (
-                      <>
-                        {" "}
-                        {courses == undefined || courses.length == 0 ? (
+                        <Typography fontWeight={"600"}>
+                          Khóa học của tôi
+                        </Typography>
+                        <Typography fontSize={"13px"} color={"#ff5117"}>
+                          {" "}
+                          Xem tất cả
+                        </Typography>
+                      </Stack>
+                      <Stack
+                        className="see-more"
+                        mt={"20px"}
+                        direction={"column"}
+                        gap={"14px"}
+                        maxHeight={"400px"}
+                        sx={{ overflowY: "scroll" }}
+                      >
+                        {loadingCourses && (
+                          <Box
+                            height={40}
+                            width={"100%"}
+                            display={"flex"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                          >
+                            <CircularProgress size={"20px"} />
+                          </Box>
+                        )}
+                        {!loadingCourses && (
                           <>
-                            <Typography textAlign={"center"}>
-                              Not found data
-                            </Typography>
+                            {" "}
+                            {courses == undefined || courses.length == 0 ? (
+                              <>
+                                <Typography textAlign={"center"}>
+                                  Not found data
+                                </Typography>
+                              </>
+                            ) : (
+                              <>
+                                {courses &&
+                                  courses.map((item: any, index) => {
+                                    return (
+                                      <Stack
+                                        direction={"row"}
+                                        p={"5px"}
+                                        borderRadius={"5px"}
+                                        sx={{
+                                          "&:hover": {
+                                            backgroundColor: "#dddddd",
+                                          },
+                                        }}
+                                        gap={"20px"}
+                                      >
+                                        <Box>
+                                          <img
+                                            src={item.image.url}
+                                            width={120}
+                                            height={67}
+                                            style={{ borderRadius: "6px" }}
+                                            alt=""
+                                          />
+                                        </Box>
+                                        <Box>
+                                          <Typography
+                                            fontSize={"14px"}
+                                            fontWeight={"bold"}
+                                          >
+                                            {item.title}
+                                          </Typography>
+
+                                          <ProgressBar
+                                            percentage={progressBar[index]}
+                                          />
+                                        </Box>
+                                      </Stack>
+                                    );
+                                  })}
+                              </>
+                            )}
                           </>
-                        ) : (
-                          <>
-                            {courses &&
-                              courses.map((item: any, index) => {
-                                return (
-                                  <Stack
-                                    direction={"row"}
-                                    p={"5px"}
-                                    borderRadius={"5px"}
-                                    sx={{
-                                      "&:hover": {
-                                        backgroundColor: "#dddddd",
-                                      },
-                                    }}
-                                    gap={"20px"}
+                        )}
+                      </Stack>
+                    </Box>
+                  </Popover>
+                </Box>
+                <Box
+                  onClick={() => {
+                    navigate("/my_wallet");
+                  }}
+                >
+                  <RiWalletLine size={22} />
+                </Box>
+                <Box>
+                  <Typography
+                    aria-describedby={idNotify}
+                    onClick={handleClickNotify}
+                  >
+                    <Badge
+                      badgeContent={
+                        dataNotify &&
+                        dataNotify.filter((item: any) => item.read == false)
+                          .length
+                      }
+                      color="primary"
+                    >
+                      <NotificationsIcon />
+                    </Badge>
+                  </Typography>
+                  <Popover
+                    id={idNotify}
+                    open={openNotify}
+                    anchorEl={anchorElNotify}
+                    onClose={handleCloseNotify}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    <Box p={"15px"} width={"450px"}>
+                      <Stack
+                        direction={"row"}
+                        justifyContent={"space-between"}
+                        alignItems={"center"}
+                      >
+                        <Typography fontWeight={"600"}>Thông báo</Typography>
+                        <Typography fontSize={"13px"} color={"#ff5117"}>
+                          {" "}
+                          Đánh dấu đã đọc
+                        </Typography>
+                      </Stack>
+                      <Stack
+                        className="see-more"
+                        mt={"20px"}
+                        direction={"column"}
+                        gap={"14px"}
+                        maxHeight={"400px"}
+                        sx={{ overflowY: "scroll" }}
+                      >
+                        {dataNotify &&
+                          dataNotify.length &&
+                          dataNotify.map((item: any) => {
+                            return (
+                              <Stack
+                                direction={"row"}
+                                onClick={() => handleNotify(item)}
+                                sx={{
+                                  "&:hover": {
+                                    backgroundColor: "#dddddd",
+                                  },
+                                }}
+                                borderBottom={"1px dashed #dddddd"}
+                                p={"5px"}
+                                borderRadius={"5px"}
+                                gap={"15px"}
+                              >
+                                <Box p={"5px"}>
+                                  <Badge
+                                    color="secondary"
+                                    invisible={item.read}
+                                    variant="dot"
                                   >
                                     <Box>
-                                      <img
-                                        src={item.image.url}
-                                        width={120}
-                                        height={67}
-                                        style={{ borderRadius: "6px" }}
-                                        alt=""
-                                      />
-                                    </Box>
-                                    <Box>
                                       <Typography
-                                        fontSize={"14px"}
                                         fontWeight={"bold"}
+                                        sx={{ width: "100%" }}
                                       >
                                         {item.title}
                                       </Typography>
-
-                                      <ProgressBar
-                                        percentage={progressBar[index]}
-                                      />
+                                      <Typography
+                                        mt={"5px"}
+                                        fontSize={"14px"}
+                                        color={"#333"}
+                                        sx={{ width: "100%" }}
+                                      >
+                                        {item.message}
+                                      </Typography>
                                     </Box>
-                                  </Stack>
-                                );
-                              })}
-                          </>
-                        )}
-                      </>
-                    )}
-                  </Stack>
-                </Box>
-              </Popover>
-            </Box>
-            <Box
-              onClick={() => {
-                navigate("/my_wallet");
-              }}
-            >
-              <RiWalletLine size={22} />
-            </Box>
-            <Box>
-              <Typography
-                aria-describedby={idNotify}
-                onClick={handleClickNotify}
-              >
-                <Badge
-                  badgeContent={
-                    notify?.status == 0 &&
-                    notify.data.filter((item: any) => item.read == false).length
-                  }
-                  color="primary"
-                >
-                  <NotificationsIcon />
-                </Badge>
-              </Typography>
-              <Popover
-                id={idNotify}
-                open={openNotify}
-                anchorEl={anchorElNotify}
-                onClose={handleCloseNotify}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                <Box p={"15px"} width={"450px"}>
-                  <Stack
-                    direction={"row"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                  >
-                    <Typography fontWeight={"600"}>Thông báo</Typography>
-                    <Typography fontSize={"13px"} color={"#ff5117"}>
-                      {" "}
-                      Đánh dấu đã đọc
-                    </Typography>
-                  </Stack>
-                  <Stack
-                    className="see-more"
-                    mt={"20px"}
-                    direction={"column"}
-                    gap={"14px"}
-                    maxHeight={"400px"}
-                    sx={{ overflowY: "scroll" }}
-                  >
-                    {notify?.status == 0 &&
-                      notify.data.length &&
-                      notify.data.map((item: any) => {
-                        return (
-                          <Stack
-                            direction={"row"}
-                            onClick={() => handleNotify(item)}
-                            sx={{
-                              "&:hover": {
-                                backgroundColor: "#dddddd",
-                              },
-                            }}
-                            borderBottom={"1px dashed #dddddd"}
-                            p={"5px"}
-                            borderRadius={"5px"}
-                            gap={"15px"}
-                          >
-                            <Box p={"5px"}>
-                              <Badge
-                                color="secondary"
-                                invisible={item.read}
-                                variant="dot"
-                              >
-                                <Box>
-                                  <Typography
-                                    fontWeight={"bold"}
-                                    sx={{ width: "100%" }}
-                                  >
-                                    {item.title}
-                                  </Typography>
-                                  <Typography
-                                    mt={"5px"}
-                                    fontSize={"14px"}
-                                    color={"#333"}
-                                    sx={{ width: "100%" }}
-                                  >
-                                    {item.message}
-                                  </Typography>
+                                  </Badge>
                                 </Box>
-                              </Badge>
-                            </Box>
-                          </Stack>
-                        );
-                      })}
-                  </Stack>
+                              </Stack>
+                            );
+                          })}
+                      </Stack>
+                    </Box>
+                  </Popover>
                 </Box>
-              </Popover>
-            </Box>
 
-            <Box>
-              <Typography aria-describedby={id} onClick={handleClickProfile}>
-                <img
-                  src={
-                    context.state.user[0].image.url
-                      ? context.state.user[0].image.url
-                      : profile
-                  }
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "50%" }}
-                  alt=""
-                />
-              </Typography>
-              <Popover
-                id={idProfile}
-                open={openProfile}
-                anchorEl={anchorElProfile}
-                onClose={handleCloseProfile}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                <Box p={"20px"} width={"200px"}>
-                  <Stack direction={"row"} alignItems={"center"} gap={"15px"}>
-                    <Box>
-                      <img
-                        src={
-                          context.state.user[0].image.url
-                            ? context.state.user[0].image.url
-                            : profile
-                        }
-                        width={40}
-                        height={40}
-                        style={{ borderRadius: "50%" }}
-                        alt=""
-                      />
-                    </Box>
-                    <Box>
-                      <Typography fontSize={"14px"} fontWeight={"bold"}>
-                        {context.state.user[0].user_name}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                  <Stack direction={"column"} mt={"20px"} gap={"18px"}>
-                    <Box
-                      borderBottom={"1px solid #dddddd"}
-                      paddingBottom={"8px"}
-                    >
-                      <Typography
-                        fontSize={"14px"}
-                        color={"#333"}
-                        onClick={() => {
-                          handleCloseProfile();
-                          navigate("/profile");
-                        }}
+                <Box>
+                  <Typography
+                    aria-describedby={id}
+                    onClick={handleClickProfile}
+                  >
+                    <img
+                      src={
+                        context.state.user[0].image.url
+                          ? context.state.user[0].image.url
+                          : profile
+                      }
+                      width={40}
+                      height={40}
+                      style={{ borderRadius: "50%" }}
+                      alt=""
+                    />
+                  </Typography>
+                  <Popover
+                    id={idProfile}
+                    open={openProfile}
+                    anchorEl={anchorElProfile}
+                    onClose={handleCloseProfile}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    <Box p={"20px"} width={"200px"}>
+                      <Stack
+                        direction={"row"}
+                        alignItems={"center"}
+                        gap={"15px"}
                       >
-                        Trang cá nhân
-                      </Typography>
-                    </Box>
-                    <Box
-                      borderBottom={"1px solid #dddddd"}
-                      paddingBottom={"8px"}
-                    >
-                      <Typography
-                        fontSize={"14px"}
-                        color={"#333"}
-                        onClick={() => {
-                          handleCloseProfile();
-                          navigate("/my_article");
-                        }}
-                      >
-                        Bài viết của tôi
-                      </Typography>
-                    </Box>
-                    <Box
-                      borderBottom={"1px solid #dddddd"}
-                      onClick={() => {
-                        handleCloseProfile();
-                        navigate("/setting");
-                      }}
-                      paddingBottom={"8px"}
-                    >
-                      <Typography fontSize={"14px"} color={"#333"}>
-                        Cài đặt{" "}
-                      </Typography>
-                    </Box>
+                        <Box>
+                          <img
+                            src={
+                              context.state.user[0].image.url
+                                ? context.state.user[0].image.url
+                                : profile
+                            }
+                            width={40}
+                            height={40}
+                            style={{ borderRadius: "50%" }}
+                            alt=""
+                          />
+                        </Box>
+                        <Box>
+                          <Typography fontSize={"14px"} fontWeight={"bold"}>
+                            {context.state.user[0].user_name}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      <Stack direction={"column"} mt={"20px"} gap={"18px"}>
+                        <Box
+                          borderBottom={"1px solid #dddddd"}
+                          paddingBottom={"8px"}
+                        >
+                          <Typography
+                            fontSize={"14px"}
+                            color={"#333"}
+                            onClick={() => {
+                              handleCloseProfile();
+                              navigate("/profile");
+                            }}
+                          >
+                            Trang cá nhân
+                          </Typography>
+                        </Box>
+                        <Box
+                          borderBottom={"1px solid #dddddd"}
+                          paddingBottom={"8px"}
+                        >
+                          <Typography
+                            fontSize={"14px"}
+                            color={"#333"}
+                            onClick={() => {
+                              handleCloseProfile();
+                              navigate("/my_article");
+                            }}
+                          >
+                            Bài viết của tôi
+                          </Typography>
+                        </Box>
+                        <Box
+                          borderBottom={"1px solid #dddddd"}
+                          onClick={() => {
+                            handleCloseProfile();
+                            navigate("/setting");
+                          }}
+                          paddingBottom={"8px"}
+                        >
+                          <Typography fontSize={"14px"} color={"#333"}>
+                            Cài đặt{" "}
+                          </Typography>
+                        </Box>
 
-                    <Typography
-                      onClick={handleLogout}
-                      fontSize={"14px"}
-                      color={"#333"}
-                    >
-                      Đăng xuất{" "}
-                    </Typography>
-                  </Stack>
+                        <Typography
+                          onClick={handleLogout}
+                          fontSize={"14px"}
+                          color={"#333"}
+                        >
+                          Đăng xuất{" "}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  </Popover>
                 </Box>
-              </Popover>
-            </Box>
-          </Stack>
+              </Stack>
+            ) : (
+              <Stack direction={"row"} gap={2}>
+                <Button
+                  onClick={() => handleCheck("login")}
+                  sx={{ color: "black" }}
+                >
+                  Đăng nhập
+                </Button>
+                <Button
+                  onClick={() => handleCheck("register")}
+                  sx={{
+                    background:
+                      "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                    color: "white",
+                    borderRadius: "99px",
+                    width: "92px",
+                    height: "34px",
+                  }}
+                >
+                  Đăng Ký
+                </Button>
+              </Stack>
+            )}
+          </>
         ) : (
-          <Stack direction={"row"} gap={2}>
-            <Button
-              onClick={() => handleCheck("login")}
-              sx={{ color: "black" }}
-            >
-              Đăng nhập
-            </Button>
-            <Button
-              onClick={() => handleCheck("register")}
-              sx={{
-                background:
-                  "linear-gradient(to right bottom, #ff8f26, #ff5117)",
-                color: "white",
-                borderRadius: "99px",
-                width: "92px",
-                height: "34px",
-              }}
-            >
-              Đăng Ký
-            </Button>
+          <>
+          <Stack direction={"row"} alignItems={"center"} gap={"12px"}>
+          <Skeleton width="50px" />
+          <Skeleton width="30px" height={"30px"} />
+          <Skeleton width="30px" height={"30px"} />
+          <Skeleton
+            animation="wave"
+            variant="circular"
+            width={40}
+            height={40}
+          />
+
           </Stack>
+          
+          </>
         )}
       </Stack>
 
@@ -1199,14 +1248,14 @@ const Header = () => {
                             <>
                               {disableForgot ? (
                                 <Button
-                                  onClick={()=>handleOtpForgotPassword(0)}
+                                  onClick={() => handleOtpForgotPassword(0)}
                                   disabled={!email}
                                   sx={{
                                     background:
                                       "linear-gradient(to right bottom, #ff8f26, #ff5117)",
                                     color: "white",
                                     borderRadius: "99px",
-                                     width: "92px",
+                                    width: "92px",
                                     height: "38px",
                                   }}
                                 >
@@ -1214,7 +1263,7 @@ const Header = () => {
                                 </Button>
                               ) : (
                                 <Button
-                                onClick={()=>handleOtpForgotPassword(1)}
+                                  onClick={() => handleOtpForgotPassword(1)}
                                   disabled={!email}
                                   sx={{
                                     background:
@@ -1233,66 +1282,69 @@ const Header = () => {
                         }}
                       />
                     </Box>
-                   
-                    {tokenOtp==null&&<>
-                      <Box mt={"10px"}>
-                      <TextField
-                      type="password"
-                    
-                        value={passwordNew}
-                        onChange={(e: any) => setPasswordNew(e.target.value)}
-                        sx={{
-                          width: "100%",
-                          height: "42px",
-                          mt: "5px",
-                          borderRadius: "30px",
-                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
-                            {
+
+                    {tokenOtp == null && (
+                      <>
+                        <Box mt={"10px"}>
+                          <TextField
+                            type="password"
+                            value={passwordNew}
+                            onChange={(e: any) =>
+                              setPasswordNew(e.target.value)
+                            }
+                            sx={{
+                              width: "100%",
+                              height: "42px",
+                              mt: "5px",
                               borderRadius: "30px",
-                            },
-                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              height: "28px",
-                            },
-                        }}
-                        helperText=" "
-                        placeholder={"Mật khẩu mới"}
-                        id="demo-helper-text-aligned-no-helper"
-                        size="small"
-                      />
-                    </Box>
-                    <Box mt={"10px"}>
-                      <TextField
-                       type="password"
-                        value={confirmPasswordNew}
-                        onChange={(e: any) => setConfirmPasswordNew(e.target.value)}
-                        sx={{
-                          width: "100%",
-                          height: "42px",
-                          mt: "5px",
-                          borderRadius: "30px",
-                          ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
-                            {
+                              ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                                {
+                                  borderRadius: "30px",
+                                },
+                              ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                                {
+                                  height: "28px",
+                                },
+                            }}
+                            helperText=" "
+                            placeholder={"Mật khẩu mới"}
+                            id="demo-helper-text-aligned-no-helper"
+                            size="small"
+                          />
+                        </Box>
+                        <Box mt={"10px"}>
+                          <TextField
+                            type="password"
+                            value={confirmPasswordNew}
+                            onChange={(e: any) =>
+                              setConfirmPasswordNew(e.target.value)
+                            }
+                            sx={{
+                              width: "100%",
+                              height: "42px",
+                              mt: "5px",
                               borderRadius: "30px",
-                            },
-                          ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              height: "28px",
-                            },
-                        }}
-                        helperText=" "
-                        placeholder={"Nhập lại mật khẩu mới"}
-                        id="demo-helper-text-aligned-no-helper"
-                        size="small"
-                      />
-                    </Box>
-                    
-                    </>}
+                              ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ":
+                                {
+                                  borderRadius: "30px",
+                                },
+                              ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input":
+                                {
+                                  height: "28px",
+                                },
+                            }}
+                            helperText=" "
+                            placeholder={"Nhập lại mật khẩu mới"}
+                            id="demo-helper-text-aligned-no-helper"
+                            size="small"
+                          />
+                        </Box>
+                      </>
+                    )}
                     <Box>
                       <Button
                         onClick={handleForgotPassword}
-                        disabled={!passwordNew||!confirmPasswordNew}
-                        
+                        disabled={!passwordNew || !confirmPasswordNew}
                         sx={{
                           width: "100%",
                           height: "44px",
@@ -1304,7 +1356,7 @@ const Header = () => {
                           fontWeight: "700",
                         }}
                       >
-                       Đặt lại mật khẩu
+                        Đặt lại mật khẩu
                       </Button>
                     </Box>
                   </Box>

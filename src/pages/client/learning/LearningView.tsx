@@ -35,6 +35,7 @@ import direction2 from "../../../images/direction.png";
 import {
   RiAddFill,
   RiArrowDownSLine,
+  RiArrowDropDownFill,
   RiArrowLeftSLine,
   RiArrowRightSLine,
   RiArticleLine,
@@ -43,6 +44,7 @@ import {
   RiCloseLine,
   RiFile3Fill,
   RiFlagFill,
+  RiFolderOpenFill,
   RiHeartFill,
   RiLock2Fill,
   RiMessengerFill,
@@ -50,6 +52,7 @@ import {
   RiPencilFill,
   RiPlayCircleFill,
   RiQuestionFill,
+  RiShareBoxFill,
   RiStickyNoteFill,
   RiSubtractFill,
   RiYoutubeFill,
@@ -96,8 +99,7 @@ type Props = {
   navigate: any;
   toggleDrawerDirection: any;
   openDirection: any;
-  setOpenDirection:any
- 
+  setOpenDirection: any;
 };
 const LearningView = ({
   courses,
@@ -128,10 +130,11 @@ const LearningView = ({
   toggleDrawerDirection,
   openDirection,
   setOpenDirection,
-  
 }: Props) => {
   return (
-    <Box>
+    <Box
+     
+    >
       <Header
         progressBar={progressBar}
         courses={courses}
@@ -172,7 +175,6 @@ const LearningView = ({
                 data={dataLesson}
                 timeVideo={timeVideo}
                 setPlaying={setPlaying}
-               
               />
             )}
             {dataLesson && dataLesson.type == "blog" && (
@@ -232,7 +234,7 @@ const Header = (props: any) => {
     },
     {
       label: "Tạo ghi chú",
-      description: `Tại F8 có một chức năng rất đặc biệt, đó là chức năng "Tạo ghi chú". Khi học sẽ có nhiều lúc cậu muốn ghi chép lại đó, tại F8 cậu sẽ không cần tốn giấy mực để làm việc này đâu. Thả tim nào <3`,
+      description: `Tại Fdemycó một chức năng rất đặc biệt, đó là chức năng "Tạo ghi chú". Khi học sẽ có nhiều lúc cậu muốn ghi chép lại đó, tại Fdemycậu sẽ không cần tốn giấy mực để làm việc này đâu. Thả tim nào <3`,
     },
     {
       label: "Xem ghi chú",
@@ -250,8 +252,8 @@ const Header = (props: any) => {
   };
 
   const handleReset = () => {
-      props.setOpenDirection(false)
-      setActiveStep(0)
+    props.setOpenDirection(false);
+    setActiveStep(0);
   };
 
   return (
@@ -361,7 +363,7 @@ const Header = (props: any) => {
                   objectFit: "cover",
                   top: "25px",
                   height: "435px",
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"75%"}
                 alt=""
@@ -376,7 +378,7 @@ const Header = (props: any) => {
                   top: "25px",
                   height: "435px",
                   right: 0,
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"25%"}
                 alt=""
@@ -392,7 +394,7 @@ const Header = (props: any) => {
                   height: "22px",
                   right: 299,
                   borderRadius: "99px",
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"57px"}
                 alt=""
@@ -408,7 +410,7 @@ const Header = (props: any) => {
                   height: "26.4px",
                   right: 318,
                   borderRadius: "4px",
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"111px"}
                 alt=""
@@ -423,7 +425,7 @@ const Header = (props: any) => {
                   top: "1px",
                   height: "27px",
                   right: 63,
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"50px"}
                 alt=""
@@ -534,8 +536,7 @@ const Footer = (props: any) => {
           Bài trước
         </Button>
         <Button
-          className={props.done&&"animation"}
-         
+          className={props.done && "animation"}
           onClick={props.handleNextLesson}
           sx={{
             color: "#ff5117",
@@ -557,16 +558,15 @@ const ContentLeftVideo = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [content, setContent] = React.useState("");
   const toggleDrawer = (newOpen: boolean) => () => {
-    if(newOpen){
+    if (newOpen) {
       props.setPlaying(false);
       setOpen(newOpen);
-
-    }else{
-       props.setPlaying(true);
+    } else {
+      props.setPlaying(true);
       setOpen(newOpen);
     }
   };
-  
+
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
@@ -658,7 +658,7 @@ const ContentLeftVideo = (props: any) => {
             <br></br>
             Các bạn subscribe{" "}
             <a style={{ color: "#ff5117" }} href="">
-              kênh Youtube F8 Official
+              kênh Youtube FdemyOfficial
             </a>{" "}
             để nhận thông báo khi có các bài học mới nhé ❤️<br></br>
             Form HTML template:{" "}
@@ -800,6 +800,17 @@ const ContentLeftVideo = (props: any) => {
 };
 
 const ContentRight = (props: any) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const handleClick = (event:any) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
   return (
     <Box
       width={"25%"}
@@ -865,90 +876,153 @@ const ContentRight = (props: any) => {
                         }
                       }
                       let active = props.activeLesson == itemchild._id;
+                      
                       return (
                         <Box
+                          position={"relative"}
                           sx={{
-                            pointerEvents:
-                              !checkSuccess && !check ? "none" : "auto",
+                            cursor: "pointer",
                           }}
-                          onClick={() => props.handleActiveLesson(itemchild)}
                         >
-                          <Stack
-                            direction={"row"}
-                            borderTop={
-                              index2 == 0 ? "none" : "1px solid #dddddd"
-                            }
-                            alignItems={"center"}
+                          <Box
                             sx={{
-                              background: active
-                                ? "rgba(240, 81, 35, .2)"
-                                : !checkSuccess && !check
-                                ? "#e6e6e6"
-                                : undefined,
-                              opacity: !checkSuccess && !check ? ".5" : "1",
+                              pointerEvents:
+                                !checkSuccess && !check ? "none" : "auto",
+                              position: "relative",
                             }}
-                            justifyContent={"space-between"}
-                            padding={"15px 20px"}
+                            onClick={() => props.handleActiveLesson(itemchild)}
                           >
                             <Stack
                               direction={"row"}
-                              alignItems={"center"}
-                              gap={"7px"}
+                              borderTop={
+                                index2 == 0 ? "none" : "1px solid #dddddd"
+                              }
+                              alignItems={"start"}
+                              sx={{
+                                background: active
+                                  ? "rgba(240, 81, 35, .2)"
+                                  : !checkSuccess && !check
+                                  ? "#e6e6e6"
+                                  : undefined,
+                                opacity: !checkSuccess && !check ? ".5" : "1",
+                              }}
+                              justifyContent={"space-between"}
+                              padding={"15px 20px"}
                             >
-                              <Typography color={"#333"} fontSize={"14px"}>
-                                {index2 + 1}.{itemchild.title}
-                                <Stack
-                                  direction={"row"}
-                                  mt={"5px"}
-                                  gap={"10px"}
-                                >
-                                  {itemchild.type == "video" && (
-                                    <RiYoutubeFill
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}
-                                  {itemchild.type == "blog" && (
-                                    <RiArticleLine
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}
-                                  {itemchild.type == "code" && (
-                                    <RiPencilFill
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}
-                                  {itemchild.type == "quiz" && (
-                                    <RiQuestionFill
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}{" "}
-                                  {itemchild.duration}
-                                </Stack>
+                              <Stack
+                                direction={"row"}
+                                alignItems={"center"}
+                                gap={"7px"}
+                              >
+                                <Typography color={"#333"} fontSize={"14px"}>
+                                  {index2 + 1}.{itemchild.title}
+                                  <Stack
+                                    direction={"row"}
+                                    alignItems={"center"}
+                                    justifyContent={"space-between"}
+                                  >
+                                    <Stack
+                                      direction={"row"}
+                                      mt={"5px"}
+                                      gap={"10px"}
+                                    >
+                                      {itemchild.type == "video" && (
+                                        <RiYoutubeFill
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}
+                                      {itemchild.type == "blog" && (
+                                        <RiArticleLine
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}
+                                      {itemchild.type == "code" && (
+                                        <RiPencilFill
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}
+                                      {itemchild.type == "quiz" && (
+                                        <RiQuestionFill
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}{" "}
+                                      {itemchild.duration}
+                                    </Stack>
+                                  </Stack>
+                                </Typography>
+                              </Stack>
+                              <Typography fontSize={"12px"}>
+                                {check ? (
+                                  ""
+                                ) : (
+                                  <>
+                                    {checkSuccess && (
+                                      <RiCheckboxCircleFill
+                                        color="green"
+                                        size={"20px"}
+                                      />
+                                    )}
+
+                                    {!checkSuccess && (
+                                      <RiLock2Fill size={"20px"} />
+                                    )}
+                                  </>
+                                )}
                               </Typography>
                             </Stack>
-                            <Typography fontSize={"12px"}>
-                              {check ? (
-                                ""
-                              ) : (
-                                <>
-                                  {checkSuccess && (
-                                    <RiCheckboxCircleFill
-                                      color="green"
-                                      size={"20px"}
-                                    />
-                                  )}
-
-                                  {!checkSuccess && (
-                                    <RiLock2Fill size={"20px"} />
-                                  )}
-                                </>
-                              )}
+                          </Box>
+                          {itemchild.source&&itemchild.source!=="..."&&
+                          <>
+                          <Box
+                            aria-describedby={id}
+                            onClick={handleClick}
+                            padding={" 3px 5px"}
+                            position={"absolute"}
+                            right={"3px"}
+                            bottom={"3px"}
+                            display={"flex"}
+                            alignItems={"center"}
+                            gap={"3px"}
+                            border={"1px solid #333"}
+                          >
+                            <RiFolderOpenFill />
+                            <Typography fontSize={"13px"}>Tài nguyên</Typography>
+                            <RiArrowDropDownFill size={20} />
+                          </Box>
+                          <Popover
+                           sx={{
+                            ".css-3bmhjh-MuiPaper-root-MuiPopover-paper": {
+                              boxShadow: "0 0 3px #dddddd",
+                            },
+                          }}
+                            id={id}
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                              vertical: 'top',
+                              horizontal: 'right',
+                            }}
+                          >
+                            <a href={itemchild.source} target="_blank">
+                            <Typography fontSize={"14px"} display={"flex"} alignItems={"center"} gap={"7px"} sx={{ p: 1 }}>
+                            <RiShareBoxFill />
+                            Mã nguồn
                             </Typography>
-                          </Stack>
+
+                            </a>
+                          </Popover>
+                          </>
+                          }
+                          
                         </Box>
                       );
                     })}
@@ -1126,19 +1200,33 @@ const ContentLeftExercise = (props: any) => {
           )}
 
           {value == 1 && (
-            <>{props.typeCode=="javascript"?<><Typography textAlign={"center"} color={"grey"} mt={"20px"} fontSize={"14px"}>Nếu có file index.html thì nội dung của nó<br></br>
-            sẽ được hiển thị tại đây.</Typography></>:<Box>
-            <iframe
-              title="result"
-              srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
-              style={{
-                width: "100%",
-                height: "85vh",
-                border: "1px solid #ccc",
-              }}
-            />
-          </Box>}</>
-            
+            <>
+              {props.typeCode == "javascript" ? (
+                <>
+                  <Typography
+                    textAlign={"center"}
+                    color={"grey"}
+                    mt={"20px"}
+                    fontSize={"14px"}
+                  >
+                    Nếu có file index.html thì nội dung của nó<br></br>
+                    sẽ được hiển thị tại đây.
+                  </Typography>
+                </>
+              ) : (
+                <Box>
+                  <iframe
+                    title="result"
+                    srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
+                    style={{
+                      width: "100%",
+                      height: "85vh",
+                      border: "1px solid #ccc",
+                    }}
+                  />
+                </Box>
+              )}
+            </>
           )}
         </Box>
         <Box width={"55%"}>

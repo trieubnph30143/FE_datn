@@ -29,6 +29,7 @@ import {
   RiArticleLine,
   RiBankCardFill,
   RiCloseCircleFill,
+  RiContactsLine,
   RiFileListFill,
   RiGitBranchFill,
   RiInboxFill,
@@ -442,6 +443,25 @@ const LayoutAdmin = () => {
                   <RiMessage3Fill />
                   </ListItemIcon>
                   <ListItemText primary={"Comment"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+          </List>
+          <Divider />
+          <List>
+          <Typography ml={"5px"}>Contact</Typography>
+          <ListItem  sx={{"a":{
+                color:"black",
+                textDecoration:"none"
+              }}} disablePadding>
+                <Link to={"/dashboard/contact"}> 
+                <CustomListItemButton
+                  >
+                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiContactsLine /> 
+                  </ListItemIcon>
+                  <ListItemText primary={"Contact"} />
                 </CustomListItemButton>
                 
                 </Link>

@@ -7,6 +7,7 @@ import {
   Popover,
   Popper,
   PopperPlacementType,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -36,8 +37,8 @@ type Props = {
   handleClose: any;
   handleDetailPost: any;
   totalPage: any;
-  handleChangePagination:any
-  page:any
+  handleChangePagination: any;
+  page: any;
 };
 const FeaturedArticleView = ({
   post,
@@ -49,11 +50,12 @@ const FeaturedArticleView = ({
   handleDetailPost,
   totalPage,
   handleChangePagination,
-  page
+  page,
 }: Props) => {
   const shareUrl: any =
-  "https://fullstack.edu.vn/blog/la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua.html"; // Thay thế bằng URL bạn muốn chia sẻ
-const title: any = "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua";
+    "https://fullstack.edu.vn/blog/la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua.html"; // Thay thế bằng URL bạn muốn chia sẻ
+  const title: any =
+    "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua";
   return (
     <Box>
       <Typography variant="h4" fontWeight={"bold"}>
@@ -65,7 +67,8 @@ const title: any = "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua
       </Typography>
       <Stack direction={"row"} gap={"120px"} mt={"60px"}>
         <Stack width={"58%"} direction={"column"} gap={"20px"}>
-          {post &&
+          {post?<>
+            {post &&
             post.length &&
             post.map((item: any) => {
               let arr = item.readers.split(",");
@@ -161,11 +164,39 @@ const title: any = "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua
                 </Box>
               );
             })}
+          </>:<>
+          {Array.from({ length: 2 },()=>{
+            return <Box
+            width={"100%"}
+            sx={{ border: " 2px solid #e8e8e8", borderRadius: "16px" }}
+            padding={"15px 25px"}
+            display={"flex"}
+            gap={"60px"}
+          >
+            <Box width={"60%"} sx={{ pt: 0.5 }}>
+              <Skeleton width="100%" height={"40px"}/>
+              <Skeleton width="100%" height={"20px"} />
+              <Skeleton width="100%" height={"150px"} />
+            </Box>
+            <Box>
+            <Skeleton variant="rectangular" sx={{borderRadius:"20px"}} width={300} height={200} />
+            </Box>
+          </Box>
+          })}
+          </>}
+          
+         
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Pagination count={totalPage} page={page} onChange={handleChangePagination} color="primary" />
+            <Pagination
+              count={totalPage}
+              page={page}
+              onChange={handleChangePagination}
+              color="primary"
+            />
           </Box>
         </Stack>
+
         <Stack width={"25%"}>
           <Typography fontSize={"17px"} color={"#757575"}>
             CÁC CHỦ ĐỀ ĐƯỢC ĐỀ XUẤT
@@ -230,11 +261,8 @@ const title: any = "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua
         }}
       >
         <Paper>
-        <Stack padding={"18px"} direction={"column"} gap={"20px"}>
-            <FacebookShareButton
-              url={shareUrl}
-              hashtag="#yourHashtag"
-            >
+          <Stack padding={"18px"} direction={"column"} gap={"20px"}>
+            <FacebookShareButton url={shareUrl} hashtag="#yourHashtag">
               <FacebookIcon size={32} round={true} />
             </FacebookShareButton>
             <TwitterShareButton

@@ -132,7 +132,7 @@ const LearningRoadmapView = () => {
                 </Typography>
                 <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
                   Lập trình viên Front-end là người xây dựng ra giao diện
-                  websites. Trong phần này F8 sẽ chia sẻ cho bạn lộ trình để trở
+                  websites. Trong phần này Fdemysẽ chia sẻ cho bạn lộ trình để trở
                   thành lập trình viên Front-end nhé.
                 </Typography>
               </Box>

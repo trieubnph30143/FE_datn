@@ -19,14 +19,26 @@ import ProductList from "@/components/ProductList";
 import { RiVolumeUpLine } from "react-icons/ri";
 import certificate from "../../../images/capture (2).png";
 import postImage from "../../../images/Screenshot from 2024-05-29 14-06-07.png";
-import contact from "../../../images/contact.jpg"
+import contact from "../../../images/contact.jpg";
 type Props = {
   courses: typeCourses[];
   progress: any;
   post: any;
+  register: any;
+  handleSubmit: any;
+  errors: any;
+  onSubmit: any;
 };
 
-const HomeView = ({ courses, progress, post }: Props) => {
+const HomeView = ({
+  courses,
+  progress,
+  post,
+  register,
+  handleSubmit,
+  errors,
+  onSubmit,
+}: Props) => {
   const settings = {
     customPaging: function (i: any) {
       return (
@@ -63,7 +75,6 @@ const HomeView = ({ courses, progress, post }: Props) => {
 
   return (
     <>
-    
       <Box
         sx={{
           ".slick-slider": {
@@ -126,12 +137,12 @@ const HomeView = ({ courses, progress, post }: Props) => {
               >
                 <Box>
                   <Typography fontWeight={700} variant="h4">
-                    Mở bán áo logo F8 đợt 2
+                    Mở bán áo logo Fdemyđợt 2
                   </Typography>
                   <Typography my={"18px"}>
-                    Áo Polo F8 với thiết kế tối giản, lịch sự, phù hợp mặc mọi
+                    Áo Polo Fdemyvới thiết kế tối giản, lịch sự, phù hợp mặc mọi
                     lúc, mọi nơi. Chất áo mềm mại, thoáng mát, ngực và tay áo in
-                    logo F8 - Fullstack.
+                    logo Fdemy- Fullstack.
                   </Typography>
                   <Button
                     sx={{
@@ -179,12 +190,12 @@ const HomeView = ({ courses, progress, post }: Props) => {
               >
                 <Box>
                   <Typography fontWeight={700} variant="h4">
-                    Mở bán áo logo F8 đợt 2
+                    Mở bán áo logo Fdemyđợt 2
                   </Typography>
                   <Typography my={"18px"}>
-                    Áo Polo F8 với thiết kế tối giản, lịch sự, phù hợp mặc mọi
+                    Áo Polo Fdemyvới thiết kế tối giản, lịch sự, phù hợp mặc mọi
                     lúc, mọi nơi. Chất áo mềm mại, thoáng mát, ngực và tay áo in
-                    logo F8 - Fullstack.
+                    logo Fdemy- Fullstack.
                   </Typography>
                   <Button
                     sx={{
@@ -232,12 +243,12 @@ const HomeView = ({ courses, progress, post }: Props) => {
               >
                 <Box>
                   <Typography fontWeight={700} variant="h4">
-                    Mở bán áo logo F8 đợt 2
+                    Mở bán áo logo Fdemyđợt 2
                   </Typography>
                   <Typography my={"18px"}>
-                    Áo Polo F8 với thiết kế tối giản, lịch sự, phù hợp mặc mọi
+                    Áo Polo Fdemyvới thiết kế tối giản, lịch sự, phù hợp mặc mọi
                     lúc, mọi nơi. Chất áo mềm mại, thoáng mát, ngực và tay áo in
-                    logo F8 - Fullstack.
+                    logo Fdemy- Fullstack.
                   </Typography>
                   <Button
                     sx={{
@@ -268,57 +279,108 @@ const HomeView = ({ courses, progress, post }: Props) => {
         progress={progress}
         title="Khóa học Pro"
       />
+      <Box
+        width={"95%"}
+        ml={"40px"}
+        mt={"25px"}
+        borderTop={"2px dashed #dddddd"}
+      ></Box>
       <ProductList
         type={"free"}
         data={courses && courses.filter((item) => item.price == 0)}
         progress={progress}
         title="Khóa học miễn phí"
       />
+      <Box
+        width={"95%"}
+        ml={"40px"}
+        mt={"25px"}
+        borderTop={"2px dashed #dddddd"}
+      ></Box>
       <ProductList type={"blog"} data={post} title="Bài viết nổi bật" />
-      <Box className="contact" sx={{p:"0 40px",width:"98%",mt:"40px",backgroundImage:`url('${contact}')`,backgroundRepeat:"no-repeat"}}>
-      
-        <div className="container " style={{display:"flex",alignItems:"center",justifyContent:"end",gap:"30px"}}>  
-          
-
-          <form onClick={(e)=>e.preventDefault()} style={{display:"flex" ,flexDirection:"column",gap:"15px"}}>
-            
-            
+      <Box
+        width={"95%"}
+        ml={"40px"}
+        mt={"25px"}
+        borderTop={"2px dashed #dddddd"}
+      ></Box>
+      <Box
+        className="contact"
+        sx={{
+          p: "0 40px",
+          width: "98%",
+          mt: "40px",
+          backgroundImage: `url('${contact}')`,
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div
+          className="container "
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "end",
+            gap: "30px",
+          }}
+        >
+          <form
+            onClick={handleSubmit(onSubmit)}
+            style={{ display: "flex", flexDirection: "column", gap: "15px" }}
+          >
             <div className="form-group position-relative">
               <label htmlFor="formName" className="d-block">
                 <i className="icon" data-feather="user" />
               </label>
               <input
+              {...register("name")}
+                style={{  border:errors.name? "1px solid red":"none" }}
                 type="text"
                 id="formName"
                 className="form-control form-control-lg thick width"
                 placeholder="Name"
               />
             </div>
-         
+
             <div className="form-group position-relative">
               <label htmlFor="formEmail" className="d-block">
                 <i className="icon" data-feather="mail" />
               </label>
               <input
+              style={{  border:errors.email? "1px solid red":"none" }}
+              {...register("email")}
                 type="email"
                 id="formEmail"
                 className="form-control form-control-lg thick width"
                 placeholder="E-mail"
               />
             </div>
-            {/* Message */}
+            <div className="form-group position-relative">
+              <label htmlFor="formName" className="d-block">
+                <i className="icon" data-feather="user" />
+              </label>
+              <input
+              {...register("subject")}
+              style={{  border:errors.subject? "1px solid red":"none" }}
+                type="text"
+                id="formName"
+                className="form-control form-control-lg thick width"
+                placeholder="Subject"
+              />
+            </div>
             <div className="form-group message">
               <textarea
+              style={{  border:errors.message? "1px solid red":"none" }}
+              {...register("message")}
                 id="formMessage"
                 className="form-control form-control-lg width"
                 rows={7}
-                placeholder="Mensagem"
+                placeholder="Message"
                 defaultValue={""}
               />
             </div>
-            {/* Submit btn */}
+
             <div className="text-center">
-              <button  className="btn btn-primary" tabIndex={-1}>
+              <button type="submit" style={{color:"white"}} className="btn btn-primary" tabIndex={-1}>
                 Send message
               </button>
             </div>

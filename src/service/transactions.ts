@@ -35,6 +35,7 @@ export const updateTransaction = async (value: any) => {
   try {
     const response = await axios.put(`/transaction/status/${value._id}`, {
       status: value.status,
+      type:value.type
     });
     return response;
   } catch (error) {

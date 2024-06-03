@@ -146,7 +146,7 @@ const Footer = () => {
               <div>Ngày thành lập: 04/03/2022</div>
               <div>
                 Lĩnh vực: Công nghệ, giáo dục, lập trình. <br />
-                F8 xây dựng và phát triển những sản <br /> phẩm mang lại giá trị
+                Fdemyxây dựng và phát triển những sản <br /> phẩm mang lại giá trị
                 cho cộng đồng.
               </div>
             </div>

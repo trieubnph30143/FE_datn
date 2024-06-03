@@ -12,8 +12,11 @@ import {
 import { getVnpay } from "@/service/vnpay";
 import { toast } from "react-toastify";
 import { getOneUser } from "@/service/auth";
-
+import { io } from "socket.io-client";
+import { addNotify } from "@/service/notify";
+import { convertToVND } from "@/utils/utils";
 const MyWalletController = () => {
+  const socket = io("http://localhost:4000");
   const [value, setValue]: any = useState(0);
   const [expanded, setExpanded] = useState<string | false>(false);
   const [open, setOpen] = useState(false);
@@ -23,7 +26,7 @@ const MyWalletController = () => {
   const [amount, setAmount] = useState("");
   const [bank, setBank] = useState("");
 
-  const [dataEmail, setDataEmail]:any = useState([]);
+  const [dataEmail, setDataEmail]: any = useState([]);
   const [transfer, setTransfer] = useState("");
   const handleChangeTabs = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -33,6 +36,7 @@ const MyWalletController = () => {
   const paramOrder_id = queryParams.get("order_id");
   const [user, setUser]: any = useLocalStorage("user", {});
   let count = 0;
+  
   const queryClient = useQueryClient();
   const { data }: any = useQuery("wallet", {
     queryFn: () => {
@@ -42,7 +46,7 @@ const MyWalletController = () => {
     },
     refetchOnWindowFocus: false,
   });
-  const { data:transtion }: any = useQuery("transtion", {
+  const { data: transtion }: any = useQuery("transtion", {
     queryFn: () => {
       if (user.data[0]._id) {
         return getUserTransaction(user.data[0]._id);
@@ -50,9 +54,9 @@ const MyWalletController = () => {
     },
     refetchOnWindowFocus: false,
   });
-  
+
   useEffect(() => {
-    (async()=>{
+    (async () => {
       let message = "";
       if (paramTransactionStatus) {
         let check: any = await getStatusTransaction();
@@ -90,23 +94,28 @@ const MyWalletController = () => {
             case "09":
               message += "GD Hoàn trả bị từ chối";
               break;
-  
+
             default:
               break;
           }
           if (message == "Giao dịch thành công") {
             if (count == 0) {
-              let amount: any = await updateStatusTransaction("completed");
-             
+              let amount: any = await updateStatusTransaction(
+                "completed",
+                "rechanrge"
+              );
               if (amount) {
-                await updateWalletSuccess(amount,user.data[0]._id);
+                socket.emit("getNewNotify", {
+                  user_id: user.data[0]._id,
+                });
+                await updateWalletSuccess(amount, user.data[0]._id);
                 toast.success(message);
                 count++;
               }
             }
           } else {
             if (count == 0) {
-              await updateStatusTransaction("failed")
+              await updateStatusTransaction("failed", "rechanrge");
               queryClient.invalidateQueries({
                 queryKey: ["wallet"],
               });
@@ -119,25 +128,32 @@ const MyWalletController = () => {
           }
         }
       }
-    })()
-    
+    })();
   }, []);
-  const updateStatusTransaction = async (status:any) => {
+  const updateStatusTransaction = async (status: any, type: any) => {
     try {
-      let data = await updateTransaction({ _id: paramOrder_id ,status:status});
+      let data = await updateTransaction({
+        _id: paramOrder_id,
+        status: status,
+        type: type,
+      });
       if (data?.status == 0) {
         return Number(data.data.amount);
       }
     } catch (error) {}
   };
-  const updateWalletSuccess = async (amount: any,user_id:any,transfer?:any) => {
+  const updateWalletSuccess = async (
+    amount: any,
+    user_id: any,
+    transfer?: any
+  ) => {
     try {
-      let wallet = await  getUserWallet(user_id)
-      if(wallet?.status==0){
+      let wallet = await getUserWallet(user_id);
+      if (wallet?.status == 0) {
         let res = await updateWallet({
           _id: wallet.data[0]._id,
           user_id: [wallet.data[0].user_id[0]],
-          balance: transfer?amount: Number(wallet.data[0].balance) + amount,
+          balance: transfer ? amount : Number(wallet.data[0].balance) + amount,
         });
         if (res?.status == 0) {
           queryClient.invalidateQueries({
@@ -146,17 +162,15 @@ const MyWalletController = () => {
           queryClient.invalidateQueries({
             queryKey: ["transtion"],
           });
-          
         }
-
       }
     } catch (error) {}
   };
   const getStatusTransaction = async () => {
     try {
       let data = await getOneTransaction(paramOrder_id);
-     
-      if (data?.status == 0&&data.data.status=="completed") {
+
+      if (data?.status == 0 && data.data.status == "completed") {
         return true;
       } else {
         return false;
@@ -197,89 +211,129 @@ const MyWalletController = () => {
     }
   };
 
-  const handleSearchEmail = async()=>{
+  const handleSearchEmail = async () => {
     try {
-      if(searchEmail==user.data[0].email){
-        toast.warning("Không tìm Email chính mình")
-      }else{
-        let data = await getOneUser(searchEmail)
-          if(data?.status==0){
-            setDataEmail(data.data)
-          }
+      if (searchEmail == user.data[0].email) {
+        toast.warning("Không tìm Email chính mình");
+      } else {
+        let data = await getOneUser(searchEmail);
+        if (data?.status == 0) {
+          setDataEmail(data.data);
+        }
       }
     } catch (error) {
       console.log(error);
     }
-  }
-  const handleTrander = async ()=>{
+  };
+  const handleTrander = async () => {
     try {
-      if(Number(data.data[0].balance) - Number(transfer)>=0){
-        
-          let transactionsUser = await addTransactions({
-            user_id: [user.data[0]._id],
-            type: "transfer",
-            status: "completed",
-            amount:transfer,
-            email_transfer:`Email Chuyển : ${dataEmail[0].email}`,
-
-          })
-          let transactionsTranfer = await addTransactions({
-            user_id: [dataEmail[0]._id],
-            type: "transfer",
-            status: "completed",
-            amount: transfer,
-            email_transfer:`Email nhận : ${user.data[0].email}`
-          })
-          let wallet = await  getUserWallet(dataEmail[0]._id)
-          if(transactionsUser?.status==0&&transactionsTranfer?.status==0){
-            updateWalletSuccess(Number(data.data[0].balance) - Number(transfer),user.data[0]._id,true)
-            updateWalletSuccess(wallet?.data[0].balance+ Number(transfer),dataEmail[0]._id,true)
-            toast.success("Chuyển tiền thành công")
-            setTransfer("")
-            queryClient.invalidateQueries({
-              queryKey: ["wallet"],
-            });
-            queryClient.invalidateQueries({
-              queryKey: ["transtion"],
-            });
-          }
-      }else{
-        toast.warning("Bạn không đủ số dư")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleWithdraw = async ()=>{
-    try {
-      if(Number(data.data[0].balance)-Number(amount)>=0){
-
-        let transactions = await addTransactions({
+      if (Number(data.data[0].balance) - Number(transfer) >= 0) {
+        let transactionsUser = await addTransactions({
           user_id: [user.data[0]._id],
-          type: "withdraw",
-          status: "pending",
-          amount:amount,
-          stk:stk,
-          bankAccount:bank
-        })
-        if(transactions?.status==0){
-          updateWalletSuccess(Number(data.data[0].balance) - Number(amount),user.data[0]._id,true)
+          type: "transfer",
+          status: "completed",
+          amount: transfer,
+          email_transfer: `Email Chuyển : ${dataEmail[0].email}`,
+        });
+        let transactionsTranfer = await addTransactions({
+          user_id: [dataEmail[0]._id],
+          type: "transfer",
+          status: "completed",
+          amount: transfer,
+          email_transfer: `Email nhận : ${user.data[0].email}`,
+        });
+        let wallet = await getUserWallet(dataEmail[0]._id);
+        if (transactionsUser?.status == 0 && transactionsTranfer?.status == 0) {
+          await updateWalletSuccess(
+            Number(data.data[0].balance) - Number(transfer),
+            user.data[0]._id,
+            true
+          );
+          await updateWalletSuccess(
+            wallet?.data[0].balance + Number(transfer),
+            dataEmail[0]._id,
+            true
+          );
+         
+           await addNotify({
+            user_id: [dataEmail[0]._id],
+            title: "Ví của bạn.",
+            message: `Bạn vừa nhận ${convertToVND(
+              transfer
+            )} vào ví của mình được chuyển từ tài khoản có email là ${
+              user.data[0].email
+            }.`,
+            url: "/my_wallet",
+            read: false,
+          });
+           await addNotify({
+            user_id: [user.data[0]._id],
+            title: "Ví của bạn.",
+            message: `Bạn vừa chuyển ${convertToVND(
+             transfer
+            )} vào ví của tài khoản có email là ${dataEmail[0].email}.`,
+            url: "/my_wallet",
+            read: false,
+          });
+          
+          toast.success("Chuyển tiền thành công");
+          setTransfer("");
+            setTimeout(()=>{
+              socket.emit("getNewNotify", {
+                user_id: dataEmail[0]._id,
+              });
+            },1000)
+            socket.emit("getNewNotify", {
+              user_id: user.data[0]._id,
+            });
+         
           queryClient.invalidateQueries({
             queryKey: ["wallet"],
           });
           queryClient.invalidateQueries({
             queryKey: ["transtion"],
           });
-          toast.success("Thành công")
         }
-      }else{
-        toast.warning("Bạn không đủ số dư")
+      } else {
+        toast.warning("Bạn không đủ số dư");
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
+  const handleWithdraw = async () => {
+    try {
+      if (Number(data.data[0].balance) - Number(amount) >= 0) {
+        let transactions = await addTransactions({
+          user_id: [user.data[0]._id],
+          type: "withdraw",
+          status: "pending",
+          amount: amount,
+          stk: stk,
+          bankAccount: bank,
+        });
+        if (transactions?.status == 0) {
+          updateWalletSuccess(
+            Number(data.data[0].balance) - Number(amount),
+            user.data[0]._id,
+            true
+          );
+          queryClient.invalidateQueries({
+            queryKey: ["wallet"],
+          });
+          queryClient.invalidateQueries({
+            queryKey: ["transtion"],
+          });
+          toast.success("Thành công");
+        }
+      } else {
+        toast.warning("Bạn không đủ số dư");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <MyWalletView

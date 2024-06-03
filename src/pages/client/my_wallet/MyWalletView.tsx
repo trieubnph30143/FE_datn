@@ -172,7 +172,6 @@ const MyWalletView = ({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
   return (
     <Box>
       <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>

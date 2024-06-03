@@ -8,6 +8,7 @@ import PostView from "./PostView";
 import { getPost } from "@/service/post";
 import { usePostMutation } from "@/hooks/usePostMutation";
 import { deleteImage } from "@/service/upload";
+import { io } from "socket.io-client";
 
 const PostController = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ const PostController = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
-  
+  const socket = io("http://localhost:4000");
   const [openModal, setOpenModal] = React.useState(false);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>,data:any) => {
     setAnchorEl(event.currentTarget);
@@ -59,9 +60,11 @@ const PostController = () => {
   });
   const { onActive } = usePostMutation({
     action: "ACTIVE",
-    onSuccess: () => {
-     
+    onSuccess: (data:any) => {
       setLoading(false)
+      socket.emit("getNewNotify", { 
+        user_id:data.author[0],
+      });
     },
   });
   const onSubmit = () => {

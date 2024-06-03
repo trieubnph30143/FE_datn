@@ -21,6 +21,8 @@ import {
   Checkbox,
   FormControlLabel,
   Modal,
+  Skeleton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
@@ -548,9 +550,9 @@ const LearningController = () => {
   };
   return (
     <>
-      {!loadingAll.courses && <Loading />}
+     
 
-      {loadingAll.courses && loadingAll.progress && (
+      {loadingAll.courses && loadingAll.progress ? (
         <>
           <LearningView
             courses={courses && courses}
@@ -601,7 +603,7 @@ const LearningController = () => {
                 Nhận chứng chỉ 🎉
               </Typography>
               <Typography my={"10px"}>
-                F8 ghi nhận sự nỗ lực của bạn! Bằng cách nhận chứng chỉ này, bạn
+                Fdemyghi nhận sự nỗ lực của bạn! Bằng cách nhận chứng chỉ này, bạn
                 chính thức hoàn thành khóa học <b>{courses.title}</b>
               </Typography>
               <Box
@@ -754,7 +756,21 @@ const LearningController = () => {
             </Box>
           </Modal>
         </>
-      )}
+      ):
+
+      <Box>
+      <Skeleton width="100%" sx={{mt:"-20px"}} height={"90px"}  />
+      <Stack direction={"row"} gap={"1%"}>
+        <Box width={"74%"}>
+        <Skeleton width="100%"  variant="rectangular"   height={"60vh"}  />
+        <Skeleton width="100%" height={"39vh"} sx={{mt:"-20px"}}    />
+       
+        </Box>
+        <Box width={"25%"}>
+        <Skeleton width="100%"  variant="rectangular"   height={"90vh"}  />
+        </Box>
+      </Stack>
+      </Box>}
     </>
   );
 };
