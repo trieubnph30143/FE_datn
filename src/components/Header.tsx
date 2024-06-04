@@ -26,7 +26,7 @@ import {
   RiSearchLine,
   RiWalletLine,
 } from "react-icons/ri";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import product from "../images/product.png";
@@ -119,6 +119,7 @@ const Header = () => {
     debouncedSearch();
   }, [changeSearch, isTyping]);
   const handleChangrSearch = (e: any) => {
+    setIsFocused(true)
     setLoadingSearch(false);
     setChangeSearch(e);
     setIsTyping(true);
@@ -346,12 +347,21 @@ const Header = () => {
     }
   };
 
+  const searchBoxRef:any = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event:any ) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(event.target)) {
+        setIsFocused(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   const handleFocus = () => {
     setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
   };
   return (
     <Box
@@ -383,9 +393,8 @@ const Header = () => {
           <TextField
             autoComplete="off"
             value={changeSearch}
-            onChange={(e) => handleChangrSearch(e.target.value)}
             onFocus={handleFocus}
-            onBlur={handleBlur}
+            onChange={(e) => handleChangrSearch(e.target.value)}
             type={"text"}
             sx={{
               width: "420px",
@@ -409,6 +418,7 @@ const Header = () => {
           />
           {isFocused &&changeSearch.length>0&& (
             <div
+            ref={searchBoxRef}
               style={{
                 position: "absolute",
                 width: "100%",

@@ -4,8 +4,13 @@ import {
   CircularProgress,
   Drawer,
   Fade,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Paper,
   Popover,
+  Radio,
+  RadioGroup,
   Stack,
   Step,
   StepConnector,
@@ -14,6 +19,7 @@ import {
   Stepper,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   TooltipProps,
   Typography,
@@ -45,6 +51,7 @@ import {
   RiFile3Fill,
   RiFlagFill,
   RiFolderOpenFill,
+  RiGift2Fill,
   RiHeartFill,
   RiLock2Fill,
   RiMessengerFill,
@@ -66,9 +73,20 @@ import css from "../../../images/css.svg";
 import Confetti from "canvas-confetti";
 import Loading from "@/components/Loading";
 import BlogContent from "@/components/BlogContent";
-import { checkExersiceProgress } from "@/service/progress";
+import { addProgress, checkExersiceProgress, getProgress } from "@/service/progress";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { addNote } from "@/service/note";
+import { convertToVND } from "@/utils/utils";
+import { toast } from "react-toastify";
+import { useCoursesContext } from "@/App";
+import { getUserWallet, updateWallet } from "@/service/wallet";
+import { addTransactions } from "@/service/transactions";
+import { addOrder, deleteOrder, updateOrder } from "@/service/order";
+import { useLocation } from "react-router-dom";
+import { getVnpay } from "@/service/vnpay";
+import { getOneUser } from "@/service/auth";
+import { addNotify } from "@/service/notify";
+import { io } from "socket.io-client";
 
 type Props = {
   courses: typeCourses;
@@ -246,16 +264,239 @@ const Header = (props: any) => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-
+  const [openGift,setOpenGift]:any  = useState(false)
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+  const handleToggleGift = (newOpen: boolean) => () => {
+    setOpenGift(newOpen);
   };
 
   const handleReset = () => {
     props.setOpenDirection(false);
     setActiveStep(0);
   };
+  const socket = io("http://localhost:4000");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const context: any = useCoursesContext();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [emailGift, setEmailGift] = useState("");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const paramTransactionStatus = queryParams.get("vnp_TransactionStatus");
+  const paramOrder_id = queryParams.get("order_id");
+  const user_id_gift = queryParams.get("user_id");
+  let count = 0;
+  useEffect(() => {
+    if (!(Object.keys(context.state.user).length == 0)) {
+      let message = "";
+      if (paramTransactionStatus) {
+        switch (paramTransactionStatus) {
+          case "00":
+            message += "Giao dịch thành công";
+            break;
+          case "01":
+            message += "Giao dịch chưa hoàn tất";
+            break;
+          case "02":
+            message += "Giao dịch bị lỗi";
+            break;
+          case "04":
+            message +=
+              "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)";
+            break;
+          case "05":
+            message += "VNPAY đang xử lý giao dịch này (GD hoàn tiền)";
+            break;
+          case "06":
+            message +=
+              "VNPAY đã gửi yêu cầu hoàn tiền sang Ngân hàng (GD hoàn tiền)";
+            break;
+          case "07":
+            message += "Giao dịch bị nghi ngờ gian lận";
+            break;
+          case "09":
+            message += "GD Hoàn trả bị từ chối";
+            break;
 
+          default:
+            break;
+        }
+        if (message == "Giao dịch thành công") {
+          setPaymentSuccess(true);
+          updateStatusOrder();
+          if (count == 0) {
+            toast.success(message);
+            count++;
+          }
+        } else {
+          deleteOrderStatus();
+          if (count == 0) {
+            toast.error(message);
+            count++;
+          }
+        }
+      } 
+    }
+  }, [context.state.user]);
+  const updateStatusOrder = async () => {
+    try {
+      let data = await updateOrder(paramOrder_id);
+      if (data?.status == 0) {
+        let arr = props.courses.lesson.map((item: any, index: number) => {
+          return {
+            lesson_id: item._id,
+            completed: false,
+            sub_lesson: item.sub_lesson.map((item2: any, index2: number) => {
+              if (index == 0 && index2 == 0) {
+                return {
+                  sub_lesson_id: item2._id,
+                  completed: false,
+                  result: true,
+                };
+              }
+              return {
+                sub_lesson_id: item2._id,
+                completed: false,
+                result: false,
+              };
+            }),
+          };
+        });
+        let body = {
+          courses_id: props.courses._id,
+          completed: false,
+          user_id:user_id_gift,
+          lesson_progress: arr,
+        };
+        let dataProgress = await addProgress(body);
+        if (dataProgress?.status == 0) {
+          await addNotify({user_id:[user_id_gift],title:`Quà tặng`,message:`Bạn vừa được tặng khóa học ${props.courses.title} từ email ${context.state.user[0].email}.`,url:`/learning/${props.courses._id}`,read:false})
+          socket.emit("getNewNotify", { 
+            user_id:user_id_gift,
+          });
+          props.navigate(`/learning/${props.courses._id}`)
+        }
+      }
+    } catch (error) {}
+  };
+  const deleteOrderStatus = async () => {
+    try {
+      let data = await deleteOrder(String(paramOrder_id));
+      if (data?.status == 0) {
+        console.log("delete");
+      }
+    } catch (error) {}
+  };
+  const handlePayment = async () => {
+    try {
+      if (emailGift == context.state.user[0].email) {
+        toast.warning("Không tặng cho Email chính mình");
+      } else {
+        let data:any = await getOneUser(emailGift);
+        let progress = await getProgress(data.data[0]._id, props.courses._id);
+        if(progress[0]){
+          toast.warning("Người dùng đã mua khóa học này rồi.");
+        }else{
+          if (data?.status == 0&&data.data.length>0) {
+            if (paymentMethod == "wallet") {
+              let wallet = await getUserWallet(context.state.user[0]._id);
+              if (wallet?.status == 0) {
+                console.log(Number(wallet.data[0].balance));
+                console.log(Number(props.courses.price));
+                if (Number(wallet.data[0].balance) - Number(props.courses.price) >= 0) {
+                  let res = await updateWallet({
+                    _id: wallet.data[0]._id,
+                    user_id: [wallet.data[0].user_id[0]],
+                    balance: Number(wallet.data[0].balance) - Number(props.courses.price),
+                  });
+                  await addTransactions({
+                    user_id: [context.state.user[0]._id],
+                    type: "purchase",
+                    status: "completed",
+                    amount: props.courses.price,
+                  });
+                  if (res?.status == 0) {
+                    let order = await addOrder({
+                      status: true,
+                      courses_id: [props.courses._id],
+                      user_id: [context.state.user[0]._id],
+                    });
+                    if (order?.status == 0) {
+                      let arr = props.courses.lesson.map((item: any, index: number) => {
+                        return {
+                          lesson_id: item._id,
+                          completed: false,
+                          sub_lesson: item.sub_lesson.map((item2: any, index2: number) => {
+                            if (index == 0 && index2 == 0) {
+                              return {
+                                sub_lesson_id: item2._id,
+                                completed: false,
+                                result: true,
+                              };
+                            }
+                            return {
+                              sub_lesson_id: item2._id,
+                              completed: false,
+                              result: false,
+                            };
+                          }),
+                        };
+                      });
+                      let body = {
+                        courses_id: props.courses._id,
+                        completed: false,
+                        user_id: data.data[0]._id,
+                        lesson_progress: arr,
+                      };
+
+                      let dataProgress = await addProgress(body);
+                      if (dataProgress?.status == 0) {
+                        await addNotify({user_id:[ data.data[0]._id],title:`Quà tặng`,message:`Bạn vừa được tặng khóa học ${props.courses.title} từ email ${context.state.user[0].email}.`,url:`/learning/${props.courses._id}`,read:false})
+                        socket.emit("getNewNotify", { 
+                          user_id:data.data[0]._id,
+                        });
+                      }
+                      setOpenGift(false);
+                      setPaymentSuccess(true);
+                      toast.success("Bạn đã thanh toán thành công");
+                    }
+                  }
+                } else {
+                  toast.warning("Bạn không đủ số dư trong ví");
+                }
+              }
+            } else {
+              let order = await addOrder({
+                status: false,
+                courses_id: [props.courses._id],
+                user_id: [context.state.user[0]._id],
+              });
+              if (order?.status == 0) {
+                let url: any = await getVnpay({
+                  order_id: order.data._id,
+                  amount: props.courses.price,
+                  courses_id: props.courses._id,
+                  user_id: data.data[0]._id,
+                  type: "gift",
+                });
+                if (url) {
+                  window.location.href = url;
+                }
+              }
+            
+          }
+          }else{
+            toast.warning("Email không tồn tại.");
+          }
+        }
+       
+      }
+        
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Stack
       height={"50px "}
@@ -283,7 +524,15 @@ const Header = (props: any) => {
           {props.courses.title}
         </Typography>
       </Stack>
-      <Stack direction={"row"} gap={"20px"}>
+      <Stack direction={"row"} sx={{cursor:"pointer"}} gap={"20px"}>
+        {props.courses.price>0&&
+        <Stack onClick={handleToggleGift(true)} direction={"row"}
+          color={"white"}
+          alignItems={"center"}
+          gap={0.5}>
+        <RiGift2Fill />
+        <Typography fontSize={"13px"}>Tặng khóa học này</Typography>
+        </Stack>}
         <Stack
           color={"white"}
           direction={"row"}
@@ -508,6 +757,85 @@ const Header = (props: any) => {
           )}
         </Box>
       </Drawer>
+      <Drawer
+        open={openGift}
+        anchor={"right"}
+        onClose={handleToggleGift(false)}
+      >
+        <Box width={"600px"} padding={"50px 50px"}>
+            <Typography variant="h5" textAlign={"center"} fontWeight={"bold"}>Tặng khóa học {props.courses.title}</Typography>
+            <Typography my={"20px"} color={"#333"} fontSize={"14px"}>
+                { props.courses.description}
+              </Typography>
+            <form style={{marginTop:"30px"}}>
+            <TextField id="outlined-basic" type="email"  value={emailGift} onChange={(e)=>setEmailGift(e.target.value)} label="Email người nhận" size="small" fullWidth variant="outlined" />
+            <Box
+              mt={"20px"}
+              width={"100%"}
+              padding={"10px"}
+              border={"1px solid #dddddd"}
+              borderRadius={"10px"}
+            >
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Box>Giá bán : </Box>
+                <Box>{convertToVND(props.courses.price)}</Box>
+              </Stack>
+              <Stack
+                direction={"row"}
+                mt={"15px"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Box>Tổng tiền : </Box>
+                <Box>{convertToVND(props.courses.price)}</Box>
+              </Stack>
+              <FormControl sx={{ mt: "20px", display: "block" }}>
+                <FormLabel id="demo-radio-buttons-group-label">
+                  Phương thức thanh toán
+                </FormLabel>
+
+                <RadioGroup
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="wallet"
+                    control={<Radio />}
+                    label="Thanh toán bằng ví"
+                  />
+                  <FormControlLabel
+                    value="vnpay"
+                    control={<Radio />}
+                    label="Cổng thanh toán VNPAY"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+            <Box mt={"20px"}>
+              <Button
+              disabled={!emailGift||!paymentMethod}
+               onClick={handlePayment}
+                sx={{
+                  background:
+                    "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                  color: "white",
+                  borderRadius: "30px",
+                  float: "right",
+                  height: "34px",
+                }}
+              >
+                Thanh toán
+              </Button>
+            </Box>
+            </form>
+        </Box>
+      </Drawer>
     </Stack>
   );
 };
@@ -652,13 +980,13 @@ const ContentLeftVideo = (props: any) => {
           <Typography mt={"20px"} lineHeight={2.5}>
             Tham gia nhóm Học{" "}
             <a style={{ color: "#ff5117" }} href="">
-              lập trình tại F8
+              lập trình tại FDemy
             </a>{" "}
             trên Facebook để cùng nhau trao đổi trong quá trình học tập ❤️
             <br></br>
             Các bạn subscribe{" "}
             <a style={{ color: "#ff5117" }} href="">
-              kênh Youtube FdemyOfficial
+              kênh Youtube Fdemy Official
             </a>{" "}
             để nhận thông báo khi có các bài học mới nhé ❤️<br></br>
             Form HTML template:{" "}

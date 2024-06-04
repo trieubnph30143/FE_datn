@@ -5,7 +5,18 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { addProgress, getProgress, getUserProgress } from "@/service/progress";
 import { useCoursesContext } from "@/App";
-import { Box, Button, Drawer, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Drawer,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { RiCheckFill } from "react-icons/ri";
 import { convertToVND } from "@/utils/utils";
 import {
@@ -33,21 +44,26 @@ const DetailCourseController = () => {
   const paramTransactionStatus = queryParams.get("vnp_TransactionStatus");
   const paramOrder_id = queryParams.get("order_id");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  let count = 0
+  let count = 0;
 
-  const { } = useQuery(["progress", id], {
+  const {} = useQuery(["progress", id], {
     queryFn: () => {
-      return getProgress(context.state.user[0]? context.state.user[0]._id:"6656f102f161c2adccer5ej2", id);
+      return getProgress(
+        context.state.user[0]
+          ? context.state.user[0]._id
+          : "6656f102f161c2adccer5ej2",
+        id
+      );
     },
     onSuccess(data) {
-      if(data[0]){
-        navigate(`/learning/${id}`)
+      if (data[0]) {
+        navigate(`/learning/${id}`);
       }
     },
     refetchOnWindowFocus: false,
   });
   useEffect(() => {
-    if(!(Object.keys(context.state.user).length==0)){
+    if (!(Object.keys(context.state.user).length == 0)) {
       let message = "";
       if (paramTransactionStatus) {
         switch (paramTransactionStatus) {
@@ -77,40 +93,36 @@ const DetailCourseController = () => {
           case "09":
             message += "GD Hoàn trả bị từ chối";
             break;
-  
+
           default:
             break;
         }
         if (message == "Giao dịch thành công") {
           setPaymentSuccess(true);
           updateStatusOrder();
-          if(count==0){
+          if (count == 0) {
             toast.success(message);
-            count++
+            count++;
           }
-            
-          
         } else {
           deleteOrderStatus();
-          if(count==0){
+          if (count == 0) {
             toast.error(message);
-            count++
+            count++;
           }
         }
       } else {
         getOrderCourses();
       }
     }
-   
   }, [context.state.user]);
   const getOrderCourses = async () => {
     try {
       if (Object.keys(context.state.user)[0]) {
         let data = await getOrderUserAndCourses(id, context.state.user[0]._id);
         if (data?.status == 0) {
-          if(data.data[0]){
+          if (data.data[0]) {
             setPaymentSuccess(true);
-
           }
         }
       }
@@ -133,7 +145,7 @@ const DetailCourseController = () => {
       }
     } catch (error) {}
   };
-  
+
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
@@ -251,7 +263,7 @@ const DetailCourseController = () => {
               navigate(`/learning/${courses && courses._id}`);
             }
           } else {
-            toast.warning("Bạn cần đăng nhập")
+            toast.warning("Bạn cần đăng nhập");
           }
         } else {
           setOpen(true);
@@ -265,45 +277,43 @@ const DetailCourseController = () => {
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
-  const handlePayment = async () => { 
+  const handlePayment = async () => {
     try {
-      if(Object.keys(context.state.user).length==0){
-       toast.warning("Bạn cần đăng nhập")
-      }else{
-        if(paymentMethod=="wallet"){
-          let wallet = await  getUserWallet(context.state.user[0]._id)
-      if(wallet?.status==0){
-        if(Number(wallet.data[0].balance)-Number(courses.price)>=0){
-          let res = await updateWallet({
-            _id: wallet.data[0]._id,
-            user_id: [wallet.data[0].user_id[0]],
-            balance: Number(wallet.data[0].balance)-Number(courses.price),
-          });
-          await addTransactions({
-            user_id: [context.state.user[0]._id],
-            type: "purchase",
-            status: "completed",
-            amount:courses.price,
-          })
-          if(res?.status==0){
-            let data = await addOrder({
-              status: true,
-              courses_id: [courses._id],
-              user_id: [context.state.user[0]._id],
-            });
-            if(data?.status==0){
-              setOpen(false)
-              setPaymentSuccess(true)
-              toast.success("Bạn đã thanh toán thành công")
+      if (Object.keys(context.state.user).length == 0) {
+        toast.warning("Bạn cần đăng nhập");
+      } else {
+        if (paymentMethod == "wallet") {
+          let wallet = await getUserWallet(context.state.user[0]._id);
+          if (wallet?.status == 0) {
+            if (Number(wallet.data[0].balance) - Number(courses.price) >= 0) {
+              let res = await updateWallet({
+                _id: wallet.data[0]._id,
+                user_id: [wallet.data[0].user_id[0]],
+                balance: Number(wallet.data[0].balance) - Number(courses.price),
+              });
+              await addTransactions({
+                user_id: [context.state.user[0]._id],
+                type: "purchase",
+                status: "completed",
+                amount: courses.price,
+              });
+              if (res?.status == 0) {
+                let data = await addOrder({
+                  status: true,
+                  courses_id: [courses._id],
+                  user_id: [context.state.user[0]._id],
+                });
+                if (data?.status == 0) {
+                  setOpen(false);
+                  setPaymentSuccess(true);
+                  toast.success("Bạn đã thanh toán thành công");
+                }
+              }
+            } else {
+              toast.warning("Bạn không đủ số dư trong ví");
             }
           }
-        }else{
-          toast.warning("Bạn không đủ số dư trong ví")
-        }
-      
-      }
-          
-        }else{
+        } else {
           let data = await addOrder({
             status: false,
             courses_id: [courses._id],
@@ -314,7 +324,7 @@ const DetailCourseController = () => {
               order_id: data.data._id,
               amount: courses.price,
               courses_id: courses._id,
-              type:"payment"
+              type: "payment",
             });
             if (url) {
               window.location.href = url;
@@ -322,12 +332,11 @@ const DetailCourseController = () => {
           }
         }
       }
-      
     } catch (error) {
       console.log(error);
     }
   };
-  
+
   return (
     <>
       <DetailCourseView
@@ -399,30 +408,29 @@ const DetailCourseController = () => {
                 <Box>Tổng tiền : </Box>
                 <Box>{courses && convertToVND(courses.price)}</Box>
               </Stack>
-              <FormControl  sx={{ mt: "20px", display: "block" }}>
-            <FormLabel id="demo-radio-buttons-group-label">
-              Phương thức thanh toán
-            </FormLabel>
-           
-            <RadioGroup
-              value={paymentMethod}
-              onChange={(e)=>setPaymentMethod(e.target.value)}
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-            >
-               <FormControlLabel
-                value="wallet"
-                control={<Radio />}
-                label="Thanh toán bằng ví"
-              />
-              <FormControlLabel
-                value="vnpay"
-                control={<Radio />}
-                label="Cổng thanh toán VNPAY"
-              />
-            </RadioGroup>
-          
-          </FormControl>
+              <FormControl sx={{ mt: "20px", display: "block" }}>
+                <FormLabel id="demo-radio-buttons-group-label">
+                  Phương thức thanh toán
+                </FormLabel>
+
+                <RadioGroup
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="wallet"
+                    control={<Radio />}
+                    label="Thanh toán bằng ví"
+                  />
+                  <FormControlLabel
+                    value="vnpay"
+                    control={<Radio />}
+                    label="Cổng thanh toán VNPAY"
+                  />
+                </RadioGroup>
+              </FormControl>
             </Box>
             <Box mt={"20px"}>
               <Button
