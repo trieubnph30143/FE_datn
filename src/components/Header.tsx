@@ -35,7 +35,7 @@ import { useCoursesContext } from "@/App";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { getUserProgress } from "@/service/progress";
-import { getMyCourses } from "@/service/courses";
+import { getMyCourses, searchCourses } from "@/service/courses";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { signInWithPopup } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -47,6 +47,7 @@ import { forgotPassword, otpEmail } from "@/service/auth";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { io } from "socket.io-client";
+import { debounce } from "lodash";
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [anchorElNotify, setAnchorElNotify] =
@@ -77,12 +78,54 @@ const Header = () => {
   const [courses, setCourses] = useState([]);
   const [dataNotify, setDataNotify] = useState([]);
   const [progressBar, setProgressBar] = useState([]);
+  const [loading, setLoading] = useState(false);
   const socket = io("http://localhost:4000");
+  const [isFocused, setIsFocused] = useState(false);
   const handleClose = () => {
     setCheck("");
     setSelect(true);
     setRegisterType(false);
     setOpen(false);
+  };
+
+  const [changeSearch, setChangeSearch] = useState("");
+
+  const [dataSearch, setDataSearch]: any = useState({
+    dataCourses: [],
+    dataPost: [],
+  });
+  const [isTyping, setIsTyping] = useState(false);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+  useEffect(() => {
+    const debouncedSearch = debounce(async () => {
+      if (!isTyping && changeSearch.length > 0) {
+        try {
+          let data: any = await searchCourses(changeSearch);
+          if (data?.status == 0) {
+            console.log(data);
+            setDataSearch([]);
+            setLoadingSearch(true);
+            setDataSearch({
+              dataCourses: data.dataCourses,
+              dataPost: data.dataPost,
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }, 100);
+
+    debouncedSearch();
+  }, [changeSearch, isTyping]);
+  const handleChangrSearch = (e: any) => {
+    setLoadingSearch(false);
+    setChangeSearch(e);
+    setIsTyping(true);
+    setDataSearch({ dataCourses: [], dataPost: [] });
+    setTimeout(() => {
+      setIsTyping(false);
+    }, 2000);
   };
   const { register, reset, handleSubmit, onFinish, errors }: any =
     useAuthMutation({
@@ -231,9 +274,10 @@ const Header = () => {
     refetchOnWindowFocus: false,
   });
   useEffect(() => {
+    setTimeout(() => {
+      setLoading(true);
+    }, 1500);
     socket.on("notifyNew", (res) => {
-      console.log(userLocal);
-      console.log(res.user_id);
       if (res.user_id == userLocal.data[0]._id) {
         console.log("tona");
         setDataNotify(res.data);
@@ -301,6 +345,14 @@ const Header = () => {
       console.log(error);
     }
   };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
   return (
     <Box
       padding={"10px 20px 15px 20px"}
@@ -327,8 +379,13 @@ const Header = () => {
           />
           <Typography fontWeight={700}>Học Lập Trình Để Đi Làm</Typography>
         </Stack>
-        <Box>
+        <Box position={"relative"}>
           <TextField
+            autoComplete="off"
+            value={changeSearch}
+            onChange={(e) => handleChangrSearch(e.target.value)}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             type={"text"}
             sx={{
               width: "420px",
@@ -350,8 +407,135 @@ const Header = () => {
               ),
             }}
           />
+          {isFocused &&changeSearch.length>0&& (
+            <div
+              style={{
+                position: "absolute",
+                width: "100%",
+                padding: "20px",
+                background: "white",
+                border: "1px solid #dddddd",
+                borderRadius: "15px",
+                left: 0,
+                top: 42,
+                cursor: "pointer",
+              }}
+            >
+              <Box
+                fontSize={"15px"}
+                color={"#0000008a"}
+                display={"flex"}
+                alignItems={"center"}
+                gap={"8px"}
+              >
+                {loadingSearch ? (
+                  <RiSearchLine />
+                ) : (
+                  <CircularProgress size={15} color="inherit" />
+                )}{" "}
+                {!loadingSearch ? (
+                  "Kết quả"
+                ) : (
+                  <>
+                    {dataSearch.dataCourses[0] || dataSearch.dataPost[0]
+                      ? "Kết quả"
+                      : "Không có kết quả"}
+                  </>
+                )}{" "}
+                tìm kiếm cho “{changeSearch}”
+              </Box>
+              <>
+                {dataSearch.dataCourses[0] && (
+                  <Box mt={"15px"}>
+                    <Stack
+                      direction={"row"}
+                      justifyContent={"space-between"}
+                      alignItems={"end"}
+                      paddingBottom={"12px"}
+                      borderBottom={"1px dashed #0000008a"}
+                    >
+                      <Typography color={"#333"}>Khóa học</Typography>
+                      <Typography fontSize={"13px"} color={"#0000008a"}>
+                        Xem thêm
+                      </Typography>
+                    </Stack>
+                    <Stack mt={"15px"} direction={"column"} gap={"8px"}>
+                      {dataSearch.dataCourses.map((item: any) => {
+                        return (
+                          <Stack
+                            direction={"row"}
+                            onClick={() => {
+                              setDataSearch({ dataCourses: [], dataPost: [] });
+                              setChangeSearch("");
+                              navigate(`/courses/${item._id}`);
+                            }}
+                            alignItems={"center"}
+                            gap={"12px"}
+                          >
+                            <img
+                              src={item.image.url}
+                              width={33}
+                              height={33}
+                              style={{ borderRadius: "50%" }}
+                              alt=""
+                            />
+                            <Typography fontSize={"14px"}>
+                              {item.title}
+                            </Typography>
+                          </Stack>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                )}
+                {dataSearch.dataPost[0] && (
+                  <Box mt={"15px"}>
+                    <Stack
+                      direction={"row"}
+                      justifyContent={"space-between"}
+                      alignItems={"end"}
+                      paddingBottom={"12px"}
+                      borderBottom={"1px dashed #0000008a"}
+                    >
+                      <Typography color={"#333"}>Bài viết</Typography>
+                      <Typography fontSize={"13px"} color={"#0000008a"}>
+                        Xem thêm
+                      </Typography>
+                    </Stack>
+                    <Stack mt={"15px"} direction={"column"} gap={"8px"}>
+                      {dataSearch.dataPost.map((item: any) => {
+                        return (
+                          <Stack
+                            direction={"row"}
+                            onClick={() => {
+                              setDataSearch({ dataCourses: [], dataPost: [] });
+                              setChangeSearch("");
+                              navigate(`/detail_blog/${item._id}`);
+                            }}
+                            alignItems={"center"}
+                            gap={"12px"}
+                          >
+                            <img
+                              src={item.image.url}
+                              width={33}
+                              height={33}
+                              style={{ borderRadius: "50%" }}
+                              alt=""
+                            />
+                            <Typography fontSize={"14px"}>
+                              {item.title}
+                            </Typography>
+                          </Stack>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                )}
+              </>
+            </div>
+          )}
         </Box>
-        {Object.keys(context.state.user)[0] ? (
+        {loading ? (
           <>
             {Object.keys(context.state.user)[0] ? (
               <Stack
@@ -716,19 +900,17 @@ const Header = () => {
           </>
         ) : (
           <>
-          <Stack direction={"row"} alignItems={"center"} gap={"12px"}>
-          <Skeleton width="50px" />
-          <Skeleton width="30px" height={"30px"} />
-          <Skeleton width="30px" height={"30px"} />
-          <Skeleton
-            animation="wave"
-            variant="circular"
-            width={40}
-            height={40}
-          />
-
-          </Stack>
-          
+            <Stack direction={"row"} alignItems={"center"} gap={"12px"}>
+              <Skeleton width="50px" />
+              <Skeleton width="30px" height={"30px"} />
+              <Skeleton width="30px" height={"30px"} />
+              <Skeleton
+                animation="wave"
+                variant="circular"
+                width={40}
+                height={40}
+              />
+            </Stack>
           </>
         )}
       </Stack>

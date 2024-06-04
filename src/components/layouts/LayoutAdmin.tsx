@@ -52,7 +52,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { AiOutlineSearch } from "react-icons/ai";
 import "../../App.css";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -119,7 +119,8 @@ const LayoutAdmin = () => {
   const theme:any = useTheme();
   const [open, setOpen] = React.useState(true);
   const [selectedItem, setSelectedItem] = useState("");
-
+  const location = useLocation();
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -263,7 +264,7 @@ const LayoutAdmin = () => {
               </Badge>
 
               <IconButton>
-                {/* <Avatar
+                <Avatar
                   alt='Nguyễn Ngọc Diệp'
                   src='/static/images/avatar/1.jpg'
                   sx={{ width: "35px", height: "35px" }}
@@ -272,7 +273,7 @@ const LayoutAdmin = () => {
                   // ariaHasPopup="true"
                   // ariaExpande={openned ? "true" : undefined}
                   onClick={handleClick}
-                /> */}
+                />
               </IconButton>
             </Box>
 
@@ -323,10 +324,12 @@ const LayoutAdmin = () => {
 
           <List>
               <Typography ml={"5px"}>Courses</Typography>
-              <ListItem  sx={{"a":{
+              <ListItem   sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/courses"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/courses"}> 
                 <CustomListItemButton
                   >
@@ -341,7 +344,8 @@ const LayoutAdmin = () => {
               <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/lesson"? "#e9e9e9":undefined}} disablePadding>
                 <Link to={"/dashboard/lesson"}> 
                 <CustomListItemButton
                   >
@@ -356,7 +360,9 @@ const LayoutAdmin = () => {
               <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/sublesson"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/sublesson"}> 
                 <CustomListItemButton
                   >
@@ -376,7 +382,9 @@ const LayoutAdmin = () => {
           <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              }
+              , background:location.pathname=="/dashboard/categories"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/categories"}> 
                 <CustomListItemButton
                   >
@@ -396,7 +404,9 @@ const LayoutAdmin = () => {
           <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/post"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/post"}> 
                 <CustomListItemButton
                   >
@@ -416,7 +426,9 @@ const LayoutAdmin = () => {
           <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/wallet"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/wallet"}> 
                 <CustomListItemButton
                   >
@@ -435,7 +447,9 @@ const LayoutAdmin = () => {
           <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              }
+              , background:location.pathname=="/dashboard/comment"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/comment"}> 
                 <CustomListItemButton
                   >
@@ -454,7 +468,9 @@ const LayoutAdmin = () => {
           <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/contact"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/contact"}> 
                 <CustomListItemButton
                   >
@@ -473,7 +489,9 @@ const LayoutAdmin = () => {
           <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/user"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/user"}> 
                 <CustomListItemButton
                   >
@@ -488,7 +506,9 @@ const LayoutAdmin = () => {
               <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/permission"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/permission"}> 
                 <CustomListItemButton
                   >
@@ -503,7 +523,9 @@ const LayoutAdmin = () => {
               <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              },
+              background:location.pathname=="/dashboard/role"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/role"}> 
                 <CustomListItemButton
                   >
@@ -518,7 +540,9 @@ const LayoutAdmin = () => {
               <ListItem  sx={{"a":{
                 color:"black",
                 textDecoration:"none"
-              }}} disablePadding>
+              }
+              , background:location.pathname=="/dashboard/role_permission"? "#e9e9e9":undefined
+              }} disablePadding>
                 <Link to={"/dashboard/role_permission"}> 
                 <CustomListItemButton
                   >

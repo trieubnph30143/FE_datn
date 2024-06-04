@@ -757,9 +757,8 @@ const LearningController = () => {
           </Modal>
         </>
       ):
-
-      <Box>
-      <Skeleton width="100%" sx={{mt:"-20px"}} height={"90px"}  />
+      <Box >
+      <Skeleton width="100%" sx={{mt:"-20px"}}  height={"90px"}  />
       <Stack direction={"row"} gap={"1%"}>
         <Box width={"74%"}>
         <Skeleton width="100%"  variant="rectangular"   height={"60vh"}  />

@@ -20,6 +20,7 @@ import { RiVolumeUpLine } from "react-icons/ri";
 import certificate from "../../../images/capture (2).png";
 import postImage from "../../../images/Screenshot from 2024-05-29 14-06-07.png";
 import contact from "../../../images/contact.jpg";
+
 type Props = {
   courses: typeCourses[];
   progress: any;
@@ -55,7 +56,7 @@ const HomeView = ({
     dots: true,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 5000,
     speed: 700,
     slidesToShow: 1,
     slidesToScroll: 1,
@@ -75,6 +76,7 @@ const HomeView = ({
 
   return (
     <>
+     
       <Box
         sx={{
           ".slick-slider": {
@@ -119,9 +121,12 @@ const HomeView = ({
             sx={{
               background:
                 "linear-gradient(to right, rgb(253, 34, 92), rgb(253, 144, 4))",
+              
             }}
           >
+           
             <Stack
+             
               direction={"row"}
               height={"100%"}
               justifyContent={"space-between"}
@@ -332,8 +337,8 @@ const HomeView = ({
                 <i className="icon" data-feather="user" />
               </label>
               <input
-              {...register("name")}
-                style={{  border:errors.name? "1px solid red":"none" }}
+                {...register("name")}
+                style={{ border: errors.name ? "1px solid red" : "none" }}
                 type="text"
                 id="formName"
                 className="form-control form-control-lg thick width"
@@ -346,8 +351,8 @@ const HomeView = ({
                 <i className="icon" data-feather="mail" />
               </label>
               <input
-              style={{  border:errors.email? "1px solid red":"none" }}
-              {...register("email")}
+                style={{ border: errors.email ? "1px solid red" : "none" }}
+                {...register("email")}
                 type="email"
                 id="formEmail"
                 className="form-control form-control-lg thick width"
@@ -359,8 +364,8 @@ const HomeView = ({
                 <i className="icon" data-feather="user" />
               </label>
               <input
-              {...register("subject")}
-              style={{  border:errors.subject? "1px solid red":"none" }}
+                {...register("subject")}
+                style={{ border: errors.subject ? "1px solid red" : "none" }}
                 type="text"
                 id="formName"
                 className="form-control form-control-lg thick width"
@@ -369,8 +374,8 @@ const HomeView = ({
             </div>
             <div className="form-group message">
               <textarea
-              style={{  border:errors.message? "1px solid red":"none" }}
-              {...register("message")}
+                style={{ border: errors.message ? "1px solid red" : "none" }}
+                {...register("message")}
                 id="formMessage"
                 className="form-control form-control-lg width"
                 rows={7}
@@ -380,7 +385,12 @@ const HomeView = ({
             </div>
 
             <div className="text-center">
-              <button type="submit" style={{color:"white"}} className="btn btn-primary" tabIndex={-1}>
+              <button
+                type="submit"
+                style={{ color: "white" }}
+                className="btn btn-primary"
+                tabIndex={-1}
+              >
                 Send message
               </button>
             </div>

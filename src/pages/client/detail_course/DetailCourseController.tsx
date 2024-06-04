@@ -35,6 +35,17 @@ const DetailCourseController = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   let count = 0
 
+  const { } = useQuery(["progress", id], {
+    queryFn: () => {
+      return getProgress(context.state.user[0]? context.state.user[0]._id:"6656f102f161c2adccer5ej2", id);
+    },
+    onSuccess(data) {
+      if(data[0]){
+        navigate(`/learning/${id}`)
+      }
+    },
+    refetchOnWindowFocus: false,
+  });
   useEffect(() => {
     if(!(Object.keys(context.state.user).length==0)){
       let message = "";
