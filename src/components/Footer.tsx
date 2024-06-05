@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import logo from "../images/f8-icon.18cd71cfcfa33566a22b.png";
+import logo from "../images/logo4.png";
 import { Button } from "@mui/material";
 
 const Footer = () => {
@@ -15,7 +15,7 @@ const Footer = () => {
               <img
                 src={`${logo}`}
                 alt=''
-                width={40}
+                width={90}
                 style={{ borderRadius: "7px" }}
               />
               <div style={{ paddingTop: "10px" }}>
@@ -146,7 +146,7 @@ const Footer = () => {
               <div>Ngày thành lập: 04/03/2022</div>
               <div>
                 Lĩnh vực: Công nghệ, giáo dục, lập trình. <br />
-                F8 xây dựng và phát triển những sản <br /> phẩm mang lại giá trị
+                Fdemyxây dựng và phát triển những sản <br /> phẩm mang lại giá trị
                 cho cộng đồng.
               </div>
             </div>

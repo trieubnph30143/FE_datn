@@ -4,8 +4,14 @@ import {
   CircularProgress,
   Drawer,
   Fade,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
   Paper,
   Popover,
+  Radio,
+  RadioGroup,
+  Rating,
   Stack,
   Step,
   StepConnector,
@@ -14,6 +20,7 @@ import {
   Stepper,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   TooltipProps,
   Typography,
@@ -24,7 +31,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
-import logo from "../../../images/f8-icon.18cd71cfcfa33566a22b.png";
+import logo from "../../../images/logo4.png";
 import direction from "../../../images/Screenshot from 2024-05-21 10-05-13.png";
 import left from "../../../images/left.png";
 import right from "../../../images/right.png";
@@ -32,9 +39,13 @@ import ques from "../../../images/q.png";
 import note2 from "../../../images/note2.png";
 import note1 from "../../../images/n.png";
 import direction2 from "../../../images/direction.png";
+import profile from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
+import StarIcon from "@mui/icons-material/Star";
+import StarRatings from "react-star-ratings";
 import {
   RiAddFill,
   RiArrowDownSLine,
+  RiArrowDropDownFill,
   RiArrowLeftSLine,
   RiArrowRightSLine,
   RiArticleLine,
@@ -43,6 +54,8 @@ import {
   RiCloseLine,
   RiFile3Fill,
   RiFlagFill,
+  RiFolderOpenFill,
+  RiGift2Fill,
   RiHeartFill,
   RiLock2Fill,
   RiMessengerFill,
@@ -50,8 +63,11 @@ import {
   RiPencilFill,
   RiPlayCircleFill,
   RiQuestionFill,
+  RiShareBoxFill,
+  RiStarFill,
   RiStickyNoteFill,
   RiSubtractFill,
+  RiVipCrown2Fill,
   RiYoutubeFill,
 } from "react-icons/ri";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -63,9 +79,26 @@ import css from "../../../images/css.svg";
 import Confetti from "canvas-confetti";
 import Loading from "@/components/Loading";
 import BlogContent from "@/components/BlogContent";
-import { checkExersiceProgress } from "@/service/progress";
+import {
+  addProgress,
+  checkExersiceProgress,
+  getProgress,
+} from "@/service/progress";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { addNote } from "@/service/note";
+import { convertToVND, roundToOneDecimal } from "@/utils/utils";
+import { toast } from "react-toastify";
+import { useCoursesContext } from "@/App";
+import { getUserWallet, updateWallet } from "@/service/wallet";
+import { addTransactions } from "@/service/transactions";
+import { addOrder, deleteOrder, updateOrder } from "@/service/order";
+import { useLocation } from "react-router-dom";
+import { getVnpay } from "@/service/vnpay";
+import { getOneUser } from "@/service/auth";
+import { addNotify } from "@/service/notify";
+import { io } from "socket.io-client";
+import { addStar, deleteStar, getStar, updateStar } from "@/service/star";
+import { useQuery, useQueryClient } from "react-query";
 
 type Props = {
   courses: typeCourses;
@@ -96,8 +129,8 @@ type Props = {
   navigate: any;
   toggleDrawerDirection: any;
   openDirection: any;
-  setOpenDirection:any
- 
+  setOpenDirection: any;
+  handleOpenCertificate:any
 };
 const LearningView = ({
   courses,
@@ -128,7 +161,7 @@ const LearningView = ({
   toggleDrawerDirection,
   openDirection,
   setOpenDirection,
-  
+  handleOpenCertificate
 }: Props) => {
   return (
     <Box>
@@ -141,7 +174,10 @@ const LearningView = ({
         toggleDrawerDirection={toggleDrawerDirection}
         openDirection={openDirection}
         setOpenDirection={setOpenDirection}
+        progress={progress}
+        handleOpenCertificate={handleOpenCertificate}
       />
+
       <Stack direction={"row"}>
         {loading && (
           <Box
@@ -172,7 +208,6 @@ const LearningView = ({
                 data={dataLesson}
                 timeVideo={timeVideo}
                 setPlaying={setPlaying}
-               
               />
             )}
             {dataLesson && dataLesson.type == "blog" && (
@@ -212,8 +247,10 @@ const LearningView = ({
 export default LearningView;
 
 const Header = (props: any) => {
-  let total = Math.floor(100 / props.totalProgressBar);
-  let success = Math.floor(props.progressBar[0] / props.totalProgressBar);
+  let total = Math.round(100 / props.totalProgressBar);
+  let success = Math.round(props.progressBar[0] / props.totalProgressBar);
+  
+  
   const steps = [
     {
       label: "Khu vực học tập",
@@ -232,7 +269,7 @@ const Header = (props: any) => {
     },
     {
       label: "Tạo ghi chú",
-      description: `Tại F8 có một chức năng rất đặc biệt, đó là chức năng "Tạo ghi chú". Khi học sẽ có nhiều lúc cậu muốn ghi chép lại đó, tại F8 cậu sẽ không cần tốn giấy mực để làm việc này đâu. Thả tim nào <3`,
+      description: `Tại Fdemycó một chức năng rất đặc biệt, đó là chức năng "Tạo ghi chú". Khi học sẽ có nhiều lúc cậu muốn ghi chép lại đó, tại Fdemycậu sẽ không cần tốn giấy mực để làm việc này đâu. Thả tim nào <3`,
     },
     {
       label: "Xem ghi chú",
@@ -244,14 +281,356 @@ const Header = (props: any) => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-
+  const [openGift, setOpenGift]: any = useState(false);
+  const [openStar, setOpenStar]: any = useState(false);
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+  const handleToggleGift = (newOpen: boolean) => () => {
+    setOpenGift(newOpen);
+  };
+  const handleToggleStar = (newOpen: boolean) => () => {
+    setOpenStar(newOpen);
+  };
 
   const handleReset = () => {
-      props.setOpenDirection(false)
-      setActiveStep(0)
+    props.setOpenDirection(false);
+    setActiveStep(0);
+  };
+  const socket = io("http://localhost:4000");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const context: any = useCoursesContext();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [emailGift, setEmailGift] = useState("");
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const paramTransactionStatus = queryParams.get("vnp_TransactionStatus");
+  const paramOrder_id = queryParams.get("order_id");
+  const user_id_gift = queryParams.get("user_id");
+  const queryClient = useQueryClient();
+  let count = 0;
+  useEffect(() => {
+    if (!(Object.keys(context.state.user).length == 0)) {
+      let message = "";
+      if (paramTransactionStatus) {
+        switch (paramTransactionStatus) {
+          case "00":
+            message += "Giao dịch thành công";
+            break;
+          case "01":
+            message += "Giao dịch chưa hoàn tất";
+            break;
+          case "02":
+            message += "Giao dịch bị lỗi";
+            break;
+          case "04":
+            message +=
+              "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)";
+            break;
+          case "05":
+            message += "VNPAY đang xử lý giao dịch này (GD hoàn tiền)";
+            break;
+          case "06":
+            message +=
+              "VNPAY đã gửi yêu cầu hoàn tiền sang Ngân hàng (GD hoàn tiền)";
+            break;
+          case "07":
+            message += "Giao dịch bị nghi ngờ gian lận";
+            break;
+          case "09":
+            message += "GD Hoàn trả bị từ chối";
+            break;
+
+          default:
+            break;
+        }
+        if (message == "Giao dịch thành công") {
+          setPaymentSuccess(true);
+          updateStatusOrder();
+          if (count == 0) {
+            toast.success(message);
+            count++;
+          }
+        } else {
+          deleteOrderStatus();
+          if (count == 0) {
+            toast.error(message);
+            count++;
+          }
+        }
+      }
+    }
+  }, [context.state.user]);
+  const updateStatusOrder = async () => {
+    try {
+      let data = await updateOrder(paramOrder_id);
+      if (data?.status == 0) {
+        let arr = props.courses.lesson.map((item: any, index: number) => {
+          return {
+            lesson_id: item._id,
+            completed: false,
+            sub_lesson: item.sub_lesson.map((item2: any, index2: number) => {
+              if (index == 0 && index2 == 0) {
+                return {
+                  sub_lesson_id: item2._id,
+                  completed: false,
+                  result: true,
+                };
+              }
+              return {
+                sub_lesson_id: item2._id,
+                completed: false,
+                result: false,
+              };
+            }),
+          };
+        });
+        let body = {
+          courses_id: props.courses._id,
+          completed: false,
+          user_id: user_id_gift,
+          lesson_progress: arr,
+        };
+        let dataProgress = await addProgress(body);
+        if (dataProgress?.status == 0) {
+          await addNotify({
+            user_id: [user_id_gift],
+            title: `Quà tặng`,
+            message: `Bạn vừa được tặng khóa học ${props.courses.title} từ email ${context.state.user[0].email}.`,
+            url: `/learning/${props.courses._id}`,
+            read: false,
+          });
+          socket.emit("getNewNotify", {
+            user_id: user_id_gift,
+          });
+          props.navigate(`/learning/${props.courses._id}`);
+        }
+      }
+    } catch (error) {}
+  };
+  const deleteOrderStatus = async () => {
+    try {
+      let data = await deleteOrder(String(paramOrder_id));
+      if (data?.status == 0) {
+        console.log("delete");
+      }
+    } catch (error) {}
+  };
+  const handlePayment = async () => {
+    try {
+      if (emailGift == context.state.user[0].email) {
+        toast.warning("Không tặng cho Email chính mình");
+      } else {
+        let data: any = await getOneUser(emailGift);
+        let progress = await getProgress(data.data[0]._id, props.courses._id);
+        if (progress[0]) {
+          toast.warning("Người dùng đã mua khóa học này rồi.");
+        } else {
+          if (data?.status == 0 && data.data.length > 0) {
+            if (paymentMethod == "wallet") {
+              let wallet = await getUserWallet(context.state.user[0]._id);
+              if (wallet?.status == 0) {
+                console.log(Number(wallet.data[0].balance));
+                console.log(Number(props.courses.price));
+                if (
+                  Number(wallet.data[0].balance) -
+                    Number(props.courses.price) >=
+                  0
+                ) {
+                  let res = await updateWallet({
+                    _id: wallet.data[0]._id,
+                    user_id: [wallet.data[0].user_id[0]],
+                    balance:
+                      Number(wallet.data[0].balance) -
+                      Number(props.courses.price),
+                  });
+                  await addTransactions({
+                    user_id: [context.state.user[0]._id],
+                    type: "purchase",
+                    status: "completed",
+                    amount: props.courses.price,
+                  });
+                  if (res?.status == 0) {
+                    let order = await addOrder({
+                      status: true,
+                      courses_id: [props.courses._id],
+                      user_id: [context.state.user[0]._id],
+                    });
+                    if (order?.status == 0) {
+                      let arr = props.courses.lesson.map(
+                        (item: any, index: number) => {
+                          return {
+                            lesson_id: item._id,
+                            completed: false,
+                            sub_lesson: item.sub_lesson.map(
+                              (item2: any, index2: number) => {
+                                if (index == 0 && index2 == 0) {
+                                  return {
+                                    sub_lesson_id: item2._id,
+                                    completed: false,
+                                    result: true,
+                                  };
+                                }
+                                return {
+                                  sub_lesson_id: item2._id,
+                                  completed: false,
+                                  result: false,
+                                };
+                              }
+                            ),
+                          };
+                        }
+                      );
+                      let body = {
+                        courses_id: props.courses._id,
+                        completed: false,
+                        user_id: data.data[0]._id,
+                        lesson_progress: arr,
+                      };
+
+                      let dataProgress = await addProgress(body);
+                      if (dataProgress?.status == 0) {
+                        await addNotify({
+                          user_id: [data.data[0]._id],
+                          title: `Quà tặng`,
+                          message: `Bạn vừa được tặng khóa học ${props.courses.title} từ email ${context.state.user[0].email}.`,
+                          url: `/learning/${props.courses._id}`,
+                          read: false,
+                        });
+                        socket.emit("getNewNotify", {
+                          user_id: data.data[0]._id,
+                        });
+                      }
+                      setOpenGift(false);
+                      setPaymentSuccess(true);
+                      toast.success("Bạn đã thanh toán thành công");
+                    }
+                  }
+                } else {
+                  toast.warning("Bạn không đủ số dư trong ví");
+                }
+              }
+            } else {
+              let order = await addOrder({
+                status: false,
+                courses_id: [props.courses._id],
+                user_id: [context.state.user[0]._id],
+              });
+              if (order?.status == 0) {
+                let url: any = await getVnpay({
+                  order_id: order.data._id,
+                  amount: props.courses.price,
+                  courses_id: props.courses._id,
+                  user_id: data.data[0]._id,
+                  type: "gift",
+                });
+                if (url) {
+                  window.location.href = url;
+                }
+              }
+            }
+          } else {
+            toast.warning("Email không tồn tại.");
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const labels: { [index: string]: string } = {
+    0.5: "Rất tệ, hoàn toàn không như tôi mong đợi",
+    1: "Rất tệ, hoàn toàn không như tôi mong đợi",
+    1.5: "Kém, khá thất vọng",
+    2: "Kém, khá thất vọng",
+    2.5: "Trung bình, lẽ ra có thể hay hơn",
+    3: "Trung bình, lẽ ra có thể hay hơn",
+    3.5: "Tốt, như tôi mong đợi",
+    4: "Tốt, như tôi mong đợi",
+    4.5: "Tuyệt vời, trên cả mong đợi!",
+    5: "Tuyệt vời, trên cả mong đợi!",
+  };
+
+  function getLabelText(value: number) {
+    return `${value} Star${value !== 1 ? "s" : ""}, ${labels[value]}`;
+  }
+  const [value, setValue] = React.useState<number | null>(0);
+  const [hover, setHover] = React.useState(-1);
+  const [messageStar, setMessageStar] = React.useState("");
+  const [dataStar, setDataStar]: any = useState([]);
+  const [userStar, setUserStar]: any = React.useState([]);
+  const [updateUserStar, setUpdateUserStar]: any = React.useState(null);
+  const { data: star }: any = useQuery("star_all", {
+    queryFn: () => {
+      return getStar(props.courses._id, "all");
+    },
+    onSuccess(data) {
+      if (data?.status == 0) {
+        setDataStar(
+          data.data.filter(
+            (item: any) => item.user_id[0]._id != context.state.user[0]._id
+          )
+        );
+        setUserStar(
+          data.data.filter(
+            (item: any) => item.user_id[0]._id == context.state.user[0]._id
+          )
+        );
+      }
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const handleStar = async () => {
+    try {
+      if (updateUserStar) {
+        let data = await updateStar(updateUserStar._id, {
+          user_id: [context.state.user[0]._id],
+          courses_id: [props.courses._id],
+          star: value,
+          message: messageStar,
+        });
+        if (data?.status == 0) {
+          setValue(0);
+          setMessageStar("");
+          toast.success("Bạn sửa đánh giá thành công.");
+          setUpdateUserStar(null);
+          queryClient.invalidateQueries({
+            queryKey: ["star_all"],
+          });
+        }
+      } else {
+        let data = await addStar({
+          user_id: [context.state.user[0]._id],
+          courses_id: [props.courses._id],
+          star: value,
+          message: messageStar,
+        });
+        if (data?.status == 0) {
+          setValue(0);
+          setMessageStar("");
+          toast.success("Bạn đã đánh giá thành công.");
+          queryClient.invalidateQueries({
+            queryKey: ["star_all"],
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteStar = async () => {
+    try {
+      let data = await deleteStar(userStar[0]._id);
+      if (data?.status == 0) {
+        toast.success("Bạn đã xóa đánh giá thành công.");
+        queryClient.invalidateQueries({
+          queryKey: ["star_all"],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -272,16 +651,43 @@ const Header = (props: any) => {
         <RiArrowLeftSLine onClick={() => props.navigate("/")} size={25} />
         <img
           src={logo}
-          width={30}
-          style={{ borderRadius: "8px" }}
-          height={30}
+          width={40}
+          style={{ borderRadius: "8px", objectFit: "contain" }}
+          height={40}
           alt=""
         />
         <Typography fontWeight={"bold"} fontSize={"13px"}>
           {props.courses.title}
         </Typography>
       </Stack>
-      <Stack direction={"row"} gap={"20px"}>
+      <Stack direction={"row"} sx={{ cursor: "pointer" }} gap={"20px"}>
+        {props.progress[0].user_name||props.progress[0].completed==true ? (
+          <Stack
+            onClick={props.handleOpenCertificate}
+            direction={"row"}
+            color={"white"}
+            alignItems={"center"}
+            gap={0.5}
+          >
+            <RiVipCrown2Fill />
+            <Typography fontSize={"13px"}>{props.progress[0].completed==true&&!props.progress[0].user_name?"Nhận":"Xem"} chứng chỉ</Typography>
+          </Stack>
+        ) : (
+          ""
+        )}
+
+        {props.courses.price > 0 && (
+          <Stack
+            onClick={handleToggleGift(true)}
+            direction={"row"}
+            color={"white"}
+            alignItems={"center"}
+            gap={0.5}
+          >
+            <RiGift2Fill />
+            <Typography fontSize={"13px"}>Tặng khóa học này</Typography>
+          </Stack>
+        )}
         <Stack
           color={"white"}
           direction={"row"}
@@ -316,6 +722,16 @@ const Header = (props: any) => {
             </b>{" "}
             bài học
           </Typography>
+        </Stack>
+        <Stack
+          direction={"row"}
+          onClick={handleToggleStar(true)}
+          color={"white"}
+          alignItems={"center"}
+          gap={0.5}
+        >
+          <RiStarFill />
+          <Typography fontSize={"13px"}>Đánh giá</Typography>
         </Stack>
         <Stack
           direction={"row"}
@@ -361,7 +777,7 @@ const Header = (props: any) => {
                   objectFit: "cover",
                   top: "25px",
                   height: "435px",
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"75%"}
                 alt=""
@@ -376,7 +792,7 @@ const Header = (props: any) => {
                   top: "25px",
                   height: "435px",
                   right: 0,
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"25%"}
                 alt=""
@@ -392,7 +808,7 @@ const Header = (props: any) => {
                   height: "22px",
                   right: 299,
                   borderRadius: "99px",
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"57px"}
                 alt=""
@@ -408,7 +824,7 @@ const Header = (props: any) => {
                   height: "26.4px",
                   right: 318,
                   borderRadius: "4px",
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"111px"}
                 alt=""
@@ -423,7 +839,7 @@ const Header = (props: any) => {
                   top: "1px",
                   height: "27px",
                   right: 63,
-                  boxShadow: '0px 0px 18px white'
+                  boxShadow: "0px 0px 18px white",
                 }}
                 width={"50px"}
                 alt=""
@@ -506,7 +922,460 @@ const Header = (props: any) => {
           )}
         </Box>
       </Drawer>
+      <Drawer
+        open={openGift}
+        anchor={"right"}
+        onClose={handleToggleGift(false)}
+      >
+        <Box width={"600px"} padding={"50px 50px"}>
+          <Typography variant="h5" textAlign={"center"} fontWeight={"bold"}>
+            Tặng khóa học {props.courses.title}
+          </Typography>
+          <Typography my={"20px"} color={"#333"} fontSize={"14px"}>
+            {props.courses.description}
+          </Typography>
+          <form style={{ marginTop: "30px" }}>
+            <TextField
+              id="outlined-basic"
+              type="email"
+              value={emailGift}
+              onChange={(e) => setEmailGift(e.target.value)}
+              label="Email người nhận"
+              size="small"
+              fullWidth
+              variant="outlined"
+            />
+            <Box
+              mt={"20px"}
+              width={"100%"}
+              padding={"10px"}
+              border={"1px solid #dddddd"}
+              borderRadius={"10px"}
+            >
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Box>Giá bán : </Box>
+                <Box>{convertToVND(props.courses.price)}</Box>
+              </Stack>
+              <Stack
+                direction={"row"}
+                mt={"15px"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Box>Tổng tiền : </Box>
+                <Box>{convertToVND(props.courses.price)}</Box>
+              </Stack>
+              <FormControl sx={{ mt: "20px", display: "block" }}>
+                <FormLabel id="demo-radio-buttons-group-label">
+                  Phương thức thanh toán
+                </FormLabel>
+
+                <RadioGroup
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  name="radio-buttons-group"
+                >
+                  <FormControlLabel
+                    value="wallet"
+                    control={<Radio />}
+                    label="Thanh toán bằng ví"
+                  />
+                  <FormControlLabel
+                    value="vnpay"
+                    control={<Radio />}
+                    label="Cổng thanh toán VNPAY"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+            <Box mt={"20px"}>
+              <Button
+                disabled={!emailGift || !paymentMethod}
+                onClick={handlePayment}
+                sx={{
+                  background:
+                    "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                  color: "white",
+                  borderRadius: "30px",
+                  float: "right",
+                  height: "34px",
+                }}
+              >
+                Thanh toán
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Drawer>
+      <Drawer
+        open={openStar}
+        anchor={"right"}
+        onClose={handleToggleStar(false)}
+      >
+        <Box
+          sx={{
+            ".css-15befwp-MuiRating-root": {
+              color: "#b4690e",
+            },
+          }}
+          width={"900px"}
+          padding={"50px 50px"}
+        >
+          <Typography variant="h4" textAlign={"center"} fontWeight={"bold"}>
+            Phản hồi của học viên
+          </Typography>
+          <Stack mt={"30px"} direction={"row"} gap={"4%"} alignItems={"center"}>
+            <Box
+              width={"20%"}
+              display={"flex"}
+              gap={"10px"}
+              alignItems={"center"}
+              flexDirection={"column"}
+              sx={{
+                svg: {
+                  width: "30px !important",
+                  height: "30px !important",
+                },
+              }}
+            >
+              <Typography variant="h2" color={"#b4690e"} fontWeight={"bold"}>
+                {roundToOneDecimal(
+                  star !== undefined && star.status == 0 && star.averageRating
+                    ? star.averageRating
+                    : 0
+                )}
+              </Typography>
+              <StarRatings
+                rating={
+                  star !== undefined && star.status == 0 && star.averageRating
+                    ? star.averageRating
+                    : 0
+                }
+                starRatedColor="blue"
+                numberOfStars={5}
+                starSpacing="0"
+                starRatedColor={"#b4690e"}
+                name="rating"
+              />
+
+              <Typography color={"#b4690e"} fontWeight={"bold"}>
+                Xếp hạng khóa học
+              </Typography>
+            </Box>
+            <Box
+              width={"56%"}
+              display={"flex"}
+              gap={"10px"}
+              alignItems={"center"}
+              flexDirection={"column"}
+            >
+              <ProgressBar
+                percentage={
+                  star !== undefined && star?.status == 0
+                    ? star.ratingPercentages.fire == null
+                      ? 0
+                      : star.ratingPercentages.fire
+                    : 0
+                }
+              />
+              <ProgressBar
+                percentage={
+                  star !== undefined && star?.status == 0
+                    ? star.ratingPercentages.four == null
+                      ? 0
+                      : star.ratingPercentages.four
+                    : 0
+                }
+              />
+              <ProgressBar
+                percentage={
+                  star !== undefined && star?.status == 0
+                    ? star.ratingPercentages.three == null
+                      ? 0
+                      : star.ratingPercentages.three
+                    : 0
+                }
+              />
+              <ProgressBar
+                percentage={
+                  star !== undefined && star?.status == 0
+                    ? star.ratingPercentages.two == null
+                      ? 0
+                      : star.ratingPercentages.two
+                    : 0
+                }
+              />
+              <ProgressBar
+                percentage={
+                  star !== undefined && star?.status == 0
+                    ? star.ratingPercentages.one == null
+                      ? 0
+                      : star.ratingPercentages.one
+                    : 0
+                }
+              />
+            </Box>
+            <Box
+              width={"20%"}
+              display={"flex"}
+              gap={"4px"}
+              alignItems={"start"}
+              flexDirection={"column"}
+            >
+              <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
+                <Rating name="read-only" color="#b4690e" value={5} readOnly />
+                <Typography>
+                  {star !== undefined &&
+                    star?.status == 0 &&
+                    star.ratingPercentages.fire}
+                  %
+                </Typography>
+              </Stack>
+              <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
+                <Rating name="read-only" color="#b4690e" value={4} readOnly />
+                <Typography>
+                  {star !== undefined &&
+                    star?.status == 0 &&
+                    star.ratingPercentages.four}
+                  %
+                </Typography>
+              </Stack>
+
+              <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
+                <Rating name="read-only" color="#b4690e" value={3} readOnly />
+                <Typography>
+                  {star !== undefined &&
+                    star?.status == 0 &&
+                    star.ratingPercentages.three}
+                  %
+                </Typography>
+              </Stack>
+              <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
+                <Rating name="read-only" color="#b4690e" value={2} readOnly />
+                <Typography>
+                  {star !== undefined &&
+                    star?.status == 0 &&
+                    star.ratingPercentages.two}
+                  %
+                </Typography>
+              </Stack>
+              <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
+                <Rating name="read-only" color="#b4690e" value={1} readOnly />
+                <Typography>
+                  {star !== undefined &&
+                    star?.status == 0 &&
+                    star.ratingPercentages.one}
+                  %
+                </Typography>
+              </Stack>
+            </Box>
+          </Stack>
+          <Typography variant="h6" fontWeight={"bold"} mt={"30px"}>
+            Đánh giá của tôi
+          </Typography>
+          <Box
+            mt={"10px"}
+            display={"flex"}
+            flexDirection={"column"}
+            gap={"10px"}
+          >
+            {!userStar[0] || updateUserStar ? (
+              <Box>
+                <Stack direction={"row"} alignItems={"center"} gap={"20px"}>
+                  <Rating
+                    name="hover-feedback"
+                    size="large"
+                    value={value}
+                    getLabelText={getLabelText}
+                    onChange={(event, newValue) => {
+                      setValue(newValue);
+                    }}
+                    onChangeActive={(event, newHover) => {
+                      setHover(newHover);
+                    }}
+                    emptyIcon={
+                      <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
+                    }
+                  />
+                  {value !== null && (
+                    <Box>{labels[hover !== -1 ? hover : value]}</Box>
+                  )}
+                </Stack>
+                <Box display={"flex"} mt={"15px"} gap={"20px"}>
+                  <TextField
+                    value={messageStar}
+                    onChange={(e) => setMessageStar(e.target.value)}
+                    id="outlined-basic"
+                    placeholder="Hãy cho tôi biết cảm nhận của bạn khi học khóa học này."
+                    variant="outlined"
+                    sx={{ width: "60%" }}
+                    size="small"
+                  />
+                  <Button
+                    onClick={handleStar}
+                    disabled={!value || !messageStar}
+                    sx={{
+                      background:
+                        "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                      color: "white",
+                      borderRadius: "4px",
+                      width: "92px",
+                    }}
+                  >
+                    Đánh giá
+                  </Button>
+                  {updateUserStar && (
+                    <Button onClick={() => setUpdateUserStar(null)}>
+                      Quay lại
+                    </Button>
+                  )}
+                </Box>
+              </Box>
+            ) : (
+              <Stack
+                direction={"row"}
+                mt={"30px"}
+                paddingBottom={"10px"}
+                gap={"20px"}
+              >
+                <img
+                  src={
+                    userStar[0].user_id[0].image.url
+                      ? userStar[0].user_id[0].image.url
+                      : profile
+                  }
+                  width={"50px"}
+                  height={"50px"}
+                  style={{ borderRadius: "50%" }}
+                  alt=""
+                />
+                <Box>
+                  <Typography display={"flex"} gap={"20px"} fontWeight={"bold"}>
+                    {userStar[0].user_id[0].user_name}{" "}
+                    <Box display={"flex"} gap={"10px"}>
+                      <Button
+                        onClick={handleDeleteStar}
+                        sx={{
+                          background: "red",
+                          color: "white",
+                          borderRadius: "4px",
+                          fontSize: "13px",
+                          height: "20px",
+                        }}
+                      >
+                        Xóa
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setMessageStar(userStar[0].message);
+                          setValue(userStar[0].star);
+                          setUpdateUserStar(userStar[0]);
+                        }}
+                        sx={{
+                          background:
+                            "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                          color: "white",
+                          borderRadius: "4px",
+                          fontSize: "13px",
+                          height: "20px",
+                        }}
+                      >
+                        Sửa
+                      </Button>
+                    </Box>
+                  </Typography>
+                  <Rating
+                    name="read-only"
+                    color="#b4690e"
+                    value={userStar[0].star}
+                    readOnly
+                  />
+                  <Typography>{userStar[0].message}</Typography>
+                </Box>
+              </Stack>
+            )}
+            {dataStar.length > 0 && (
+              <>
+                <Typography variant="h6" fontWeight={"bold"} mt={"30px"}>
+                  Tất cả đánh giá
+                </Typography>
+                <Stack direction={"column"} gap={"20px"} mt={"30px"}>
+                  {dataStar &&
+                    dataStar.length &&
+                    dataStar.map((item: any) => {
+                      return (
+                        <Stack
+                          direction={"row"}
+                          paddingBottom={"10px"}
+                          borderBottom={"1px dashed #dddddd"}
+                          gap={"20px"}
+                        >
+                          <img
+                            src={
+                              item.user_id[0].image.url
+                                ? item.user_id[0].image.url
+                                : profile
+                            }
+                            width={"50px"}
+                            height={"50px"}
+                            style={{ borderRadius: "50%" }}
+                            alt=""
+                          />
+                          <Box>
+                            <Typography fontWeight={"bold"}>
+                              {item.user_id[0].user_name}
+                            </Typography>
+                            <Rating
+                              name="read-only"
+                              color="#b4690e"
+                              value={item.star}
+                              readOnly
+                            />
+                            <Typography>{item.message}</Typography>
+                          </Box>
+                        </Stack>
+                      );
+                    })}
+                </Stack>
+              </>
+            )}
+          </Box>
+        </Box>
+      </Drawer>
     </Stack>
+  );
+};
+const ProgressBar = ({ percentage }: any) => {
+  return (
+    <div
+      className="progress-bar-container"
+      style={{
+        width: "90%",
+        backgroundColor: "#f0f0f0",
+        borderRadius: "4px",
+        overflow: "hidden",
+        marginTop: "10px",
+      }}
+    >
+      <div
+        className="progress-bar"
+        style={{
+          height: "9px",
+          backgroundColor: "#b4690e",
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "width 0.5s ease",
+          width: `${percentage}%`,
+        }}
+      ></div>
+    </div>
   );
 };
 
@@ -534,8 +1403,7 @@ const Footer = (props: any) => {
           Bài trước
         </Button>
         <Button
-          className={props.done&&"animation"}
-          disabled={!props.done}
+          className={props.done && "animation"}
           onClick={props.handleNextLesson}
           sx={{
             color: "#ff5117",
@@ -557,10 +1425,15 @@ const ContentLeftVideo = (props: any) => {
   const [open, setOpen] = React.useState(false);
   const [content, setContent] = React.useState("");
   const toggleDrawer = (newOpen: boolean) => () => {
-    props.setPlaying(false);
-    setOpen(newOpen);
+    if (newOpen) {
+      props.setPlaying(false);
+      setOpen(newOpen);
+    } else {
+      props.setPlaying(true);
+      setOpen(newOpen);
+    }
   };
-  console.log(props.handleSeek);
+
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
@@ -646,13 +1519,13 @@ const ContentLeftVideo = (props: any) => {
           <Typography mt={"20px"} lineHeight={2.5}>
             Tham gia nhóm Học{" "}
             <a style={{ color: "#ff5117" }} href="">
-              lập trình tại F8
+              lập trình tại FDemy
             </a>{" "}
             trên Facebook để cùng nhau trao đổi trong quá trình học tập ❤️
             <br></br>
             Các bạn subscribe{" "}
             <a style={{ color: "#ff5117" }} href="">
-              kênh Youtube F8 Official
+              kênh Youtube Fdemy Official
             </a>{" "}
             để nhận thông báo khi có các bài học mới nhé ❤️<br></br>
             Form HTML template:{" "}
@@ -794,6 +1667,17 @@ const ContentLeftVideo = (props: any) => {
 };
 
 const ContentRight = (props: any) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
   return (
     <Box
       width={"25%"}
@@ -859,90 +1743,151 @@ const ContentRight = (props: any) => {
                         }
                       }
                       let active = props.activeLesson == itemchild._id;
+
                       return (
                         <Box
+                          position={"relative"}
                           sx={{
-                            pointerEvents:
-                              !checkSuccess && !check ? "none" : "auto",
+                            cursor: "pointer",
                           }}
-                          onClick={() => props.handleActiveLesson(itemchild)}
                         >
-                          <Stack
-                            direction={"row"}
-                            borderTop={
-                              index2 == 0 ? "none" : "1px solid #dddddd"
-                            }
-                            alignItems={"center"}
+                          <Box
                             sx={{
-                              background: active
-                                ? "rgba(240, 81, 35, .2)"
-                                : !checkSuccess && !check
-                                ? "#e6e6e6"
-                                : undefined,
-                              opacity: !checkSuccess && !check ? ".5" : "1",
+                              position: "relative",
                             }}
-                            justifyContent={"space-between"}
-                            padding={"15px 20px"}
+                            onClick={() => props.handleActiveLesson(itemchild)}
                           >
                             <Stack
                               direction={"row"}
-                              alignItems={"center"}
-                              gap={"7px"}
+                              borderTop={
+                                index2 == 0 ? "none" : "1px solid #dddddd"
+                              }
+                              alignItems={"start"}
+                              sx={{
+                                background: active
+                                  ? "rgba(240, 81, 35, .2)"
+                                  : undefined,
+                              }}
+                              justifyContent={"space-between"}
+                              padding={"15px 20px"}
                             >
-                              <Typography color={"#333"} fontSize={"14px"}>
-                                {index2 + 1}.{itemchild.title}
-                                <Stack
-                                  direction={"row"}
-                                  mt={"5px"}
-                                  gap={"10px"}
-                                >
-                                  {itemchild.type == "video" && (
-                                    <RiYoutubeFill
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}
-                                  {itemchild.type == "blog" && (
-                                    <RiArticleLine
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}
-                                  {itemchild.type == "code" && (
-                                    <RiPencilFill
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}
-                                  {itemchild.type == "quiz" && (
-                                    <RiQuestionFill
-                                      size={"20px"}
-                                      color={"#f05123"}
-                                    />
-                                  )}{" "}
-                                  {itemchild.duration}
-                                </Stack>
+                              <Stack
+                                direction={"row"}
+                                alignItems={"center"}
+                                gap={"7px"}
+                              >
+                                <Typography color={"#333"} fontSize={"14px"}>
+                                  {index2 + 1}.{itemchild.title}
+                                  <Stack
+                                    direction={"row"}
+                                    alignItems={"center"}
+                                    justifyContent={"space-between"}
+                                  >
+                                    <Stack
+                                      direction={"row"}
+                                      mt={"5px"}
+                                      gap={"10px"}
+                                    >
+                                      {itemchild.type == "video" && (
+                                        <RiYoutubeFill
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}
+                                      {itemchild.type == "blog" && (
+                                        <RiArticleLine
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}
+                                      {itemchild.type == "code" && (
+                                        <RiPencilFill
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}
+                                      {itemchild.type == "quiz" && (
+                                        <RiQuestionFill
+                                          size={"20px"}
+                                          color={"#f05123"}
+                                        />
+                                      )}{" "}
+                                      {itemchild.duration}
+                                    </Stack>
+                                  </Stack>
+                                </Typography>
+                              </Stack>
+                              <Typography fontSize={"12px"}>
+                                {check ? (
+                                  ""
+                                ) : (
+                                  <>
+                                    {checkSuccess && (
+                                      <RiCheckboxCircleFill
+                                        color="green"
+                                        size={"20px"}
+                                      />
+                                    )}
+                                  </>
+                                )}
                               </Typography>
                             </Stack>
-                            <Typography fontSize={"12px"}>
-                              {check ? (
-                                ""
-                              ) : (
-                                <>
-                                  {checkSuccess && (
-                                    <RiCheckboxCircleFill
-                                      color="green"
-                                      size={"20px"}
-                                    />
-                                  )}
-
-                                  {!checkSuccess && (
-                                    <RiLock2Fill size={"20px"} />
-                                  )}
-                                </>
-                              )}
-                            </Typography>
-                          </Stack>
+                          </Box>
+                          {itemchild.source && itemchild.source !== "..." && (
+                            <>
+                              <Box
+                                aria-describedby={id}
+                                onClick={handleClick}
+                                padding={" 3px 5px"}
+                                position={"absolute"}
+                                right={"3px"}
+                                bottom={"3px"}
+                                display={"flex"}
+                                alignItems={"center"}
+                                gap={"3px"}
+                                border={"1px solid #333"}
+                              >
+                                <RiFolderOpenFill />
+                                <Typography fontSize={"13px"}>
+                                  Tài nguyên
+                                </Typography>
+                                <RiArrowDropDownFill size={20} />
+                              </Box>
+                              <Popover
+                                sx={{
+                                  ".css-3bmhjh-MuiPaper-root-MuiPopover-paper":
+                                    {
+                                      boxShadow: "0 0 3px #dddddd",
+                                    },
+                                }}
+                                id={id}
+                                open={open}
+                                anchorEl={anchorEl}
+                                onClose={handleClose}
+                                anchorOrigin={{
+                                  vertical: "bottom",
+                                  horizontal: "right",
+                                }}
+                                transformOrigin={{
+                                  vertical: "top",
+                                  horizontal: "right",
+                                }}
+                              >
+                                <a href={itemchild.source} target="_blank">
+                                  <Typography
+                                    fontSize={"14px"}
+                                    display={"flex"}
+                                    alignItems={"center"}
+                                    gap={"7px"}
+                                    sx={{ p: 1 }}
+                                  >
+                                    <RiShareBoxFill />
+                                    Mã nguồn
+                                  </Typography>
+                                </a>
+                              </Popover>
+                            </>
+                          )}
                         </Box>
                       );
                     })}
@@ -1120,19 +2065,33 @@ const ContentLeftExercise = (props: any) => {
           )}
 
           {value == 1 && (
-            <>{props.typeCode=="javascript"?<><Typography textAlign={"center"} color={"grey"} mt={"20px"} fontSize={"14px"}>Nếu có file index.html thì nội dung của nó<br></br>
-            sẽ được hiển thị tại đây.</Typography></>:<Box>
-            <iframe
-              title="result"
-              srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
-              style={{
-                width: "100%",
-                height: "85vh",
-                border: "1px solid #ccc",
-              }}
-            />
-          </Box>}</>
-            
+            <>
+              {props.typeCode == "javascript" ? (
+                <>
+                  <Typography
+                    textAlign={"center"}
+                    color={"grey"}
+                    mt={"20px"}
+                    fontSize={"14px"}
+                  >
+                    Nếu có file index.html thì nội dung của nó<br></br>
+                    sẽ được hiển thị tại đây.
+                  </Typography>
+                </>
+              ) : (
+                <Box>
+                  <iframe
+                    title="result"
+                    srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
+                    style={{
+                      width: "100%",
+                      height: "85vh",
+                      border: "1px solid #ccc",
+                    }}
+                  />
+                </Box>
+              )}
+            </>
           )}
         </Box>
         <Box width={"55%"}>

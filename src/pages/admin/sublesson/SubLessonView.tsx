@@ -440,6 +440,7 @@ const ModalForm = (props: any) => {
                 size="small"
               />
             </Box>
+
             <Box width={"24%"}>
               <FormControl fullWidth size="small">
                 <InputLabel id="demo-simple-select-label">Lesson</InputLabel>
@@ -458,6 +459,16 @@ const ModalForm = (props: any) => {
                     })}
                 </Select>
               </FormControl>
+            </Box>
+            <Box width={"24%"}>
+              <TextField
+                {...props.register("source")}
+                fullWidth
+                id="outlined-basic"
+                label="Source"
+                variant="outlined"
+                size="small"
+              />
             </Box>
             <Box width={"100%"}>
               <Tabs

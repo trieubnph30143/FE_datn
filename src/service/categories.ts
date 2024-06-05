@@ -7,6 +7,14 @@ export const getCategories = async () => {
     console.log(`get_Categories`, error);
   }
 };
+export const getCategoriesCourses = async () => {
+  try {
+    const response = await axios.get(`/categories/courses`);
+    return response.data;
+  } catch (error) {
+    console.log(`get_Categories`, error);
+  }
+};
 export const addCategories = async (value: typeCategories) => {
   try {
     const response = await axios.post(`/categories`, value);

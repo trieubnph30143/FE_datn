@@ -1,4 +1,4 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid, Skeleton, Typography } from "@mui/material";
 import Product from "./Product";
 
 const ProductList = ({
@@ -10,12 +10,13 @@ const ProductList = ({
   title: string;
   type?: string;
   data?: any;
-  progress?:any
+  progress?: any;
 }) => {
- 
-  let checkRegisterCourses = progress&&progress.length&&progress.map((item:any)=>item.courses_id[0])
+  let checkRegisterCourses =
+    progress &&
+    progress.length &&
+    progress.map((item: any) => item.courses_id[0]);
 
-  
   return (
     <Box mt={"20px"} px={"40px"}>
       <Typography fontSize={30} fontWeight={"bold"}>
@@ -27,11 +28,11 @@ const ProductList = ({
             {data &&
               data.length &&
               data.map((item: any) => {
-                let check =false 
-                if(progress&&progress[0]){
-                  check = checkRegisterCourses.includes(item._id)
+                let check = false;
+                if (progress && progress[0]) {
+                  check = checkRegisterCourses.includes(item._id);
                 }
-                
+
                 return (
                   <Grid item xs={12} sm={6} md={3}>
                     <Product type={type} check={check} item={item} />
@@ -43,7 +44,13 @@ const ProductList = ({
           <>
             {Array.from({ length: 4 }, (value, index) => (
               <Grid item xs={12} sm={6} md={3}>
-                <Product type={type} />
+                <Box >
+                  <Skeleton variant="rectangular" sx={{borderRadius:"18px"}} height={"228px"}  />
+                  <Box>
+                    <Skeleton />
+                    <Skeleton width="60%" />
+                  </Box>
+                </Box>
               </Grid>
             ))}
           </>

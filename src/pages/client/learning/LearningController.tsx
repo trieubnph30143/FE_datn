@@ -6,7 +6,7 @@ import {
   updateCertificate,
   updateProgress,
 } from "@/service/progress";
-import { calculateProgress, getCurrentDate } from "@/utils/utils";
+import { calculateProgress, convertToVND, getCurrentDate, roundToOneDecimal } from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,12 +21,17 @@ import {
   Checkbox,
   FormControlLabel,
   Modal,
+  Skeleton,
+  Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import certificate from "../../../images/certificate (1).png";
 import confetti from "canvas-confetti";
 import { RiDownloadCloud2Line } from "react-icons/ri";
+import { addNotify } from "@/service/notify";
+import { addTransactions } from "@/service/transactions";
+import { updateRewardWallet } from "@/service/wallet";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -69,10 +74,6 @@ const LearningController = () => {
   };
   const player: any = useRef(null);
   const [user, setUser] = useLocalStorage("user", {});
-  const [currentTime, setCurrentTime] = useState(0);
-  const [previousTime, setPreviousTime] = useState(0);
-  const [seeking, setSeeking] = useState(false);
-  const seekLimit = 10;
   const [loadingAll, setLoadingAll] = useState({
     courses: false,
     progress: false,
@@ -91,19 +92,26 @@ const LearningController = () => {
       return getProgress(user.data[0]._id, id);
     },
     onSuccess(data) {
-      let total = 0;
-      data[0].lesson_progress.map((item: any) => {
-        item.sub_lesson.map(() => total++);
-      });
-      const percentagePerItem = Math.round(100 / total);
-      setTotalprogressBar(percentagePerItem);
-      let arr = calculateProgress(data);
-
-      setprogressBar(arr);
-      setLoadingAll({ ...loadingAll, progress: true });
+      if (data[0]) {
+        let total = 0;
+        data[0].lesson_progress.map((item: any) => {
+          item.sub_lesson.map(() => total++);
+        });   
+        const percentagePerItem = roundToOneDecimal(100 / total) ;     
+        setTotalprogressBar(percentagePerItem);  
+        console.log(percentagePerItem);
+        let arr = calculateProgress(data);
+        console.log(arr);
+        setprogressBar(arr);
+        setLoadingAll({ ...loadingAll, progress: true });
+      } else {
+        navigate("/");
+      }
     },
     refetchOnWindowFocus: false,
   });
+
+  
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
@@ -189,7 +197,6 @@ const LearningController = () => {
 
     refetchOnWindowFocus: false,
   });
-
   const handleTongle = (index: number) => {
     setExpanded((prevExpanded: any) =>
       prevExpanded.map((item: any, idx: any) => (idx === index ? !item : item))
@@ -207,6 +214,9 @@ const LearningController = () => {
   const handleActiveLesson = (data: any) => {
     setActiveLesson(data._id);
     setDataLesson(data);
+    if (data.type == "blog") {
+      setDone(true);
+    }
     if (data.type == "code") {
       if (Object.keys(JSON.parse(data.type_exercise)).length == 2) {
         setTypeCode("html-css");
@@ -238,28 +248,18 @@ const LearningController = () => {
     };
   }, [playedRef.current]);
 
-  useEffect(() => {
-    const savedTime: any = localStorage.getItem("videoCurrentTime");
-
-    if (player.current) {
-      player.current.seekTo(0.0);
-    }
-  }, [player.current]);
-
   const handleProgress = (state: any) => {
-   
     if (playedRef.current !== state.played) {
       const minutes = Math.floor(state.playedSeconds / 60);
-        const seconds = Math.ceil(state.playedSeconds % 60);
-        setTimeVideo(
-          minutes < 10
-            ? `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
-            : `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
-        );
-      
+      const seconds = Math.ceil(state.playedSeconds % 60);
+      setTimeVideo(
+        minutes < 10
+          ? `0${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+          : `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
+      );
     }
   };
-  
+
   const handleEnded = () => {
     setDone(true);
     setPlaying(false);
@@ -283,7 +283,6 @@ const LearningController = () => {
         setLoading(false);
       } else {
         if (check_lesson_passed) {
-          console.log("toan1");
           completionCourse();
           setLoading(false);
         } else {
@@ -307,7 +306,6 @@ const LearningController = () => {
           let lengthLesson = progress[0].lesson_progress.length - 1;
           if (lengthLesson == index && length == index2) {
             true;
-            handleOpenCertificate();
           } else {
             if (length == index2) {
               expanded[index + 1] = true;
@@ -353,16 +351,31 @@ const LearningController = () => {
   };
   const courseNotCompleted = async () => {
     let arr = progress;
+    let arrCheck: any[] = [];
+    progress[0].lesson_progress.forEach((item_test: any) => {
+      item_test.sub_lesson.forEach((i: any) => {
+        if (
+          (i.completed === false && i.result === true) ||
+          (i.completed === false && i.result === false)
+        ) {
+          arrCheck.push(i);
+        }
+      });
+    });
+
     progress[0].lesson_progress.map((item: any, index: number) => {
       item.sub_lesson.map((itemChild: any, index2: number) => {
         if (activeLesson == itemChild.sub_lesson_id) {
           let length = progress[0].lesson_progress[index].sub_lesson.length - 1;
           let lengthLesson = progress[0].lesson_progress.length - 1;
+          if (arrCheck.length == 1) {
+            arr[0].completed = true;
+            handleOpenCertificate();
+          }
+
           if (lengthLesson == index && length == index2) {
             arr[0].lesson_progress[index].sub_lesson[index2].completed = true;
             arr[0].lesson_progress[index].completed = true;
-            arr[0].completed = true;
-            handleOpenCertificate();
           } else {
             if (length == index2) {
               expanded[index + 1] = true;
@@ -419,11 +432,12 @@ const LearningController = () => {
         }
       });
     });
+
     if (dataLesson.type == "video" && done) {
       try {
         let data = await updateProgress(arr[0]);
         if (data?.status == 0) {
-          setprogressBar([(progressBar[0] += totalProgressBar)]);
+          setprogressBar([Math.round((progressBar[0] += totalProgressBar))]);
           queryClient.invalidateQueries({
             queryKey: ["progress", "detail"],
           });
@@ -436,7 +450,7 @@ const LearningController = () => {
       try {
         let data = await updateProgress(arr[0]);
         if (data?.status == 0) {
-          setprogressBar([(progressBar[0] += totalProgressBar)]);
+          setprogressBar([Math.round((progressBar[0] += totalProgressBar))]);
           queryClient.invalidateQueries({
             queryKey: ["progress", "detail"],
           });
@@ -447,18 +461,17 @@ const LearningController = () => {
     }
     if (dataLesson.type == "code") {
       let data = await updateProgress(arr[0]);
-      setprogressBar([(progressBar[0] += totalProgressBar)]);
+      setprogressBar([Math.round((progressBar[0] += totalProgressBar))]);
       queryClient.invalidateQueries({
         queryKey: ["progress", "detail"],
       });
-
       setLoading(false);
     }
     if (dataLesson.type == "quiz") {
       try {
         let data = await updateProgress(arr[0]);
         if (data?.status == 0) {
-          setprogressBar([(progressBar[0] += totalProgressBar)]);
+          setprogressBar([Math.round((progressBar[0] += totalProgressBar))]);
           queryClient.invalidateQueries({
             queryKey: ["progress", "detail"],
           });
@@ -466,6 +479,9 @@ const LearningController = () => {
           setLoading(false);
         }
       } catch (error) {}
+    }
+    if (arrCheck.length == 1) {
+      setprogressBar([100])
     }
   };
 
@@ -478,6 +494,28 @@ const LearningController = () => {
         _id: progress[0]._id,
       });
       if (data?.status == 0) {
+        if (courses.price > 0) {
+          let price = (10 / 100) * courses.price;
+          let wallet = await updateRewardWallet({
+            user_id: user.data[0]._id,
+            amount: price,
+          });
+          await addNotify({
+            user_id: [user.data[0]._id],
+            title: `Bạn nhận đựơc ${convertToVND(price)} vào ví.`,
+            message:
+              "Chúc mừng bạn đã hoàn thành xuất sắc khóa học bạn được hoàn lại 10% giá trị tiền khóa học.",
+            url: "/my_wallet",
+            read: false,
+          });
+          await addTransactions({
+            user_id: [user.data[0]._id],
+            type: "reward",
+            status: "completed",
+            amount: price,
+            note: `Phần thuởng hoàn thành khóa học ${courses.title}.`,
+          });
+        }
         var duration = 15 * 1000;
         var animationEnd = Date.now() + duration;
         var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -494,7 +532,6 @@ const LearningController = () => {
           }
 
           var particleCount = 50 * (timeLeft / duration);
-          // since particles fall down, start a bit higher than random
           confetti({
             ...defaults,
             particleCount,
@@ -527,9 +564,7 @@ const LearningController = () => {
   };
   return (
     <>
-      {!loadingAll.courses && <Loading />}
-
-      {loadingAll.courses && loadingAll.progress && (
+      {loadingAll.courses && loadingAll.progress ? (
         <>
           <LearningView
             courses={courses && courses}
@@ -560,7 +595,7 @@ const LearningController = () => {
             toggleDrawerDirection={toggleDrawerDirection}
             openDirection={openDirection}
             setOpenDirection={setOpenDirection}
-            
+            handleOpenCertificate={handleOpenCertificate}
           />
           <CommentController lesson_id={activeLesson} courses_id={id} />
           <NoteController
@@ -579,8 +614,8 @@ const LearningController = () => {
                 Nhận chứng chỉ 🎉
               </Typography>
               <Typography my={"10px"}>
-                F8 ghi nhận sự nỗ lực của bạn! Bằng cách nhận chứng chỉ này, bạn
-                chính thức hoàn thành khóa học <b>{courses.title}</b>
+                Fdemyghi nhận sự nỗ lực của bạn! Bằng cách nhận chứng chỉ này,
+                bạn chính thức hoàn thành khóa học <b>{courses.title}</b>
               </Typography>
               <Box
                 ref={captureRef}
@@ -717,6 +752,19 @@ const LearningController = () => {
             </Box>
           </Modal>
         </>
+      ) : (
+        <Box>
+          <Skeleton width="100%" sx={{ mt: "-20px" }} height={"90px"} />
+          <Stack direction={"row"} gap={"1%"}>
+            <Box width={"74%"}>
+              <Skeleton width="100%" variant="rectangular" height={"60vh"} />
+              <Skeleton width="100%" height={"39vh"} sx={{ mt: "-20px" }} />
+            </Box>
+            <Box width={"25%"}>
+              <Skeleton width="100%" variant="rectangular" height={"90vh"} />
+            </Box>
+          </Stack>
+        </Box>
       )}
     </>
   );

@@ -3,6 +3,7 @@ import {
   Button,
   Drawer,
   Popover,
+  Skeleton,
   Stack,
   Tab,
   Tabs,
@@ -34,6 +35,7 @@ type Props = {
   register: any;
   handleSubmit: any;
   onFinish: any;
+  isLoading:any
 };
 const MyArticleView = ({
   id,
@@ -55,6 +57,7 @@ const MyArticleView = ({
   register,
   handleSubmit,
   onFinish,
+  isLoading
 }: Props) => {
   return (
     <Box>
@@ -316,9 +319,41 @@ const MyArticleView = ({
             <Box display={"flex"} width={"60%"}>
               {!dataActive[0] ? (
                 <>
-                  <Typography mt={"20px"} ml={"15px"}>
+                {isLoading?<> <>
+                  <Stack width={"100%"} direction={"column"} gap={"20px"}>
+                      {Array.from({ length: 2 }, () => {
+                        return (
+                          <Box
+                            width={"100%"}
+                            sx={{
+                              border: " 2px solid #e8e8e8",
+                              borderRadius: "16px",
+                            }}
+                            padding={"15px 25px"}
+                            display={"flex"}
+                            gap={"60px"}
+                          >
+                            <Box width={"60%"} sx={{ pt: 0.5 }}>
+                              <Skeleton width="100%" height={"40px"} />
+                              <Skeleton width="100%" height={"20px"} />
+                              <Skeleton width="100%" height={"150px"} />
+                            </Box>
+                            <Box>
+                              <Skeleton
+                                variant="rectangular"
+                                sx={{ borderRadius: "20px" }}
+                                width={300}
+                                height={200}
+                              />
+                            </Box>
+                          </Box>
+                        );
+                      })}
+                      </Stack>
+                    </></>:<> <Typography mt={"20px"} ml={"15px"}>
                     Chưa có xuất bản nào
-                  </Typography>
+                  </Typography></>}
+                 
                 </>
               ) : (
                 <Stack
@@ -327,103 +362,106 @@ const MyArticleView = ({
                   gap={"20px"}
                   width={"100%"}
                 >
-                  {dataActive &&
-                    dataActive.length &&
-                    dataActive.map((item: any) => {
-                      let arr = item.readers.split(",");
-                      return (
-                        <Box
-                          width={"100%"}
-                          sx={{
-                            border: " 2px solid #e8e8e8",
-                            borderRadius: "16px",
-                          }}
-                          padding={"15px 25px"}
-                        >
-                          <Stack
-                            mb={"10px"}
-                            direction={"row"}
-                            justifyContent={"end"}
-                            alignItems={"center"}
-                          >
-                            <Stack
-                              direction={"row"}
-                              alignItems={"center"}
-                              gap={"10px"}
+                 
+                      {dataActive &&
+                        dataActive.length &&
+                        dataActive.map((item: any) => {
+                          let arr = item.readers.split(",");
+                          return (
+                            <Box
+                              width={"100%"}
+                              sx={{
+                                border: " 2px solid #e8e8e8",
+                                borderRadius: "16px",
+                              }}
+                              padding={"15px 25px"}
                             >
-                              <RiMoreFill
-                                onClick={(e: any) => handleClick(e, item)}
-                                color="#333"
-                                size={"20px"}
-                              />
-                            </Stack>
-                          </Stack>
-                          <Stack direction={"row"}>
-                            <Box width={"60%"}>
-                              <Typography variant="h6" fontWeight={"bold"}>
-                                {item.title}
-                              </Typography>
-                              <Typography
-                                mt={"13px"}
-                                fontSize={"13px"}
-                                color={"#333"}
-                              >
-                                {item.description}
-                              </Typography>
-                              <Typography
-                                mt={"13px"}
-                                display={"flex"}
+                              <Stack
+                                mb={"10px"}
+                                direction={"row"}
+                                justifyContent={"end"}
                                 alignItems={"center"}
-                                fontSize={"13px"}
-                                color={"#333"}
                               >
-                                6 Ngày trước • 6 phút đọc{" "}
                                 <Stack
-                                  ml={"20px"}
                                   direction={"row"}
+                                  alignItems={"center"}
                                   gap={"10px"}
                                 >
-                                  {arr.map((item: string) => {
-                                    return (
-                                      <Typography
-                                        sx={{
-                                          bgcolor: "#f2f2f2",
-                                          color: "#333",
-                                          fontSize: "12px",
-                                          borderRadius: "100px",
-                                          fontWeight: 600,
-                                          padding: "5px 10px",
-                                        }}
-                                      >
-                                        {item}
-                                      </Typography>
-                                    );
-                                  })}
+                                  <RiMoreFill
+                                    onClick={(e: any) => handleClick(e, item)}
+                                    color="#333"
+                                    size={"20px"}
+                                  />
                                 </Stack>
-                              </Typography>
+                              </Stack>
+                              <Stack direction={"row"}>
+                                <Box width={"60%"}>
+                                  <Typography variant="h6" fontWeight={"bold"}>
+                                    {item.title}
+                                  </Typography>
+                                  <Typography
+                                    mt={"13px"}
+                                    fontSize={"13px"}
+                                    color={"#333"}
+                                  >
+                                    {item.description}
+                                  </Typography>
+                                  <Typography
+                                    mt={"13px"}
+                                    display={"flex"}
+                                    alignItems={"center"}
+                                    fontSize={"13px"}
+                                    color={"#333"}
+                                  >
+                                    6 Ngày trước • 6 phút đọc{" "}
+                                    <Stack
+                                      ml={"20px"}
+                                      direction={"row"}
+                                      gap={"10px"}
+                                    >
+                                      {arr.map((item: string) => {
+                                        return (
+                                          <Typography
+                                            sx={{
+                                              bgcolor: "#f2f2f2",
+                                              color: "#333",
+                                              fontSize: "12px",
+                                              borderRadius: "100px",
+                                              fontWeight: 600,
+                                              padding: "5px 10px",
+                                            }}
+                                          >
+                                            {item}
+                                          </Typography>
+                                        );
+                                      })}
+                                    </Stack>
+                                  </Typography>
+                                </Box>
+                                <Box width={"40%"}>
+                                  <Box
+                                    display={"flex"}
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
+                                  >
+                                    <img
+                                      width={"200px"}
+                                      style={{
+                                        borderRadius: "8px",
+                                        objectFit: "cover",
+                                      }}
+                                      height={"112px"}
+                                      src={item.image.url}
+                                      alt=""
+                                    />
+                                  </Box>
+                                </Box>
+                              </Stack>
                             </Box>
-                            <Box width={"40%"}>
-                              <Box
-                                display={"flex"}
-                                justifyContent={"center"}
-                                alignItems={"center"}
-                              >
-                                <img
-                                  width={"200px"}
-                                  style={{
-                                    borderRadius: "8px",
-                                    objectFit: "cover",
-                                  }}
-                                  height={"112px"}
-                                  src={item.image.url}
-                                  alt=""
-                                />
-                              </Box>
-                            </Box>
-                          </Stack>
-                        </Box>
-                      );
-                    })}
+                          );
+                        })}
+                  
+                 
                 </Stack>
               )}
             </Box>

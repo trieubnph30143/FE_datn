@@ -8,7 +8,7 @@ import { useLocalStorage } from "./useStorage";
 type usePostMutationProps = {
   action: "CREATE" | "UPDATE" | "DELETE" | "ACTIVE";
   defaultValues?: any;
-  onSuccess?: () => void;
+  onSuccess?:any;
   file?: any;
   content?: any;
 };
@@ -49,11 +49,11 @@ export const usePostMutation = ({
           return null;
       }
     },
-    onSuccess: () => {
+    onSuccess: (data:any) => {
       queryClient.invalidateQueries({
         queryKey: ["post"],
       });
-      onSuccess && onSuccess();
+      onSuccess && onSuccess(data);
     },
   });
   const onFinish = async (values: any) => {

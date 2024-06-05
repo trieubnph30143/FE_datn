@@ -1,3 +1,12 @@
+
+import { parseISO, format } from 'date-fns';
+
+export function formatDate(isoString:any) {
+  // Chuyển đổi ISO string thành đối tượng Date
+  const date = parseISO(isoString);
+  // Định dạng lại ngày theo định dạng mong muốn, ví dụ: dd/MM/yyyy HH:mm:ss
+  return format(date, 'dd/MM/yyyy HH:mm:ss');
+}
 export function limitDescription(description: any, maxLength: any) {
   if (description.length <= maxLength) {
     return description;
@@ -14,7 +23,8 @@ export const calculateProgress = (data:any) => {
     course.lesson_progress.forEach((lesson:any) => {
       lesson.sub_lesson.forEach((subLesson:any) => {
         totalSubLessons++;
-        if (subLesson.completed && subLesson.result) {
+        if ((subLesson.completed==true && subLesson.result==true) || (subLesson.completed === true && subLesson.result === false)) {
+          
           completedSubLessons++;
         }
       });
@@ -38,4 +48,8 @@ export function getCurrentDate() {
   const year = today.getFullYear();
 
   return `Hà Nội,${day}/${month}/${year}`;
+}
+
+export function roundToOneDecimal(num:any) {
+  return parseFloat(num.toFixed(1));
 }

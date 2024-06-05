@@ -7,6 +7,15 @@ export const getCourses = async () => {
     console.log(`get_Courses`, error);
   }
 };
+
+export const searchCourses = async (search:any) => {
+  try {
+    const response = await axios.get(`/courses/search/${search}`);
+    return response;
+  } catch (error) {
+    console.log(`get_Courses`, error);
+  }
+};
 export const getOneCourses = async (id: any) => {
   try {
     console.log(id);

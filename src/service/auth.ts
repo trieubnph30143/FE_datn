@@ -65,7 +65,14 @@ export const getUser = async () => {
     console.log(`get_User`, error);
   }
 };
-
+export const getOneUser = async (email:any) => {
+  try {
+    const response = await axios.get(`/auth/search/${email}`);
+    return response;
+  } catch (error) {
+    console.log(`get_User`, error);
+  }
+};
 export const updateUSer = async (value: any) => {
   try {
     const response = await axios.put(`/auth/${value._id}`, {
@@ -74,6 +81,30 @@ export const updateUSer = async (value: any) => {
       user_name:value.user_name,
     });
     return response.data;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
+export const changePassword = async (value: any) => {
+  try {
+    const response = await axios.put(`/auth/change_password/user`, value);
+    return response;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
+export const forgotPassword = async (value: any) => {
+  try {
+    const response = await axios.put(`/auth/forgot_password/user`, value);
+    return response;
+  } catch (error) {
+    console.log(`get_Role`, error);
+  }
+};
+export const otpEmail = async (value: any) => {
+  try {
+    const response = await axios.post(`/auth/otp_email/user`, value);
+    return response;
   } catch (error) {
     console.log(`get_Role`, error);
   }

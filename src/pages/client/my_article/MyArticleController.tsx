@@ -22,7 +22,7 @@ const MyArticleController = () => {
 
  
   const queryClient = useQueryClient();
-  const {  } = useQuery(["post_user"], {
+  const { isLoading } = useQuery(["post_user"], {
     queryFn: () => {
       return getUserPost(user.data[0]._id);
     },
@@ -124,6 +124,7 @@ const MyArticleController = () => {
         register={register}
         handleSubmit={handleSubmit}
         onFinish={onFinish}
+        isLoading={isLoading}
       />
     </>
   );

@@ -62,7 +62,7 @@ const ProfileView = ({user,courses}:Props) => {
                 gap={"10px"}>
                 <RiGroupFill size={24} color={"#666666"} />
                 <Typography fontSize={"14px"}>
-                  Thành viên của <b>F8 - Học lập trình để đi làm</b> từ 2 năm
+                  Thành viên của <b>Fdemy- Học lập trình để đi làm</b> từ 2 năm
                   trước
                 </Typography>
               </Box>
