@@ -29,6 +29,7 @@ import { getVnpay } from "@/service/vnpay";
 import { toast } from "react-toastify";
 import { getUserWallet, updateWallet } from "@/service/wallet";
 import { addTransactions } from "@/service/transactions";
+import { getStar } from "@/service/star";
 
 const DetailCourseController = () => {
   const { id }: any = useParams();
@@ -62,6 +63,14 @@ const DetailCourseController = () => {
     },
     refetchOnWindowFocus: false,
   });
+
+  const { data: star }:any = useQuery("star", {
+    queryFn: () => {
+      return getStar(id,"averageRating");
+    },
+    refetchOnWindowFocus: false,
+  });
+  
   useEffect(() => {
     if (!(Object.keys(context.state.user).length == 0)) {
       let message = "";
@@ -349,6 +358,7 @@ const DetailCourseController = () => {
         totalLesson={totalLesson}
         navigate={navigate}
         handleProgress={handleProgress}
+        star={star!==undefined?star.status==0&&star.averageRating!==null?star.averageRating:0:0}
       />
       <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
         <Box padding={"50px"} width={"100%"}>

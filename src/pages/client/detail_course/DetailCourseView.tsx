@@ -13,6 +13,7 @@ import {
   RiTimeFill,
   RiYoutubeFill,
 } from "react-icons/ri";
+import StarRatings from "react-star-ratings";
 type Props = {
   courses: typeCourses;
   expanded: any;
@@ -23,6 +24,7 @@ type Props = {
   navigate: any;
   handleProgress:any;
   paymentSuccess:any
+  star:any
 };
 const DetailCourseView = ({
   courses,
@@ -33,7 +35,8 @@ const DetailCourseView = ({
   totalLesson,
   navigate,
   handleProgress,
-  paymentSuccess
+  paymentSuccess,
+  star
 }: Props) => {
   return (
     <Box>
@@ -158,7 +161,23 @@ const DetailCourseView = ({
               </Typography>
             </Box>
           </Box>
-          <Typography variant='h4' my={"20px"} color={"#f05123"}>
+          <Box  sx={{
+                svg: {
+                  width: "30px !important",
+                  height: "30px !important",
+                },
+              }} my={"10px"}>
+          <StarRatings
+                rating={star}
+                starRatedColor="blue"
+                numberOfStars={5}
+                starSpacing="0"
+                starRatedColor={"rgb(250, 175, 0)"}
+                name="rating"
+              />
+
+          </Box>
+          <Typography variant='h4' mb={"10px"}  color={"#f05123"}>
             {courses&&<>{courses&&courses.price==0?"Miễn phí":convertToVND(courses.price)}</>}
           </Typography>
           <Button

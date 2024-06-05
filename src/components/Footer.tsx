@@ -1,6 +1,6 @@
 import React from "react";
 import "../App.css";
-import logo from "../images/f8-icon.18cd71cfcfa33566a22b.png";
+import logo from "../images/logo4.png";
 import { Button } from "@mui/material";
 
 const Footer = () => {
@@ -15,7 +15,7 @@ const Footer = () => {
               <img
                 src={`${logo}`}
                 alt=''
-                width={40}
+                width={90}
                 style={{ borderRadius: "7px" }}
               />
               <div style={{ paddingTop: "10px" }}>

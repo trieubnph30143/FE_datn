@@ -329,7 +329,7 @@ const HomeView = ({
           }}
         >
           <form
-            onClick={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit)}
             style={{ display: "flex", flexDirection: "column", gap: "15px" }}
           >
             <div className="form-group position-relative">
@@ -380,7 +380,7 @@ const HomeView = ({
                 className="form-control form-control-lg width"
                 rows={7}
                 placeholder="Message"
-                defaultValue={""}
+                
               />
             </div>
 

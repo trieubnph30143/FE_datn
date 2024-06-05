@@ -23,7 +23,8 @@ export const calculateProgress = (data:any) => {
     course.lesson_progress.forEach((lesson:any) => {
       lesson.sub_lesson.forEach((subLesson:any) => {
         totalSubLessons++;
-        if (subLesson.completed && subLesson.result) {
+        if ((subLesson.completed==true && subLesson.result==true) || (subLesson.completed === true && subLesson.result === false)) {
+          
           completedSubLessons++;
         }
       });
@@ -47,4 +48,8 @@ export function getCurrentDate() {
   const year = today.getFullYear();
 
   return `Hà Nội,${day}/${month}/${year}`;
+}
+
+export function roundToOneDecimal(num:any) {
+  return parseFloat(num.toFixed(1));
 }

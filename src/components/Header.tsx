@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import logo from "../images/f8-icon.18cd71cfcfa33566a22b.png";
+import logo from "../images/logo4.png";
 import user from "../images/personal-18px.svg";
 import google from "../images/google-18px.svg";
 import github from "../images/github-18px.svg";
@@ -379,14 +379,17 @@ const Header = () => {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Stack direction={"row"} gap={2} alignItems={"center"}>
-          <img
+        <Stack direction={"row"} gap={5} alignItems={"center"}>
+          <Box width={"50px"} height={"40px"}>
+         <img
             src={logo}
-            width={38}
-            height={38}
-            style={{ borderRadius: "8px", objectFit: "contain" }}
+            width={85}
+            height={85}
+            style={{ borderRadius: "8px", objectFit: "contain",marginTop:"-20px",marginLeft:"-10px" }}
             alt="logo"
           />
+
+          </Box>
           <Typography fontWeight={700}>Học Lập Trình Để Đi Làm</Typography>
         </Stack>
         <Box position={"relative"}>
