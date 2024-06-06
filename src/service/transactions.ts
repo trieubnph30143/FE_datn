@@ -23,6 +23,14 @@ export const getUserTransaction = async (id: any) => {
     console.log(`get_Categories`, error);
   }
 };
+export const getUserStatisticalTransaction = async (id:any) => {
+  try {
+    const response = await axios.get(`/transaction/statistical/${id}`);
+    return response;
+  } catch (error) {
+    console.log(`get_wallet`, error);
+  }
+};
 export const addTransactions = async (value: any) => {
   try {
     const response = await axios.post(`/transaction`, value);

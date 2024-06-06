@@ -975,9 +975,9 @@ const Header = () => {
 
               <Box>
                 <img
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "10px" }}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: "10px",objectFit:"contain" }}
                   src={logo}
                   alt=""
                 />
@@ -988,7 +988,7 @@ const Header = () => {
                 variant="h5"
                 fontSize={"27px"}
               >
-                Đăng nhập tài khoản f8
+                Đăng nhập tài khoản FDemy
               </Typography>
               <Typography my={"10px"} fontSize={"13px"} color={"#f33a58"}>
                 Mỗi người nên sử dụng riêng một tài khoản, tài khoản nhiều người
@@ -1178,9 +1178,9 @@ const Header = () => {
               )}
               <Box>
                 <img
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "10px" }}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: "10px",objectFit:"contain" }}
                   src={logo}
                   alt=""
                 />
@@ -1191,7 +1191,7 @@ const Header = () => {
                 variant="h5"
                 fontSize={"27px"}
               >
-                Đăng ký tài khoản f8
+                Đăng ký tài khoản FDemy
               </Typography>
               <Typography my={"10px"} fontSize={"13px"} color={"#f33a58"}>
                 Mỗi người nên sử dụng riêng một tài khoản, tài khoản nhiều người
@@ -1356,9 +1356,9 @@ const Header = () => {
 
               <Box>
                 <img
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "10px" }}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: "10px",objectFit:"contain" }}
                   src={logo}
                   alt=""
                 />

@@ -1257,7 +1257,16 @@ const Header = (props: any) => {
                 <Box>
                   <Typography display={"flex"} gap={"20px"} fontWeight={"bold"}>
                     {userStar[0].user_id[0].user_name}{" "}
-                    <Box display={"flex"} gap={"10px"}>
+                    
+                  </Typography>
+                  <Rating
+                    name="read-only"
+                    color="#b4690e"
+                    value={userStar[0].star}
+                    readOnly
+                  />
+                  <Typography>{userStar[0].message}</Typography>
+                  <Box display={"flex"} gap={"10px"}>
                       <Button
                         onClick={handleDeleteStar}
                         sx={{
@@ -1288,14 +1297,6 @@ const Header = (props: any) => {
                         Sửa
                       </Button>
                     </Box>
-                  </Typography>
-                  <Rating
-                    name="read-only"
-                    color="#b4690e"
-                    value={userStar[0].star}
-                    readOnly
-                  />
-                  <Typography>{userStar[0].message}</Typography>
                 </Box>
               </Stack>
             )}

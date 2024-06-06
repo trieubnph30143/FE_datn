@@ -47,6 +47,21 @@ import { convertToVND, formatDate } from "@/utils/utils";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import profile from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import { useLocalStorage } from "@/hooks/useStorage";
+import { PolarArea } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  ArcElement,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  RadialLinearScale,
+  ArcElement,
+  Tooltip,
+  Legend
+);
 type Props = {
   handleChangeTabs: any;
   value: any;
@@ -299,6 +314,13 @@ const MyWalletView = ({
                     label={
                       <>
                         <Typography sx={{ gap: "5px" }}>Rút tiền</Typography>
+                      </>
+                    }
+                  />
+                   <Tab
+                    label={
+                      <>
+                        <Typography sx={{ gap: "5px" }}>Thống kê</Typography>
                       </>
                     }
                   />
@@ -706,6 +728,19 @@ const MyWalletView = ({
                   </Box>
                 </>
               )}
+               {value == 3 && (
+                <>
+                  <Box
+                    display={"flex"}
+                    width={"100%"}
+                    mt={"20px"}
+                    justifyContent={"center"}
+                  >
+                   
+                   <PolarAreaChart/>
+                  </Box>
+                </>
+              )}
             </Stack>
           </Stack>
         </Box>
@@ -724,3 +759,58 @@ const MyWalletView = ({
 };
 
 export default MyWalletView;
+
+const PolarAreaChart = () => {
+  const data = {
+    labels: ['Nạp tiền', 'Rút tiền', 'Thanh toán', 'Thưởng'],
+    datasets: [
+      {
+        data: [1200000, 800000, 1500000, 400000],
+        backgroundColor: [
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+        ],
+        borderColor: [
+          'rgba(75, 192, 192, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+        ],
+        borderWidth: 1,
+        
+      },
+    ],
+  };
+
+  const options:any = {
+    responsive: true,
+    scales: {
+      r: {
+        pointLabels: {
+          display: true,
+          centerPointLabels: true,
+          font: {
+            size: 12
+          }
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+      title: {
+        display: false,
+        text: 'Biểu đồ thống kê chi tiêu trong tháng vừa qua'
+      }
+    }
+  };
+
+  return (
+    <Box width={500} height={500}>
+      <PolarArea data={data}  options={options} />
+    </Box>
+  );
+};

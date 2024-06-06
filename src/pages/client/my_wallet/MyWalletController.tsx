@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import MyWalletView from "./MyWalletView";
 import { useQuery, useQueryClient } from "react-query";
-import { getUserWallet, updateWallet } from "@/service/wallet";
+import {  getUserWallet, updateWallet } from "@/service/wallet";
 import { useLocalStorage } from "@/hooks/useStorage";
 import {
   addTransactions,
   getOneTransaction,
+  getUserStatisticalTransaction,
   getUserTransaction,
   updateTransaction,
 } from "@/service/transactions";
@@ -55,6 +56,15 @@ const MyWalletController = () => {
     refetchOnWindowFocus: false,
   });
 
+  const { data: statistical }: any = useQuery("statistical", {
+    queryFn: () => {
+      if (user.data[0]._id) {
+        return getUserStatisticalTransaction(user.data[0]._id);
+      }
+    },
+    refetchOnWindowFocus: false,
+  });
+  console.log(statistical);
   useEffect(() => {
     (async () => {
       let message = "";
