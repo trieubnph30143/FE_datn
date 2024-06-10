@@ -53,3 +53,18 @@ export function getCurrentDate() {
 export function roundToOneDecimal(num:any) {
   return parseFloat(num.toFixed(1));
 }
+export const getStartOfMonth = () => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  // Lấy ngày, tháng, năm cụ thể
+  const day = startOfMonth.getDate();
+  const month = startOfMonth.getMonth() + 1; // Tháng bắt đầu từ 0, cần phải cộng thêm 1
+  const year = startOfMonth.getFullYear();
+
+  // Chuyển định dạng ngày, tháng, năm thành chuỗi
+  const formattedDate = `${day}/${month}/${year}`;
+
+  return formattedDate;
+};

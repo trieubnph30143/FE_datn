@@ -15,6 +15,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Skeleton,
   Stack,
   Tab,
   Table,
@@ -32,7 +33,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import bg from "../../../images/cong-thanh-toan-vnpay-va-cach-tich-hop-vao-website-wordpress.jpg";
-import vnpay from "../../../images/vnp.png"
+import vnpay from "../../../images/vnp.png";
 import {
   RiArrowLeftRightFill,
   RiArrowRightSLine,
@@ -43,25 +44,20 @@ import {
   RiSparkling2Line,
   RiWalletLine,
 } from "react-icons/ri";
-import { convertToVND, formatDate } from "@/utils/utils";
+import { convertToVND, formatDate, getStartOfMonth } from "@/utils/utils";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import profile from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import { useLocalStorage } from "@/hooks/useStorage";
-import { PolarArea } from 'react-chartjs-2';
+import { PolarArea } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   RadialLinearScale,
   ArcElement,
   Tooltip,
-  Legend
-} from 'chart.js';
+  Legend,
+} from "chart.js";
 
-ChartJS.register(
-  RadialLinearScale,
-  ArcElement,
-  Tooltip,
-  Legend
-);
+ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
 type Props = {
   handleChangeTabs: any;
   value: any;
@@ -88,6 +84,7 @@ type Props = {
   bank: any;
   setBank: any;
   handleWithdraw: any;
+  statistical: any;
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -168,6 +165,7 @@ const MyWalletView = ({
   bank,
   setBank,
   handleWithdraw,
+  statistical,
 }: Props) => {
   const [user, setUser]: any = useLocalStorage("user", {});
   const [page, setPage] = useState(0);
@@ -192,7 +190,7 @@ const MyWalletView = ({
       <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
         <Box width={"600px"} padding={"60px 30px"}>
           <img src={vnpay} width={"90%"} alt="" />
-         
+
           <TextField
             value={rechanrge}
             onChange={(e) => setRechanrge(e.target.value)}
@@ -246,8 +244,13 @@ const MyWalletView = ({
             justifyContent={"space-between"}
             alignItems={"end"}
           >
-            <Typography variant="h4" fontWeight={"bold"} display={"flex"} alignItems={"center"}>
-            <RiWalletLine style={{ marginRight: "10px" }}  /> Ví của tôi
+            <Typography
+              variant="h4"
+              fontWeight={"bold"}
+              display={"flex"}
+              alignItems={"center"}
+            >
+              <RiWalletLine style={{ marginRight: "10px" }} /> Ví của tôi
             </Typography>
 
             <Stack>
@@ -317,7 +320,7 @@ const MyWalletView = ({
                       </>
                     }
                   />
-                   <Tab
+                  <Tab
                     label={
                       <>
                         <Typography sx={{ gap: "5px" }}>Thống kê</Typography>
@@ -342,93 +345,185 @@ const MyWalletView = ({
                           <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody>
-                        {paginatedRows &&
-                          paginatedRows.length > 0 &&
-                          paginatedRows.map((row: any) => {
-                            let message =""
-                            let style={}
-                            if(row.type == "withdraw" && row.status=="completed"){
-                              message+="Rút tiền thành công"
-                            }
-                            if(row.type == "withdraw" && row.status=="pending"){
-                              message+="Chờ thanh toán"
-                            }
-                            if(row.type == "withdraw" && row.status=="failed"){
-                              message+="Rút tiền thất bại.Ghi chú : "+row.note
-                            }
-                            if(row.type == "transfer" && row.status=="completed"){
-                              message+="Chuyển tiền thành công"
-                            }
-                            if(row.type == "transfer" && row.status=="failed"){
-                              message+="Chuyển tiền thất bại"
-                            }
-                            
-                            if(row.type == "rechanrge" && row.status=="completed"){
-                              message+="Nạp tiền thành công"
-                            }
-                            if(row.type == "reward" && row.status=="completed"){
-                              message+=row.note
-                            }
-                            if(row.type == "rechanrge" && row.status=="pending"){
-                              message+="Chờ thanh toán"
-                            }
-                            if(row.type == "rechanrge" && row.status=="failed"){
-                              message+="Nạp tiền thất bại"
-                            }
-                            if(row.type == "purchase" && row.status=="completed"){
-                              message+="Thanh toán khóa học thành công"
-                            }
-                            if(row.status=="completed"){
-                              style ={border:"1px solid green" ,borderRadius:"80px",fontSize:"10px" ,color:"green"}
-                            }
-                            if(row.status=="failed"){
-                              style ={border:"1px solid red" ,borderRadius:"80px",fontSize:"10px" ,color:"red"}
-                            }
-                            if(row.status=="pending"){
-                              style ={border:"1px solid yellow" ,borderRadius:"80px",fontSize:"10px" ,color:"yellow"}
-                            }
-                            
-                            return (
-                              <TableRow
-                                sx={{
-                                  "&:last-child td, &:last-child th": {
-                                    border: 0,
-                                  },
-                                }}
-                              >
-                                <TableCell component="th"  scope="row">
-                                  <Box sx={{display:"flex" ,alignItems:"center",gap:"10px",border:"1px solid grey",padding:"5px",borderRadius:"8px",justifyContent:"center"}}>
-                                  {row.type=="transfer"&&<RiArrowLeftRightFill />}
-                                  {row.type=="rechanrge"&&<RiBankCardFill />}
-                                  {row.type=="withdraw"&&<RiDownload2Line />}
-                                  {row.type=="purchase"&&<RiSparkling2Line />}
-                                  {row.type=="reward"&&<RiGift2Line />}
-                                  {row.type}
+                      {paginatedRows.length == 0 ? (
+                        <TableBody>
+                          {Array.from({ length: 5 }, (value, index) => (
+                            <TableRow
+                              sx={{
+                                "&:last-child td, &:last-child th": {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell>
+                                <Skeleton height={"35px"} width="150px" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton height={"25px"} width="100px" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton height={"35px"} width="100px" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton height={"25px"} width="200px" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton height={"25px"} width="140px" />
+                              </TableCell>
+                              <TableCell>
+                                <Skeleton height={"25px"} width="80px" />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      ) : (
+                        <TableBody>
+                          {paginatedRows &&
+                            paginatedRows.length > 0 &&
+                            paginatedRows.map((row: any) => {
+                              let message = "";
+                              let style = {};
+                              if (
+                                row.type == "withdraw" &&
+                                row.status == "completed"
+                              ) {
+                                message += "Rút tiền thành công";
+                              }
+                              if (
+                                row.type == "withdraw" &&
+                                row.status == "pending"
+                              ) {
+                                message += "Chờ thanh toán";
+                              }
+                              if (
+                                row.type == "withdraw" &&
+                                row.status == "failed"
+                              ) {
+                                message +=
+                                  "Rút tiền thất bại.Ghi chú : " + row.note;
+                              }
+                              if (
+                                row.type == "transfer" &&
+                                row.status == "completed"
+                              ) {
+                                message += "Chuyển tiền thành công";
+                              }
+                              if (
+                                row.type == "transfer" &&
+                                row.status == "failed"
+                              ) {
+                                message += "Chuyển tiền thất bại";
+                              }
 
-                                  </Box>
-                                </TableCell>
-                                <TableCell>
-                                  {convertToVND(row.amount)}
-                                </TableCell>
-                                <TableCell><Button sx={style}>{row.status}</Button></TableCell>
+                              if (
+                                row.type == "rechanrge" &&
+                                row.status == "completed"
+                              ) {
+                                message += "Nạp tiền thành công";
+                              }
+                              if (
+                                row.type == "reward" &&
+                                row.status == "completed"
+                              ) {
+                                message += row.note;
+                              }
+                              if (
+                                row.type == "rechanrge" &&
+                                row.status == "pending"
+                              ) {
+                                message += "Chờ thanh toán";
+                              }
+                              if (
+                                row.type == "rechanrge" &&
+                                row.status == "failed"
+                              ) {
+                                message += "Nạp tiền thất bại";
+                              }
+                              if (
+                                row.type == "purchase" &&
+                                row.status == "completed"
+                              ) {
+                                message += "Thanh toán khóa học thành công";
+                              }
+                              if (row.status == "completed") {
+                                style = {
+                                  border: "1px solid green",
+                                  borderRadius: "80px",
+                                  fontSize: "10px",
+                                  color: "green",
+                                };
+                              }
+                              if (row.status == "failed") {
+                                style = {
+                                  border: "1px solid red",
+                                  borderRadius: "80px",
+                                  fontSize: "10px",
+                                  color: "red",
+                                };
+                              }
+                              if (row.status == "pending") {
+                                style = {
+                                  border: "1px solid yellow",
+                                  borderRadius: "80px",
+                                  fontSize: "10px",
+                                  color: "yellow",
+                                };
+                              }
 
-                                <TableCell>
-                                  
-                                   
-                                   {row.email_transfer}
-                                </TableCell>
+                              return (
+                                <TableRow
+                                  sx={{
+                                    "&:last-child td, &:last-child th": {
+                                      border: 0,
+                                    },
+                                  }}
+                                >
+                                  <TableCell component="th" scope="row">
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        border: "1px solid grey",
+                                        padding: "5px",
+                                        borderRadius: "8px",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      {row.type == "transfer" && (
+                                        <RiArrowLeftRightFill />
+                                      )}
+                                      {row.type == "rechanrge" && (
+                                        <RiBankCardFill />
+                                      )}
+                                      {row.type == "withdraw" && (
+                                        <RiDownload2Line />
+                                      )}
+                                      {row.type == "purchase" && (
+                                        <RiSparkling2Line />
+                                      )}
+                                      {row.type == "reward" && <RiGift2Line />}
+                                      {row.type}
+                                    </Box>
+                                  </TableCell>
+                                  <TableCell>
+                                    {convertToVND(row.amount)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Button sx={style}>{row.status}</Button>
+                                  </TableCell>
 
-                                <TableCell>
-                                  {message}
-                                </TableCell>
-                                <TableCell>
-                                  {formatDate(row.createdAt)}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                      </TableBody>
+                                  <TableCell>{row.email_transfer}</TableCell>
+
+                                  <TableCell>{message}</TableCell>
+                                  <TableCell>
+                                    {formatDate(row.createdAt)}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                        </TableBody>
+                      )}
                     </Table>
                   </TableContainer>
                   <TablePagination
@@ -474,9 +569,7 @@ const MyWalletView = ({
                       <li style={{ margin: "0" }}>
                         Purchase : Thanh toán tiền khi mua khóa học
                       </li>
-                      <li style={{ margin: "0" }}>
-                        reward : Phần thưởng
-                      </li>
+                      <li style={{ margin: "0" }}>reward : Phần thưởng</li>
                     </ul>
                     <Typography
                       ml={"10px"}
@@ -609,9 +702,7 @@ const MyWalletView = ({
                     border={"1px solid #dddddd"}
                     borderRadius={"10px"}
                   >
-                    <Typography fontWeight={"bold"}>
-                      Ghi chú
-                    </Typography>
+                    <Typography fontWeight={"bold"}>Ghi chú</Typography>
                     <Typography fontSize={"14px"}>
                       Tìm kiếm đúng Email nguời dùng
                     </Typography>
@@ -695,6 +786,7 @@ const MyWalletView = ({
                               border: "2px solid #ff5117",
                               m: 1,
                               width: "95%",
+                              height:'50px'
                             }}
                           >
                             Rút tiền
@@ -713,9 +805,7 @@ const MyWalletView = ({
                     border={"1px solid #dddddd"}
                     borderRadius={"10px"}
                   >
-                    <Typography  fontWeight={"bold"}>
-                      Ghi chú
-                    </Typography>
+                    <Typography fontWeight={"bold"}>Ghi chú</Typography>
                     <Typography fontSize={"14px"}>
                       Chọn đúng ngân hàng
                     </Typography>
@@ -728,16 +818,20 @@ const MyWalletView = ({
                   </Box>
                 </>
               )}
-               {value == 3 && (
+              {value == 3 && (
                 <>
                   <Box
                     display={"flex"}
                     width={"100%"}
                     mt={"20px"}
                     justifyContent={"center"}
+                    alignItems={"center"}
+                    gap={"40px"}
                   >
-                   
-                   <PolarAreaChart/>
+                    <Typography>
+                      Thông kê từ ngày {getStartOfMonth()}
+                    </Typography>
+                    <PolarAreaChart statistical={statistical} />
                   </Box>
                 </>
               )}
@@ -760,31 +854,46 @@ const MyWalletView = ({
 
 export default MyWalletView;
 
-const PolarAreaChart = () => {
+const PolarAreaChart = (props: any) => {
   const data = {
-    labels: ['Nạp tiền', 'Rút tiền', 'Thanh toán', 'Thưởng'],
+    labels: ["Nạp tiền", "Rút tiền", "Thanh toán", "Thưởng", "Chuyển tiền"],
     datasets: [
       {
-        data: [1200000, 800000, 1500000, 400000],
+        data: [
+          props.statistical !== undefined && props.statistical.status == 0
+            ? props.statistical.rechanrge
+            : 0,
+          props.statistical !== undefined && props.statistical.status == 0
+            ? props.statistical.withdraw
+            : 0,
+          props.statistical !== undefined && props.statistical.status == 0
+            ? props.statistical.purchase
+            : 0,
+          props.statistical !== undefined && props.statistical.status == 0
+            ? props.statistical.reward
+            : 0,
+          props.statistical !== undefined && props.statistical.status == 0
+            ? props.statistical.transfer
+            : 0,
+        ],
         backgroundColor: [
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
         ],
         borderColor: [
-          'rgba(75, 192, 192, 1)',
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
+          "rgba(75, 192, 192, 1)",
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
         ],
         borderWidth: 1,
-        
       },
     ],
   };
 
-  const options:any = {
+  const options: any = {
     responsive: true,
     scales: {
       r: {
@@ -792,25 +901,25 @@ const PolarAreaChart = () => {
           display: true,
           centerPointLabels: true,
           font: {
-            size: 12
-          }
-        }
-      }
+            size: 12,
+          },
+        },
+      },
     },
     plugins: {
       legend: {
-        position: 'bottom',
+        position: "bottom",
       },
       title: {
         display: false,
-        text: 'Biểu đồ thống kê chi tiêu trong tháng vừa qua'
-      }
-    }
+        text: "Biểu đồ thống kê chi tiêu trong tháng vừa qua",
+      },
+    },
   };
 
   return (
     <Box width={500} height={500}>
-      <PolarArea data={data}  options={options} />
+      <PolarArea data={data} options={options} />
     </Box>
   );
 };
