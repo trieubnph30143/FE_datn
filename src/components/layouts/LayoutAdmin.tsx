@@ -25,6 +25,8 @@ import {
   Badge,
 } from "@mui/material";
 import React, { useState } from "react";
+import logo from "../../images/logo4.png"
+import profile from "../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg"
 import {
   RiArticleLine,
   RiBankCardFill,
@@ -33,6 +35,8 @@ import {
   RiFileListFill,
   RiGitBranchFill,
   RiInboxFill,
+  RiLineChartFill,
+  RiLineChartLine,
   RiMailAddFill,
   RiMenuFill,
   RiMessage3Fill,
@@ -102,7 +106,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
+  justifyContent:"end",
+  gap:"40px"
 }));
 
 const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -167,7 +172,7 @@ const LayoutAdmin = () => {
         <AppBar
           position='fixed'
           open={open}
-          sx={{ backgroundColor: "white", color: "black" }}>
+          sx={{ background:"#262b40", color: "black" }}>
           <Toolbar
             style={{
               display: "flex",
@@ -181,13 +186,13 @@ const LayoutAdmin = () => {
                 onClick={handleDrawerOpen}
                 edge='start'
                 sx={{ mr: 2, ...(open && { display: "none" }) }}>
-                {/* <RiMenuFill style={{ color: "#ccc"}}/> */}
-                <ChevronLeftIcon sx={{ color: "#7d7c7c", width: "32px" }} />
+               
+                <ChevronLeftIcon sx={{ color: "white", fontSize: "30px" }} />
               </IconButton>
               <div>
                 <IconButton>
                   <AiOutlineSearch
-                    style={{ fontSize: "30px", color: "gray" }}
+                    style={{ fontSize: "30px", color: "white" }}
                     onClick={handleClickOpen}
                   />
                 </IconButton>
@@ -258,22 +263,13 @@ const LayoutAdmin = () => {
               <Badge badgeContent={4} color='warning' sx={{ mr: 2 }}>
                 <IconButton>
                   <RiNotification2Fill
-                    style={{ color: "gray", width: "20px", height: "20px" }}
+                    style={{ color: "white", width: "20px", height: "20px" }}
                   />
                 </IconButton>
               </Badge>
 
-              <IconButton>
-                <Avatar
-                  alt='Nguyễn Ngọc Diệp'
-                  src='/static/images/avatar/1.jpg'
-                  sx={{ width: "35px", height: "35px" }}
-                  // id="basic-button"
-                  // ariaControls={openned ? "basic-menu" : undefined}
-                  // ariaHasPopup="true"
-                  // ariaExpande={openned ? "true" : undefined}
-                  onClick={handleClick}
-                />
+              <IconButton onClick={handleClick}>
+               <img src={profile}  width={34} height={34} style={{borderRadius:"50%"}} alt="" />
               </IconButton>
             </Box>
 
@@ -300,41 +296,75 @@ const LayoutAdmin = () => {
         }}>
 
         <Drawer
+          
           sx={{
             width: drawerWidth,
-            flexShrink: 0,
+            
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
             },
+            ".css-12i7wg6-MuiPaper-root-MuiDrawer-paper":{
+              background:"#262b40",
+              
+            },
+            padding:"10px"
           }}
           variant='persistent'
           anchor='left'
           open={open}>
           <DrawerHeader>
+            <img src={logo} width={80} height={80} style={{objectFit:"contain"}} alt="" />
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === "ltr" ? (
-                <ChevronLeftIcon />
+                <ChevronLeftIcon  sx={{color:"white",fontSize:"30px"}}/>
               ) : (
-                <ChevronRightIcon />
+                <ChevronRightIcon sx={{color:"white",fontSize:"30px"}}/>
               )}
             </IconButton>
           </DrawerHeader>
-          <Divider />
-
-          <List>
-              <Typography ml={"5px"}>Courses</Typography>
+          <Box className="see-more-admin" sx={{overflowY:"scroll",color:"white"}}>
+          <List sx={{px:"10px"}}>
+              <Typography ml={"5px"} fontWeight={"bold"}>Dashboard</Typography>
               <ListItem   sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/courses"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard"?"5px":"none",
+              }} disablePadding>
+                <Link to={"/dashboard"}> 
+                <CustomListItemButton
+                  >
+                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
+                  <RiLineChartFill    color={"white"}/>
+                  </ListItemIcon>
+                  <ListItemText primary={"Dashboard"} />
+                </CustomListItemButton>
+                
+                </Link>
+              </ListItem>
+             
+           
+          </List>
+          <Divider />
+
+          <List sx={{px:"10px"}}>
+              <Typography ml={"5px"} fontWeight={"bold"}>Courses</Typography>
+              <ListItem   sx={{"a":{
+                color:"white",
+                textDecoration:"none"
+              },
+              background:location.pathname=="/dashboard/courses"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/courses"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/courses"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/courses"}> 
                 <CustomListItemButton
                   >
                    <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiSlideshow4Fill />
+                  <RiSlideshow4Fill  color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Courses"} />
                 </CustomListItemButton>
@@ -342,15 +372,19 @@ const LayoutAdmin = () => {
                 </Link>
               </ListItem>
               <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/lesson"? "#e9e9e9":undefined}} disablePadding>
+              background:location.pathname=="/dashboard/lesson"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/lesson"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/lesson"?"5px":"none",
+              
+              }} disablePadding>
                 <Link to={"/dashboard/lesson"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiFileListFill />
+                  <RiFileListFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Lesson"} />
                 </CustomListItemButton>
@@ -358,16 +392,18 @@ const LayoutAdmin = () => {
                 </Link>
               </ListItem>
               <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/sublesson"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/sublesson"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/sublesson"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/sublesson"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/sublesson"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiOrganizationChart />
+                  <RiOrganizationChart color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Sub Lesson"} />
                 </CustomListItemButton>
@@ -377,19 +413,21 @@ const LayoutAdmin = () => {
            
           </List>
           <Divider />
-          <List>
-          <Typography ml={"5px"}>Category</Typography>
+          <List sx={{px:"10px"}}>
+          <Typography ml={"5px"} fontWeight={"bold"}>Category</Typography>
           <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               }
-              , background:location.pathname=="/dashboard/categories"? "#e9e9e9":undefined
+              ,  background:location.pathname=="/dashboard/categories"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/categories"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/categories"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/categories"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiGitBranchFill />
+                  <RiGitBranchFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Category"} />
                 </CustomListItemButton>
@@ -398,20 +436,22 @@ const LayoutAdmin = () => {
               </ListItem>
           </List>
           <Divider />
-          <List>
+          <List sx={{px:"10px"}}>
             
-          <Typography ml={"5px"}>Post</Typography>
+          <Typography ml={"5px"} fontWeight={"bold"}>Post</Typography>
           <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/post"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/post"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/post"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/post"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/post"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiArticleLine />
+                  <RiArticleLine color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Blog"} />
                 </CustomListItemButton>
@@ -420,20 +460,22 @@ const LayoutAdmin = () => {
               </ListItem>
           </List>
           <Divider />
-          <List>
+          <List sx={{px:"10px"}}>
             
-          <Typography ml={"5px"}>Wallet</Typography>
+          <Typography ml={"5px"} fontWeight={"bold"}>Wallet</Typography>
           <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/wallet"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/wallet"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/wallet"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/wallet"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/wallet"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiBankCardFill />
+                  <RiBankCardFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Wallet"} />
                 </CustomListItemButton>
@@ -442,19 +484,21 @@ const LayoutAdmin = () => {
               </ListItem>
           </List>
           <Divider />
-          <List>
-          <Typography ml={"5px"}>Comment</Typography>
+          <List sx={{px:"10px"}}>
+          <Typography ml={"5px"} fontWeight={"bold"}>Comment</Typography>
           <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               }
-              , background:location.pathname=="/dashboard/comment"? "#e9e9e9":undefined
+              , background:location.pathname=="/dashboard/comment"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/comment"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/comment"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/comment"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiMessage3Fill />
+                  <RiMessage3Fill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Comment"} />
                 </CustomListItemButton>
@@ -463,19 +507,21 @@ const LayoutAdmin = () => {
               </ListItem>
           </List>
           <Divider />
-          <List>
-          <Typography ml={"5px"}>Contact</Typography>
+          <List sx={{px:"10px"}}>
+          <Typography ml={"5px"} fontWeight={"bold"}>Contact</Typography>
           <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/contact"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/contact"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/contact"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/contact"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/contact"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiContactsLine /> 
+                  <RiContactsLine color={"white"}/> 
                   </ListItemIcon>
                   <ListItemText primary={"Contact"} />
                 </CustomListItemButton>
@@ -484,19 +530,21 @@ const LayoutAdmin = () => {
               </ListItem>
           </List>
           <Divider />
-          <List>
-          <Typography ml={"5px"}>User</Typography>
+          <List sx={{px:"10px"}}>
+          <Typography ml={"5px"} fontWeight={"bold"}>User</Typography>
           <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/user"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/user"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/user"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/user"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/user"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiUserAddFill />
+                  <RiUserAddFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"User"} />
                 </CustomListItemButton>
@@ -504,16 +552,18 @@ const LayoutAdmin = () => {
                 </Link>
               </ListItem>
               <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/permission"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/permission"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/permission"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/permission"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/permission"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiTeamFill />
+                  <RiTeamFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Permission"} />
                 </CustomListItemButton>
@@ -521,16 +571,18 @@ const LayoutAdmin = () => {
                 </Link>
               </ListItem>
               <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               },
-              background:location.pathname=="/dashboard/role"? "#e9e9e9":undefined
+              background:location.pathname=="/dashboard/role"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/role"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/role"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/role"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiPencilFill />
+                  <RiPencilFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Role"} />
                 </CustomListItemButton>
@@ -538,16 +590,18 @@ const LayoutAdmin = () => {
                 </Link>
               </ListItem>
               <ListItem  sx={{"a":{
-                color:"black",
+                color:"white",
                 textDecoration:"none"
               }
-              , background:location.pathname=="/dashboard/role_permission"? "#e9e9e9":undefined
+              , background:location.pathname=="/dashboard/role_permission"? "#2e3650":undefined,
+              border:location.pathname=="/dashboard/role_permission"?"1px solid #4c5680":"none",
+              borderRadius:location.pathname=="/dashboard/role_permission"?"5px":"none",
               }} disablePadding>
                 <Link to={"/dashboard/role_permission"}> 
                 <CustomListItemButton
                   >
                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiShuffleFill />
+                  <RiShuffleFill color={"white"}/>
                   </ListItemIcon>
                   <ListItemText primary={"Role Permission"} />
                 </CustomListItemButton>
@@ -555,11 +609,15 @@ const LayoutAdmin = () => {
                 </Link>
               </ListItem>
           </List>
+          </Box>
         </Drawer>
         </Box>
-        <Main open={open}>
+        <Main sx={{background:"#f5f8fb",minHeight:"100vh"}} open={open}>
           <DrawerHeader />
+          <Box >
           <Outlet />
+
+          </Box>
         </Main>
       </Box>
     </div>

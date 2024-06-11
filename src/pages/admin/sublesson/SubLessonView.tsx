@@ -20,7 +20,7 @@ import {
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -100,6 +100,15 @@ type typeProps = {
   handleImageChange: any;
   videoUrl: any;
 };
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#ff5117",
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 const SubLessonView = ({
   data,
   register,
@@ -229,13 +238,13 @@ const SubLessonView = ({
                             >
                               <TableHead>
                                 <TableRow>
-                                  <TableCell align="left">Title</TableCell>
-                                  <TableCell align="left">
+                                  <StyledTableCell align="left">Title</StyledTableCell>
+                                  <StyledTableCell align="left">
                                     Description
-                                  </TableCell>
-                                  <TableCell align="left">Duration</TableCell>
-                                  <TableCell align="left">Type</TableCell>
-                                  <TableCell align="left">Action</TableCell>
+                                  </StyledTableCell>
+                                  <StyledTableCell align="left">Duration</StyledTableCell>
+                                  <StyledTableCell align="left">Type</StyledTableCell>
+                                  <StyledTableCell align="left">Action</StyledTableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>

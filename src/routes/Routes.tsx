@@ -32,6 +32,7 @@ import CoursesClient from "@/pages/client/courses/CoursesController"
 import { useCoursesContext } from "@/App";
 import CommentControllerAdmin from "@/pages/admin/comment/CommentController";
 import ContactController from "@/pages/admin/contact/ContactController";
+import DashboardController from "@/pages/admin/dashboard/DashboardController";
 const Router = () => {
   
   const context: any = useCoursesContext();
@@ -61,6 +62,7 @@ const Router = () => {
         </Route>
         <Route path='/learning/:id' element={<PrivateRouter user={context.state.user}><LearningController /></PrivateRouter>} />
         <Route path='/dashboard' element={<PrivateRouter user={context.state.user}><LayoutAdmin /></PrivateRouter>}>
+        <Route path='' element={<DashboardController />} />
           <Route path='courses' element={<CoursesController />} />
           <Route path='lesson' element={<LessonController />} />
           <Route path='sublesson' element={<SubLessonController />} />

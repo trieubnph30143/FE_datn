@@ -7,17 +7,27 @@ import {
   Stack,
   TextField,
   Typography,
+  styled,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import { RiCloseFill } from "react-icons/ri";
 import { Editor } from "@tinymce/tinymce-react";
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#ff5117",
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 type typeProps = {
   data: any;
   handleOpenModal: any;
@@ -56,13 +66,13 @@ const PostView = ({
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Readers</TableCell>
-              <TableCell align="left">Description</TableCell>
-              <TableCell>Active</TableCell>
+              <StyledTableCell>Title</StyledTableCell>
+              <StyledTableCell>Image</StyledTableCell>
+              <StyledTableCell>Readers</StyledTableCell>
+              <StyledTableCell align="left">Description</StyledTableCell>
+              <StyledTableCell>Active</StyledTableCell>
 
-              <TableCell align="left">Action</TableCell>
+              <StyledTableCell align="left">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

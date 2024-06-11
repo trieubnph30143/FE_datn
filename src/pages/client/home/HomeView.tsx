@@ -427,7 +427,7 @@ const HomeView = ({
         }}
       >
         <Box
-          className="see-more"
+          className="see-more-admin"
           sx={{ width: "900px", padding: "30px", overflowY: "scroll" }}
         >
           <DialogTitle id="alert-dialog-title">

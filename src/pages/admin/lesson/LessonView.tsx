@@ -13,11 +13,12 @@ import {
   Stack,
   TextField,
   Typography,
+  styled,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -27,6 +28,15 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React from "react";
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#ff5117",
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 type typeProps = {
   data: typeLesson[];
   register: any;
@@ -132,11 +142,11 @@ const LessonView = ({
                   <Table sx={{ minWidth: 650 }} aria-label='simple table'>
                     <TableHead>
                       <TableRow>
-                        <TableCell align='left'>Title</TableCell>
-                        <TableCell align='left'>Description</TableCell>
-                        <TableCell align='left'>Duration</TableCell>
+                        <StyledTableCell align='left'>Title</StyledTableCell>
+                        <StyledTableCell align='left'>Description</StyledTableCell>
+                        <StyledTableCell align='left'>Duration</StyledTableCell>
 
-                        <TableCell align='left'>Action</TableCell>
+                        <StyledTableCell align='left'>Action</StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
