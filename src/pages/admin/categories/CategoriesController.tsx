@@ -4,6 +4,7 @@ import { getCategories } from "@/service/categories";
 import { useCategoriesMutation } from "@/hooks/useCategoriesMutation";
 import React, { useState } from "react";
 import Loading from "@/components/Loading";
+import { Box } from "@mui/material";
 
 const CategoriesController = () => {
   const [openModal, setOpenModal] = React.useState(false);
@@ -26,7 +27,7 @@ const CategoriesController = () => {
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
 
-  const { data } = useQuery("categories", {
+  const { data, isFetching } = useQuery("categories", {
     queryFn: () => getCategories(),
   });
   const { register, handleSubmit, onFinish, errors, reset } =
@@ -69,27 +70,31 @@ const CategoriesController = () => {
   };
   return (
     <>
-      <CategoriesView
-        register={register}
-        handleSubmit={handleSubmit}
-        onFinish={onFinish}
-        errors={errors}
-        handleOpenModal={handleOpenModal}
-        handleCloseModal={handleCloseModal}
-        openModal={openModal}
-        data={data}
-        onSubmit={onSubmit}
-        handleDelete={handleDelete}
-        handleClick={handleClick}
-        handleClose={handleClose}
-        id={id}
-        anchorEl={anchorEl}
-        open={open}
-        action={action}
-        deleteCategory={deleteCategory}
-      />
+      
+        <>
+          <CategoriesView
+            register={register}
+            handleSubmit={handleSubmit}
+            onFinish={onFinish}
+            errors={errors}
+            handleOpenModal={handleOpenModal}
+            handleCloseModal={handleCloseModal}
+            openModal={openModal}
+            data={data!==undefined&&data.length>0?data:[]}
+            onSubmit={onSubmit}
+            handleDelete={handleDelete}
+            handleClick={handleClick}
+            handleClose={handleClose}
+            id={id}
+            anchorEl={anchorEl}
+            open={open}
+            action={action}
+            deleteCategory={deleteCategory}
+          />
 
-      {loading && <Loading />}
+          {loading && <Loading />}
+        </>
+      
     </>
   );
 };

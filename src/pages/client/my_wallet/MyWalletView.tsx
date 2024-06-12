@@ -463,10 +463,10 @@ const MyWalletView = ({
                               }
                               if (row.status == "pending") {
                                 style = {
-                                  border: "1px solid yellow",
+                                  border: "1px solid #56420c",
                                   borderRadius: "80px",
                                   fontSize: "10px",
-                                  color: "yellow",
+                                  color: "#56420c",
                                 };
                               }
 

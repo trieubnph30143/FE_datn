@@ -65,6 +65,14 @@ export const getUser = async () => {
     console.log(`get_User`, error);
   }
 };
+export const countUser = async () => {
+  try {
+    const response = await axios.get(`/auth/count`);
+    return response;
+  } catch (error) {
+    console.log(`get_User`, error);
+  }
+};
 export const getOneUser = async (email:any) => {
   try {
     const response = await axios.get(`/auth/search/${email}`);

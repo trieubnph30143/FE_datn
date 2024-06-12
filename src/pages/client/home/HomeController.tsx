@@ -50,8 +50,8 @@ const HomeController = () => {
     <>
       <HomeView
         progress={context.state.progress !== undefined && context.state.progress[0]  && context.state.progress}
-        courses={courses && courses}
-        post={post&&post.data}
+        courses={courses!==undefined&&courses.length>0?courses:[]}
+        post={post!==undefined&&post.status==0?post.data:[]}
         register={register}
         handleSubmit={handleSubmit}
         errors={errors}

@@ -3,7 +3,9 @@ import {
   Button,
   Modal,
   Popover,
+  Skeleton,
   Stack,
+  TablePagination,
   TextField,
   Typography,
   styled,
@@ -15,6 +17,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { useEffect, useState } from "react";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#ff5117",
@@ -62,6 +65,23 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     action,
     deleteRole
   }: typeProps) => {
+    const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [paginatedRows, setPaginatedRows]: any = useState([]);
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
+  useEffect(() => {
+    if (data) {
+      setPaginatedRows(
+        data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      );
+    }
+  }, [page, rowsPerPage, data]);
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
     return (
       <>
         <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
@@ -78,6 +98,28 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
                 <StyledTableCell align='left'>Action</StyledTableCell>
               </TableRow>
             </TableHead>
+            {data.length == 0 ? (
+            <TableBody>
+              {Array.from({ length: 5 }, (value, index) => (
+                <TableRow
+                  sx={{
+                    "&:last-child td, &:last-child th": {
+                      border: 0,
+                    },
+                  }}
+                >
+                  <TableCell>
+                    <Skeleton height={"35px"} width="150px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                 
+                  
+                </TableRow>
+              ))}
+            </TableBody>
+          ) :
             <TableBody>
               {data &&
                 data.length &&
@@ -102,9 +144,18 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
                    
                   </TableRow>
                 ))}
-            </TableBody>
+            </TableBody>}
           </Table>
         </TableContainer>
+        <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
         <Popover
           id={id}
           open={open}

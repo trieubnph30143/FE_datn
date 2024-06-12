@@ -21,9 +21,14 @@ import github from "../images/github-18px.svg";
 import fb from "../images/facebook-18px.svg";
 
 import {
+  RiAccountCircleLine,
+  RiAdminLine,
   RiArrowLeftSLine,
+  RiArticleLine,
   RiCloseLine,
+  RiLogoutCircleRLine,
   RiSearchLine,
+  RiSettings2Line,
   RiWalletLine,
 } from "react-icons/ri";
 import { useEffect, useRef, useState } from "react";
@@ -119,7 +124,7 @@ const Header = () => {
     debouncedSearch();
   }, [changeSearch, isTyping]);
   const handleChangrSearch = (e: any) => {
-    setIsFocused(true)
+    setIsFocused(true);
     setLoadingSearch(false);
     setChangeSearch(e);
     setIsTyping(true);
@@ -347,17 +352,20 @@ const Header = () => {
     }
   };
 
-  const searchBoxRef:any = useRef(null);
+  const searchBoxRef: any = useRef(null);
   useEffect(() => {
-    const handleClickOutside = (event:any ) => {
-      if (searchBoxRef.current && !searchBoxRef.current.contains(event.target)) {
+    const handleClickOutside = (event: any) => {
+      if (
+        searchBoxRef.current &&
+        !searchBoxRef.current.contains(event.target)
+      ) {
         setIsFocused(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
   const handleFocus = () => {
@@ -381,14 +389,18 @@ const Header = () => {
       >
         <Stack direction={"row"} gap={5} alignItems={"center"}>
           <Box width={"50px"} height={"40px"}>
-         <img
-            src={logo}
-            width={85}
-            height={85}
-            style={{ borderRadius: "8px", objectFit: "contain",marginTop:"-20px",marginLeft:"-10px" }}
-            alt="logo"
-          />
-
+            <img
+              src={logo}
+              width={85}
+              height={85}
+              style={{
+                borderRadius: "8px",
+                objectFit: "contain",
+                marginTop: "-20px",
+                marginLeft: "-10px",
+              }}
+              alt="logo"
+            />
           </Box>
           <Typography fontWeight={700}>Học Lập Trình Để Đi Làm</Typography>
         </Stack>
@@ -419,9 +431,9 @@ const Header = () => {
               ),
             }}
           />
-          {isFocused &&changeSearch.length>0&& (
+          {isFocused && changeSearch.length > 0 && (
             <div
-            ref={searchBoxRef}
+              ref={searchBoxRef}
               style={{
                 position: "absolute",
                 width: "100%",
@@ -806,7 +818,7 @@ const Header = () => {
                       horizontal: "right",
                     }}
                   >
-                    <Box p={"20px"} width={"200px"}>
+                    <Box p={"20px"} sx={{ cursor: "pointer" }} width={"200px"}>
                       <Stack
                         direction={"row"}
                         alignItems={"center"}
@@ -833,7 +845,7 @@ const Header = () => {
                       </Stack>
                       <Stack direction={"column"} mt={"20px"} gap={"18px"}>
                         <Box
-                          borderBottom={"1px solid #dddddd"}
+                          borderBottom={"1px dashed #dddddd"}
                           paddingBottom={"8px"}
                         >
                           <Typography
@@ -843,12 +855,35 @@ const Header = () => {
                               handleCloseProfile();
                               navigate("/profile");
                             }}
+                            sx={{ display: "flex" }}
+                            alignItems={"center"}
+                            gap={"8px"}
                           >
-                            Trang cá nhân
+                            <RiAccountCircleLine size={18} /> Trang cá nhân
                           </Typography>
                         </Box>
+                        {context.state.user[0].role !== "member" && (
+                          <Box
+                            borderBottom={"1px dashed #dddddd"}
+                            paddingBottom={"8px"}
+                          >
+                            <Typography
+                              fontSize={"14px"}
+                              color={"#333"}
+                              onClick={() => {
+                                handleCloseProfile();
+                                navigate("/dashboard");
+                              }}
+                              sx={{ display: "flex" }}
+                              alignItems={"center"}
+                              gap={"8px"}
+                            >
+                              <RiAdminLine size={18} /> Quản trị
+                            </Typography>
+                          </Box>
+                        )}
                         <Box
-                          borderBottom={"1px solid #dddddd"}
+                          borderBottom={"1px dashed #dddddd"}
                           paddingBottom={"8px"}
                         >
                           <Typography
@@ -858,20 +893,29 @@ const Header = () => {
                               handleCloseProfile();
                               navigate("/my_article");
                             }}
+                            sx={{ display: "flex" }}
+                            alignItems={"center"}
+                            gap={"8px"}
                           >
-                            Bài viết của tôi
+                            <RiArticleLine size={18} /> Bài viết của tôi
                           </Typography>
                         </Box>
                         <Box
-                          borderBottom={"1px solid #dddddd"}
+                          borderBottom={"1px dashed #dddddd"}
                           onClick={() => {
                             handleCloseProfile();
                             navigate("/setting");
                           }}
                           paddingBottom={"8px"}
                         >
-                          <Typography fontSize={"14px"} color={"#333"}>
-                            Cài đặt{" "}
+                          <Typography
+                            fontSize={"14px"}
+                            color={"#333"}
+                            sx={{ display: "flex" }}
+                            alignItems={"center"}
+                            gap={"8px"}
+                          >
+                            <RiSettings2Line size={20} /> Cài đặt
                           </Typography>
                         </Box>
 
@@ -879,8 +923,11 @@ const Header = () => {
                           onClick={handleLogout}
                           fontSize={"14px"}
                           color={"#333"}
+                          sx={{ display: "flex" }}
+                          alignItems={"center"}
+                          gap={"8px"}
                         >
-                          Đăng xuất{" "}
+                          <RiLogoutCircleRLine size={20} /> Đăng xuất
                         </Typography>
                       </Stack>
                     </Box>
@@ -977,7 +1024,7 @@ const Header = () => {
                 <img
                   width={100}
                   height={100}
-                  style={{ borderRadius: "10px",objectFit:"contain" }}
+                  style={{ borderRadius: "10px", objectFit: "contain" }}
                   src={logo}
                   alt=""
                 />
@@ -1180,7 +1227,7 @@ const Header = () => {
                 <img
                   width={100}
                   height={100}
-                  style={{ borderRadius: "10px",objectFit:"contain" }}
+                  style={{ borderRadius: "10px", objectFit: "contain" }}
                   src={logo}
                   alt=""
                 />
@@ -1358,7 +1405,7 @@ const Header = () => {
                 <img
                   width={100}
                   height={100}
-                  style={{ borderRadius: "10px",objectFit:"contain" }}
+                  style={{ borderRadius: "10px", objectFit: "contain" }}
                   src={logo}
                   alt=""
                 />

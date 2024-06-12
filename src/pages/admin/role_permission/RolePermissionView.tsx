@@ -8,7 +8,9 @@ import {
   OutlinedInput,
   Popover,
   Select,
+  Skeleton,
   Stack,
+  TablePagination,
   TextField,
   Typography,
   styled,
@@ -20,6 +22,7 @@ import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { useEffect, useState } from "react";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#ff5117",
@@ -79,6 +82,23 @@ const RolePermissionView = ({
   handleChange,
   personName,
 }: typeProps) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [paginatedRows, setPaginatedRows]: any = useState([]);
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
+  useEffect(() => {
+    if (data) {
+      setPaginatedRows(
+        data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      );
+    }
+  }, [page, rowsPerPage, data]);
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
@@ -96,6 +116,31 @@ const RolePermissionView = ({
               <StyledTableCell align="left">Action</StyledTableCell>
             </TableRow>
           </TableHead>
+          {data.length == 0 ? (
+            <TableBody>
+              {Array.from({ length: 5 }, (value, index) => (
+                <TableRow
+                  sx={{
+                    "&:last-child td, &:last-child th": {
+                      border: 0,
+                    },
+                  }}
+                >
+                  <TableCell>
+                    <Skeleton height={"35px"} width="150px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                 
+                  
+                </TableRow>
+              ))}
+            </TableBody>
+          ) :
           <TableBody>
             {data &&
               data.length &&
@@ -108,7 +153,7 @@ const RolePermissionView = ({
                     {row.role_id[0].name}
                   </TableCell>
                   <TableCell component="th" scope="row">
-                    <Box sx={{ display: "flex", gap: "10px" }}>
+                    <Box sx={{ display: "flex", gap: "10px",flexWrap:"wrap",width:"60%" }}>
                       {row.permission.map((i: any) => {
                         return (
                           <Button
@@ -140,9 +185,18 @@ const RolePermissionView = ({
                   </TableCell>
                 </TableRow>
               ))}
-          </TableBody>
+          </TableBody>}
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <Popover
         id={id}
         open={open}

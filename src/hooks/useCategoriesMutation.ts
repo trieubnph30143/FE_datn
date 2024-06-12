@@ -45,7 +45,8 @@ export const useCategoriesMutation = ({
           return null;
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data);
       queryClient.invalidateQueries({
         queryKey: ["categories"],
       });

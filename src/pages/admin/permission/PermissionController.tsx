@@ -33,6 +33,7 @@ const PermissionController = () => {
   const { data } = useQuery("permission", {
     queryFn: () => getPermission(),
   });
+  console.log(data);
   const { register, handleSubmit, onFinish, errors, reset } =
     usePermissionMutation({
       action: action,
@@ -81,7 +82,7 @@ const PermissionController = () => {
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
         openModal={openModal}
-        data={data}
+        data={data!=undefined&&data.length>0?data:[]}
         onSubmit={onSubmit}
         handleDelete={handleDelete}
         handleClick={handleClick}

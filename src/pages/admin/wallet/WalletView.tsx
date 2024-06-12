@@ -4,6 +4,7 @@ import {
   Button,
   Paper,
   Popover,
+  Skeleton,
   Stack,
   Tab,
   Table,
@@ -43,7 +44,7 @@ type Props = {
   open: any;
   note: any;
   setNote: any;
-  handleWithdrawFaild:any
+  handleWithdrawFaild: any;
 };
 
 const WalletView = ({
@@ -59,7 +60,7 @@ const WalletView = ({
   open,
   note,
   setNote,
-  handleWithdrawFaild
+  handleWithdrawFaild,
 }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -73,10 +74,29 @@ const WalletView = ({
         completed.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
       );
     }
-  }, [page, rowsPerPage, completed,]);
+  }, [page, rowsPerPage, completed]);
   const handleChangeRowsPerPage = (event: any) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+
+  const [pageNot, setPageNot] = useState(0);
+  const [rowsPerPageNot, setRowsPerPageNot] = useState(10);
+  const [paginatedRowsNot, setPaginatedRowsNot] = useState([]);
+  const handleChangePageNot = (event: any, newPage: any) => {
+    setPageNot(newPage);
+  };
+  useEffect(() => {
+    if (notcompleted) {
+      setPaginatedRowsNot(
+        notcompleted.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      );
+    }
+  }, [page, rowsPerPage, notcompleted]);
+  const handleChangeRowsPerPageNot = (event: any) => {
+    setRowsPerPageNot(parseInt(event.target.value, 10));
+    setPageNot(0);
   };
   return (
     <div>
@@ -91,24 +111,21 @@ const WalletView = ({
         }}
       >
         <Box p={"10px"}>
-        <TextField
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          id="outlined-basic"
-          sx={{ width: "95%", m: 1 }}
-         placeholder="Ghi chú"
-          variant="outlined"
-          size="small"
-        />
-         <Stack direction={"row"} mt={"5px"} justifyContent={"end"}>
+          <TextField
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            id="outlined-basic"
+            sx={{ width: "95%", m: 1 }}
+            placeholder="Ghi chú"
+            variant="outlined"
+            size="small"
+          />
+          <Stack direction={"row"} mt={"5px"} justifyContent={"end"}>
             <Button onClick={handleClose}>Hủy</Button>
-            <Button
-              onClick={handleWithdrawFaild}
-              sx={{ color: "red" }}>
+            <Button onClick={handleWithdrawFaild} sx={{ color: "red" }}>
               Xóa
             </Button>
           </Stack>
-
         </Box>
       </Popover>
       <Box width={"100%"} display={"flex"} justifyContent={"center"}>
@@ -144,108 +161,159 @@ const WalletView = ({
 
       <Stack direction={"column"} justifyContent={"center"}>
         {value == 0 && (
-          <TableContainer sx={{ mt: "30px" }} component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Kiểu</StyledTableCell>
-                  <StyledTableCell>Số tiền</StyledTableCell>
-                  <StyledTableCell>Trạng thái</StyledTableCell>
-                  <StyledTableCell>Ngân hàng</StyledTableCell>
-                  <StyledTableCell>Số tài khoản</StyledTableCell>
-                  <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
-                  <StyledTableCell>Chuyển trạng thái</StyledTableCell>
+          <>
+            <TableContainer sx={{ mt: "30px" }} component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Kiểu</StyledTableCell>
+                    <StyledTableCell>Số tiền</StyledTableCell>
+                    <StyledTableCell>Trạng thái</StyledTableCell>
+                    <StyledTableCell>Ngân hàng</StyledTableCell>
+                    <StyledTableCell>Số tài khoản</StyledTableCell>
+                    <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
+                    <StyledTableCell>Chuyển trạng thái</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                {notcompleted.length == 0 ? (
+            <TableBody>
+              {Array.from({ length: 5 }, (value, index) => (
+                <TableRow
+                  sx={{
+                    "&:last-child td, &:last-child th": {
+                      border: 0,
+                    },
+                  }}
+                >
+                  <TableCell>
+                    <Skeleton height={"35px"} width="150px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                 
+                  
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {notcompleted &&
-                  notcompleted.length > 0 &&
-                  notcompleted.map((row: any) => {
-                    return (
-                      <TableRow
-                        sx={{
-                          "&:last-child td, &:last-child th": {
-                            border: 0,
-                          },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {row.type}
-                        </TableCell>
-                        <TableCell>{convertToVND(row.amount)}</TableCell>
-                        <TableCell>{row.status}</TableCell>
-                        <TableCell>{row.bankAccount}</TableCell>
-                        <TableCell>{row.stk}</TableCell>
-                        <TableCell>{formatDate(row.createdAt)}</TableCell>
-                        <TableCell>
-                          <Button
-                            onClick={() => handleWithdrawSuccess(row._id)}
-                          >
-                            Thành công
-                          </Button>
-                          <Button aria-describedby={id} onClick={(e)=>handleClick(e,row)}>
-                            Thất bại
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              ))}
+            </TableBody>
+          ) :
+                <TableBody>
+                  {paginatedRowsNot &&
+                    paginatedRowsNot.length > 0 &&
+                    paginatedRowsNot.map((row: any) => {
+                      return (
+                        <TableRow
+                          sx={{
+                            "&:last-child td, &:last-child th": {
+                              border: 0,
+                            },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {row.type}
+                          </TableCell>
+                          <TableCell>{convertToVND(row.amount)}</TableCell>
+                          <TableCell>{row.status}</TableCell>
+                          <TableCell>{row.bankAccount}</TableCell>
+                          <TableCell>{row.stk}</TableCell>
+                          <TableCell>{formatDate(row.createdAt)}</TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() => handleWithdrawSuccess(row._id)}
+                            >
+                              Thành công
+                            </Button>
+                            <Button
+                              aria-describedby={id}
+                              onClick={(e) => handleClick(e, row)}
+                            >
+                              Thất bại
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>}
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={notcompleted.length}
+              rowsPerPage={rowsPerPageNot}
+              page={pageNot}
+              onPageChange={handleChangePageNot}
+              onRowsPerPageChange={handleChangeRowsPerPageNot}
+            />
+          </>
         )}
 
         {value == 1 && (
           <>
-          <TableContainer sx={{ mt: "30px" }} component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Kiểu</StyledTableCell>
-                  <StyledTableCell>Số tiền</StyledTableCell>
-                  <StyledTableCell>Trạng thái</StyledTableCell>
-                  <StyledTableCell>Ngân hàng</StyledTableCell>
-                  <StyledTableCell>Số tài khoản</StyledTableCell>
-                  <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
-                  <StyledTableCell>ghi chú</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedRows &&
-                  paginatedRows.length > 0 &&
-                  paginatedRows.map((row: any) => {
-                    return (
-                      <TableRow
-                        sx={{
-                          "&:last-child td, &:last-child th": {
-                            border: 0,
-                          },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {row.type}
-                        </TableCell>
-                        <TableCell>{convertToVND(row.amount)}</TableCell>
-                        <TableCell>{row.status}</TableCell>
-                        <TableCell>{row.bankAccount}</TableCell>
-                        <TableCell>{row.stk}</TableCell>
-                        <TableCell>{formatDate(row.updatedAt)}</TableCell>
-                        <TableCell>{row.note}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={completed.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                  />
+            <TableContainer sx={{ mt: "30px" }} component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Kiểu</StyledTableCell>
+                    <StyledTableCell>Số tiền</StyledTableCell>
+                    <StyledTableCell>Trạng thái</StyledTableCell>
+                    <StyledTableCell>Ngân hàng</StyledTableCell>
+                    <StyledTableCell>Số tài khoản</StyledTableCell>
+                    <StyledTableCell>Thời điểm giao dịch</StyledTableCell>
+                    <StyledTableCell>ghi chú</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginatedRows &&
+                    paginatedRows.length > 0 &&
+                    paginatedRows.map((row: any) => {
+                      return (
+                        <TableRow
+                          sx={{
+                            "&:last-child td, &:last-child th": {
+                              border: 0,
+                            },
+                          }}
+                        >
+                          <TableCell component="th" scope="row">
+                            {row.type}
+                          </TableCell>
+                          <TableCell>{convertToVND(row.amount)}</TableCell>
+                          <TableCell>{row.status}</TableCell>
+                          <TableCell>{row.bankAccount}</TableCell>
+                          <TableCell>{row.stk}</TableCell>
+                          <TableCell>{formatDate(row.updatedAt)}</TableCell>
+                          <TableCell>{row.note}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={completed.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </>
         )}
       </Stack>

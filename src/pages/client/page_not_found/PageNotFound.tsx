@@ -1,14 +1,13 @@
 import React from "react";
-
 import "../../../App.css"
 import { Link } from "react-router-dom";
 import { Box, Button } from "@mui/material";
-import logo from "../../../images/f8-icon.18cd71cfcfa33566a22b.png"
+import logo from "../../../images/logo4.png"
 const PageNotFound = () => {
   return (
     <Box>
         <header style={{display: "flex", padding: "25px", alignItems: "center", fontWeight: "600", gap: "15px"}}>
-            <Link to='/'><img src={`${logo}`} alt="logo f8" width={50} height={50} style={{borderRadius: "10px"}}/></Link>
+            <Link to='/'><img src={`${logo}`} alt="logo f8" width={100} height={100} style={{borderRadius: "10px",objectFit:"contain"}}/></Link>
             <Link to='/' style={{textDecoration: "none",fontSize: "16px", color: "black"}}><p>Học lập trình để đi làm</p></Link>
         </header>
       <div
@@ -17,8 +16,7 @@ const PageNotFound = () => {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
-          gap: "50px",
-          marginTop: "30px"
+         
         }}
       >
         <div>

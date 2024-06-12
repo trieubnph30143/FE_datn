@@ -10,8 +10,10 @@ import {
   Popover,
   Select,
   SelectChangeEvent,
+  Skeleton,
   Stack,
   Tab,
+  TablePagination,
   Tabs,
   TextField,
   Typography,
@@ -53,7 +55,7 @@ import {
   RiPlayCircleFill,
   RiQuestionFill,
 } from "react-icons/ri";
-import React from "react";
+import React, { useEffect, useState } from "react";
 type typeProps = {
   data: any;
   register: any;
@@ -161,6 +163,23 @@ const SubLessonView = ({
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
     };
+    const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [paginatedRows, setPaginatedRows]: any = useState([]);
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
+  useEffect(() => {
+    if (courses) {
+      setPaginatedRows(
+        courses.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      );
+    }
+  }, [page, rowsPerPage, courses]);
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <>
@@ -180,6 +199,14 @@ const SubLessonView = ({
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
         <Typography variant="h5">SubLesson</Typography>
       </Stack>
+
+      {courses.length == 0 ? (
+        <Box display={"flex"} flexDirection={"column"} gap={"5px"} >
+          {Array.from({ length: 5 }, (value, index) => (
+            <Skeleton sx={{borderRadius:"5px"}} variant="rectangular" height={"50px"} width="100%" />
+          ))}
+        </Box>
+      ) :<>
       {courses &&
         courses.length &&
         courses.map((item_courses: any) => {
@@ -324,7 +351,17 @@ const SubLessonView = ({
             );
           }
         })}
-
+      
+      </>}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={courses.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <Popover
         id={id}
         open={open}

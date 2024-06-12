@@ -89,7 +89,7 @@ const CommentView = (props: Props) => {
         comments.map((comment: any) => (
           <StyledPaper key={comment._id}>
             <Typography variant="body1">
-              <strong>Content:</strong>{" "}
+              <strong>Nội dung</strong>
               {<BlogContent content={comment.content} />}
             </Typography>
             {comment.report_spam.length > 1 ||
@@ -99,27 +99,27 @@ const CommentView = (props: Props) => {
                 color="secondary"
                 onClick={() => handleDeleteComment(comment._id, 0)}
               >
-                Delete
+                Xóa
               </StyledButton>
             ) : null}
             {comment.report_spam.length > 1 && (
               <Typography variant="body2" color="error">
-                Reported as spam
+                Spam bình luận
               </Typography>
             )}
             {comment.report_inappropriate.length > 1 && (
               <Typography variant="body2" color="error">
-                Reported as inappropriate content
+                Nội dung không phù hợp
               </Typography>
             )}
             <div>
-              <Typography variant="h6" gutterBottom>
+              <Typography fontWeight={"bold"} gutterBottom>
                 Child Comments
               </Typography>
               {comment.comments_child.map((child: any) => (
                 <StyledChildPaper key={child._id}>
                   <Typography variant="body1">
-                    <strong>Content:</strong>{" "}
+                    <strong>Nội dung</strong>{" "}
                     {<BlogContent content={child.content} />}
                   </Typography>
                   {child.report_spam.length > 1 ||
@@ -129,17 +129,17 @@ const CommentView = (props: Props) => {
                       color="secondary"
                       onClick={() => handleDeleteComment(child._id, 1, comment)}
                     >
-                      Delete
+                      Xóa
                     </StyledButton>
                   ) : null}
                   {child.report_spam.length > 1 && (
                     <Typography variant="body2" color="error">
-                      Reported as spam
+                      Spam bình luận
                     </Typography>
                   )}
                   {child.report_inappropriate.length > 1 && (
                     <Typography variant="body2" color="error">
-                      Reported as inappropriate content
+                     Nội dung không phù hợp
                     </Typography>
                   )}
                 </StyledChildPaper>

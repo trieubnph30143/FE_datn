@@ -33,6 +33,7 @@ import { useCoursesContext } from "@/App";
 import CommentControllerAdmin from "@/pages/admin/comment/CommentController";
 import ContactController from "@/pages/admin/contact/ContactController";
 import DashboardController from "@/pages/admin/dashboard/DashboardController";
+import PrivateRouterAdmin from "@/components/PrivateRouterAdmin";
 const Router = () => {
   
   const context: any = useCoursesContext();
@@ -61,7 +62,7 @@ const Router = () => {
         
         </Route>
         <Route path='/learning/:id' element={<PrivateRouter user={context.state.user}><LearningController /></PrivateRouter>} />
-        <Route path='/dashboard' element={<PrivateRouter user={context.state.user}><LayoutAdmin /></PrivateRouter>}>
+        <Route path='/dashboard' element={<PrivateRouterAdmin ><LayoutAdmin /></PrivateRouterAdmin>}>
         <Route path='' element={<DashboardController />} />
           <Route path='courses' element={<CoursesController />} />
           <Route path='lesson' element={<LessonController />} />
