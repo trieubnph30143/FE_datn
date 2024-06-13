@@ -34,6 +34,8 @@ import CommentControllerAdmin from "@/pages/admin/comment/CommentController";
 import ContactController from "@/pages/admin/contact/ContactController";
 import DashboardController from "@/pages/admin/dashboard/DashboardController";
 import PrivateRouterAdmin from "@/components/PrivateRouterAdmin";
+import VouchersController from "@/pages/admin/vouchers/VouchersController";
+import UserVouchersController from "@/pages/admin/user_vouchers/UserVouchersController";
 const Router = () => {
   
   const context: any = useCoursesContext();
@@ -67,6 +69,8 @@ const Router = () => {
           <Route path='courses' element={<CoursesController />} />
           <Route path='lesson' element={<LessonController />} />
           <Route path='sublesson' element={<SubLessonController />} />
+          <Route path='vouchers' element={<VouchersController />} />
+          <Route path='user_vouchers' element={<UserVouchersController />} />
           <Route path='categories' element={<CategoriesController />} />
           <Route path='post' element={<PostController />} />
           <Route path='role' element={<RoleController />} />

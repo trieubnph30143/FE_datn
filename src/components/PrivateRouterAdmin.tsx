@@ -9,13 +9,16 @@ const rolePermissions:any = {
         '/dashboard/categories',
         '/dashboard/post',
         '/dashboard/comment',
-        '/dashboard/contact'
+        '/dashboard/contact',
+        '/dashboard/vouchers',
+        '/dashboard/user_vouchers'
     ],
     course_management: [
         '/dashboard/courses',
         '/dashboard/categories',
         '/dashboard/lesson',
         '/dashboard/sublesson',
+        '/dashboard/vouchers'
     ],
     interaction_management: [
         '/dashboard/post',

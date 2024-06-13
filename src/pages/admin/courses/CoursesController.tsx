@@ -43,7 +43,7 @@ const CoursesController = () => {
   const { data, isFetching } = useQuery("courses", {
     queryFn: () => getCourses(),
   });
-  console.log(isFetching);
+  
   const { data: category } = useQuery("categories", {
     queryFn: () => getCategories(),
   });

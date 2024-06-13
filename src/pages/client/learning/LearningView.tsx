@@ -1908,7 +1908,7 @@ const ContentLeftExercise = (props: any) => {
   const [exerciseHtml, setexerciseHtml] = React.useState(
     JSON.parse(props.data.type_exercise).html
   );
-  const [message, setMessage]: any = useState("");
+  const [message, setMessage]: any = useState([]);
   const [success, setSuccess]: any = useState(false);
   const [exerciseCss, setexerciseCss] = React.useState(
     JSON.parse(props.data.type_exercise).css
@@ -1921,15 +1921,20 @@ const ContentLeftExercise = (props: any) => {
   useEffect(() => {
     if (props.data.solution_key == "...") {
       setSuccess(true);
-      setMessage("Nhấn nút kiểm tra để hoàn thành bài học");
+      setMessage([{status:true,message:"Nhấn nút kiểm tra để hoàn thành bài học"}]);
+    }else{
+      setMessage([])
     }
     if (props.typeCode == "html") {
+      
       setexerciseHtml(JSON.parse(props.data.type_exercise).html);
     }
     if (props.typeCode == "javascript") {
+     
       setExercise(JSON.parse(props.data.type_exercise).javascript);
     }
     if (props.typeCode == "html-css") {
+     
       setexerciseCss(JSON.parse(props.data.type_exercise).css);
       setexerciseHtml(JSON.parse(props.data.type_exercise).html);
     }
@@ -1963,17 +1968,30 @@ const ContentLeftExercise = (props: any) => {
               : `${exerciseHtml}<style>${exerciseCss}</style>`,
         });
         if (data?.status == 0) {
-          setSuccess(true);
-          setMessage(data.message);
-          props.setDone(true);
-          Confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 1 },
-          });
-        } else {
-          setMessage(data.message);
-          setSuccess(false);
+          let check = false
+          data.results.map((e:any)=>{
+            if(e.status==false){
+              check=true
+            }
+          })
+          if(check){
+            setSuccess(false);
+            setMessage(data.results);
+            
+          }else{
+            setSuccess(true);
+            setMessage(data.results);
+            props.setDone(true);
+            if(data.code){
+              eval(data.code)
+            }
+            Confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 1 },
+            });
+
+          }
         }
       } else {
         props.setDone(true);
@@ -2317,23 +2335,26 @@ const ContentLeftExercise = (props: any) => {
             </Button>
           </Stack>
           <Stack padding={"20px"}>
-            <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-              {message !== "" ? (
+            <Stack direction={"column"}  gap={"10px"}>
+              {message.length>0 && (
                 <>
-                  <Box>
-                    {success ? (
+                {message.map((item:any)=>{
+                  return <>
+                   <Box display={"flex"} alignItems={"center"} gap={"10px"}>
+                    {item.status ? (
                       <RiCheckLine color="#5db85c" size={"25px"} />
                     ) : (
                       <RiCloseLine size={"25px"} color="red" />
                     )}
-                  </Box>
                   <Typography fontWeight={"400"} fontSize={"16px"}>
-                    {message}
+                    {item.message}
                   </Typography>
+                  </Box>
+                  </>
+                })}
+                 
                 </>
-              ) : (
-                ""
-              )}
+              ) }
             </Stack>
           </Stack>
         </Box>

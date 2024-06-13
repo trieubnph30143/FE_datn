@@ -26,6 +26,7 @@ import React, { useState } from "react";
 import {
   RiArticleLine,
   RiBankCardFill,
+  RiBardLine,
   RiContactsLine,
   RiFileListFill,
   RiGitBranchFill,
@@ -34,6 +35,7 @@ import {
   RiMessage3Fill,
   RiOrganizationChart,
   RiPencilFill,
+  RiPriceTag3Line,
   RiShuffleFill,
   RiSlideshow4Fill,
   RiTeamFill,
@@ -450,6 +452,78 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
+                    Vouchers
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/vouchers"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/vouchers"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/vouchers"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/vouchers"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiPriceTag3Line  color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Vouchers"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/user_vouchers"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/user_vouchers"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/user_vouchers"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/user_vouchers"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiBardLine   color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"User Vouchers"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
                     Post
                   </Typography>
                   <ListItem
@@ -780,6 +854,7 @@ const LayoutAdmin = () => {
                 </List>
 
                 <Divider />
+                
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
                     Comment

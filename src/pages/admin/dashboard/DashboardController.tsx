@@ -57,34 +57,41 @@ const DashboardController = () => {
     onSuccess(data) {
       if (data?.status == 0) {
         const today: any = new Date();
+        today.setHours(0, 0, 0, 0);  
+        
         const orderTotals = Array(7).fill(0);
         data.data.forEach((order: any) => {
           const transactionDate: any = new Date(order.createdAt);
+          transactionDate.setHours(0, 0, 0, 0);  
+        
           const daysDifference = Math.floor(
             (today - transactionDate) / (1000 * 60 * 60 * 24)
           );
-
+        
           if (daysDifference < 7) {
             const index = 6 - daysDifference;
             orderTotals[index] += parseFloat(order.courses_id[0].price);
           }
         });
+        
         setOrderStatistical(orderTotals);
+        
         const totalPriceByCourse: any = {};
-
+        
         data.data.forEach((order: any) => {
           order.courses_id.forEach((course: any) => {
-            const { _id, title, price,image,description } = course;
+            const { _id, title, price, image, description } = course;
             if (!totalPriceByCourse[_id]) {
-              totalPriceByCourse[_id] = { _id, title,image:image,description:description, totalPrice: 0 };
+              totalPriceByCourse[_id] = { _id, title, image, description, totalPrice: 0 };
             }
             totalPriceByCourse[_id].totalPrice += price;
           });
         });
-
+        
         const result = Object.values(totalPriceByCourse);
-
-        setTopRevenua(result.sort((a:any, b:any) => b.totalPrice - a.totalPrice).slice(0, 3))
+        
+        setTopRevenua(result.sort((a: any, b: any) => b.totalPrice - a.totalPrice).slice(0, 3));
+        
       }
     },
   });
