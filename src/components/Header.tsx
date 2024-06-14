@@ -293,14 +293,18 @@ const Header = () => {
   const handleNotify = async (data: any) => {
     try {
       if (data.read) {
-        navigate(data.url);
+        if(!(data.url ==" ")){
+          navigate(data.url);
+        }
         handleCloseNotify();
       } else {
         await updateUserReadNotify(data._id);
         queryClient.invalidateQueries({
           queryKey: ["notify"],
         });
-        navigate(data.url);
+        if(!(data.url ==" ")){
+          navigate(data.url);
+        }
         handleCloseNotify();
       }
     } catch (error) {

@@ -9,6 +9,7 @@ type useUserVouchersMutationProps = {
   action: "CREATE" | "UPDATE" | "DELETE";
   defaultValues?: any;
   onSuccess?: () => void;
+  type?:string
 };
 const schema = yup.object({
   _id: yup.string(),
@@ -19,6 +20,7 @@ export const useUserVouchersMutation = ({
   action,
   defaultValues = { name: "" },
   onSuccess,
+  type
 }: useUserVouchersMutationProps) => {
   const queryClient = useQueryClient();
 
@@ -51,7 +53,7 @@ export const useUserVouchersMutation = ({
   });
   const onFinish = async (values: any) => {
     if(action=="CREATE"){
-      mutate({status:false,user_id:[values.user_id],vouchers_id:[values.vouchers_id]});
+      mutate({type:type,body:{status:false,user_id:[values.user_id],vouchers_id:[values.vouchers_id]}});
 
     }else{
       mutate({...values,user_id:[values.user_id],vouchers_id:[values.vouchers_id]});

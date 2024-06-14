@@ -8,9 +8,11 @@ import { useCoursesContext } from "@/App";
 import {
   Box,
   Button,
+  Checkbox,
   Drawer,
   FormControl,
   FormControlLabel,
+  FormGroup,
   FormLabel,
   Radio,
   RadioGroup,
@@ -30,6 +32,7 @@ import { toast } from "react-toastify";
 import { getUserWallet, updateWallet } from "@/service/wallet";
 import { addTransactions } from "@/service/transactions";
 import { getStar } from "@/service/star";
+import { getVouchersUser } from "@/service/user_vouchers";
 
 const DetailCourseController = () => {
   const { id }: any = useParams();
@@ -67,6 +70,14 @@ const DetailCourseController = () => {
   const { data: star }:any = useQuery("star", {
     queryFn: () => {
       return getStar(id,"averageRating");
+    },
+    refetchOnWindowFocus: false,
+  });
+  const { data: vouchers }:any = useQuery(["voucher_user",open], {
+    queryFn: () => {
+      if(open){
+        return getVouchersUser(context.state.user[0]._id);
+      }
     },
     refetchOnWindowFocus: false,
   });
@@ -345,6 +356,15 @@ const DetailCourseController = () => {
       console.log(error);
     }
   };
+  const [selectedVouchers, setSelectedVouchers]:any = useState([]);
+  const handleCheckboxChange = (event:any) => {
+    const voucherId = event.target.name;
+    if (event.target.checked) {
+      setSelectedVouchers([...selectedVouchers, voucherId]);
+    } else {
+      setSelectedVouchers(selectedVouchers.filter((id:any) => id !== voucherId));
+    }
+  };
 
   return (
     <>
@@ -397,7 +417,7 @@ const DetailCourseController = () => {
             <Box
               mt={"20px"}
               width={"100%"}
-              padding={"10px"}
+              padding={"20px"}
               border={"1px solid #dddddd"}
               borderRadius={"10px"}
             >
@@ -405,13 +425,30 @@ const DetailCourseController = () => {
                 direction={"row"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
+                borderBottom={"1px dashed #dddddd"}
+                paddingBottom={"10px"}
               >
                 <Box>Giá bán : </Box>
                 <Box>{courses && convertToVND(courses.price)}</Box>
               </Stack>
+              <FormGroup sx={{ borderBottom:"1px dashed #dddddd"}}>
+          {vouchers!==undefined&& <>
+            <Box mt={"10px"}>Thêm mã giảm giá</Box>
+           { vouchers.map((voucher:any) => (
+            <FormControlLabel
+              key={voucher._id}
+              control={<Checkbox checked={selectedVouchers.includes(voucher._id)} onChange={handleCheckboxChange} name={voucher._id} />}
+              label={`${voucher.vouchers_id[0].code} - ${voucher.vouchers_id[0].discount_type === "percentage" ? `${voucher.vouchers_id[0].discount_value}%` : `${voucher.vouchers_id[0].discount_value} VND`}`}
+            />
+          ))}
+          </>}
+        </FormGroup>
               <Stack
+             
+              borderBottom={"1px dashed #dddddd"}
+              pb={"15px"}
                 direction={"row"}
-                mt={"15px"}
+                pt={"15px"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >

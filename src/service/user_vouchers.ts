@@ -8,6 +8,22 @@ export const getUserVouchers = async () => {
     console.log(`get_UserVouchers`, error);
   }
 };
+export const getVouchersUser = async (id:any) => {
+  try {
+    const response = await axios.get(`/user_vouchers/user/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(`get_UserVouchers`, error);
+  }
+};
+export const getUsersWithoutVoucher = async (id:string) => {
+  try {
+    const response = await axios.get(`/user_vouchers/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log(`get_UserVouchers`, error);
+  }
+};
 export const addUserVouchers = async (value: any) => {
   try {
     const response:any = await axios.post(`/user_vouchers`, value);

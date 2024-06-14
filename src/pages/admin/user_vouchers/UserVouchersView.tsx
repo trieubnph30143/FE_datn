@@ -2,10 +2,13 @@ import {
   Box,
   Button,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Modal,
   Popover,
+  Radio,
+  RadioGroup,
   Select,
   Skeleton,
   Stack,
@@ -56,6 +59,9 @@ type typeProps = {
   setValueUser: any;
   valueVouchers: any;
   setValueVouchers: any;
+  setSelect: any;
+  select: any;
+  checkUpdate: any;
 };
 const UserVouchersView = ({
   data,
@@ -81,6 +87,9 @@ const UserVouchersView = ({
   setValueUser,
   valueVouchers,
   setValueVouchers,
+  select,
+  setSelect,
+  checkUpdate
 }: typeProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -112,7 +121,7 @@ const UserVouchersView = ({
           <TableHead>
             <TableRow>
               <StyledTableCell>Email</StyledTableCell>
-             
+
               <StyledTableCell>Code</StyledTableCell>
               <StyledTableCell>Status</StyledTableCell>
               <StyledTableCell>Action</StyledTableCell>
@@ -134,7 +143,7 @@ const UserVouchersView = ({
                   <TableCell>
                     <Skeleton height={"25px"} width="200px" />
                   </TableCell>
-                  
+
                   <TableCell>
                     <Skeleton height={"25px"} width="80px" />
                   </TableCell>
@@ -150,12 +159,13 @@ const UserVouchersView = ({
                     key={row.name}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                   
                     <TableCell align="left">{row.user_id[0].email}</TableCell>
-                    <TableCell align="left">{row.vouchers_id[0].code}</TableCell>
-                    <TableCell align="left">{row.status?"Đã dùng":"Chưa dùng"}</TableCell>
-
-                    
+                    <TableCell align="left">
+                      {row.vouchers_id[0].code}
+                    </TableCell>
+                    <TableCell align="left">
+                      {row.status ? "Đã dùng" : "Chưa dùng"}
+                    </TableCell>
 
                     <TableCell align="left">
                       <Button onClick={() => handleOpenModal("UPDATE", row)}>
@@ -226,6 +236,9 @@ const UserVouchersView = ({
         setValueUser={setValueUser}
         valueVouchers={valueVouchers}
         setValueVouchers={setValueVouchers}
+        setSelect={setSelect}
+        select={select}
+        checkUpdate={checkUpdate}
       />
     </>
   );
@@ -265,26 +278,8 @@ const ModalForm = (props: any) => {
             direction={"row"}
             flexWrap={"wrap"}
           >
-            <Box width={"48%"}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">
-                  Người dùng
-                </InputLabel>
-                <Select
-                  {...props.register("user_id")}
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  label="Người dùng"
-                  value={props.valueUser}
-                  onChange={(e) => props.setValueUser(e.target.value)}
-                >
-                  {props.user.map((item: any) => {
-                    return <MenuItem value={item._id}>{item.email}</MenuItem>;
-                  })}
-                </Select>
-              </FormControl>
-            </Box>
-            <Box width={"48%"}>
+            {props.checkUpdate?<>
+              <Box width={"100%"}>
               <FormControl fullWidth size="small">
                 <InputLabel id="demo-simple-select-label">Vouchers</InputLabel>
                 <Select
@@ -301,7 +296,71 @@ const ModalForm = (props: any) => {
                 </Select>
               </FormControl>
             </Box>
-
+            </>:
+            <>
+            <Box width={"100%"}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="demo-simple-select-label">Vouchers</InputLabel>
+                <Select
+                  {...props.register("vouchers_id")}
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Vouchers"
+                  value={props.valueVouchers}
+                  onChange={(e) => props.setValueVouchers(e.target.value)}
+                >
+                  {props.vouchers.map((item: any) => {
+                    return <MenuItem value={item._id}>{item.code}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
+            {props.valueVouchers !== "" && (
+              <Box width={"100%"}>
+                <FormControl fullWidth size="small">
+                  <RadioGroup
+                    value={props.select}
+                    onChange={(e) => props.setSelect(e.target.value)}
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    name="radio-buttons-group"
+                  >
+                    <FormControlLabel
+                      value="all"
+                      control={<Radio />}
+                      label="Add all give away vouchers"
+                    />
+                    <FormControlLabel
+                      value="one"
+                      control={<Radio />}
+                      label="Add one give away voucher"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Box>
+            )}
+            {props.select == "one" && (
+              <Box width={"100%"}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="demo-simple-select-label">
+                    Người dùng
+                  </InputLabel>
+                  <Select
+                    {...props.register("user_id")}
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Người dùng"
+                    value={props.valueUser}
+                    onChange={(e) => props.setValueUser(e.target.value)}
+                  >
+                    {props.user.map((item: any) => {
+                      return <MenuItem value={item._id}>{item.email}</MenuItem>;
+                    })}
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
+            
+            </>}
             <Box
               width={"100%"}
               display={"flex"}
