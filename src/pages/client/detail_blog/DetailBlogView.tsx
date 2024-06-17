@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import article from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
 import parse from "html-react-parser";
-import b from "../../../images/b.png";
+import b from "../../../images/fotor-ai-2024061716321.jpg";
 import {
   RiBookmarkLine,
   RiFacebookCircleFill,
@@ -23,6 +23,7 @@ import {
   TwitterShareButton,
   TwitterIcon,
 } from "react-share";
+import { calculateTimeAgoString } from "@/utils/utils";
 type Props = {
   post: any;
   handleLikePost: any;
@@ -51,9 +52,30 @@ const DetailBlogView = ({ post, handleLikePost, likes, user }: Props) => {
       <Stack direction={"row"} gap={"5%"}>
         <Box width={"10%"} display={"flex"} justifyContent={"center"}>
           <Box>
-            <Typography fontWeight={500} fontSize={"18px"}>
-              {post && post.author[0].user_name}
-            </Typography>
+          <Stack direction={"row"}>
+                <Box width={"100%"}>
+                  <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
+                    <img
+                      width={40}
+                      height={40}
+                      style={{ borderRadius: "50%" }}
+                      src={
+                        post && post.author[0].image.url
+                          ? post.author[0].image.url
+                          : article
+                      }
+                      alt=""
+                    />
+                    <Typography mt={"5px"} fontSize={"17px"}>
+                      {post && post.author[0].user_name}
+                    </Typography>
+                  </Stack>
+                  <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
+                  {calculateTimeAgoString(new Date(post && post.createdAt), new Date)} 
+                  </Typography>
+                </Box>
+               
+              </Stack>
             <hr style={{ width: "120%", margin: "25px 0" }} />
             <Box display={"flex"} gap={"20px"}>
               <Stack
@@ -73,9 +95,7 @@ const DetailBlogView = ({ post, handleLikePost, likes, user }: Props) => {
                 />{" "}
                 {likes.length}
               </Stack>
-              <Stack color={"#757575"} direction={"row"} gap={"7px"}>
-                <RiMessage3Line size={"23px"} /> 1
-              </Stack>
+             
             </Box>
           </Box>
         </Box>
@@ -110,30 +130,7 @@ const DetailBlogView = ({ post, handleLikePost, likes, user }: Props) => {
                   />
                 </Stack>
               </Stack>
-              <Stack direction={"row"}>
-                <Box width={"60%"}>
-                  <Stack direction={"row"} alignItems={"center"} gap={"3px"}>
-                    <img
-                      width={26}
-                      height={26}
-                      style={{ borderRadius: "50%" }}
-                      src={
-                        post && post.author[0].image.url
-                          ? post.author[0].image.url
-                          : article
-                      }
-                      alt=""
-                    />
-                    <Typography mt={"5px"} fontSize={"12px"}>
-                      {post && post.author[0].user_name}
-                    </Typography>
-                  </Stack>
-                  <Typography mt={"13px"} fontSize={"13px"} color={"#333"}>
-                    6 Ngày trước • 6 phút đọc
-                  </Typography>
-                </Box>
-                <Box width={"40%"}></Box>
-              </Stack>
+             
             </Box>
             <Box mt={"30px"}>
               <BlogContent content={post && post.content} />

@@ -44,7 +44,7 @@ const Footer = () => {
                 fontWeight: "bold",
                 paddingBottom: "15px",
               }}>
-              VỀ F8
+              VỀ FDEMY
             </div>
             <ul>
               <li>
@@ -133,7 +133,7 @@ const Footer = () => {
                 fontWeight: "bold",
                 // paddingTop: "90px",
               }}>
-              CÔNG TY CỔ PHẦN CÔNG <br /> NGHỆ GIÁO DỤC F8
+              CÔNG TY CỔ PHẦN CÔNG <br /> NGHỆ GIÁO DỤC FDEMY
             </div>
             <div
               style={{
@@ -153,8 +153,8 @@ const Footer = () => {
           </div>
         </div>
         <div>
-          <p style={{ textAlign: "center", padding: "20px 0" }}>
-            © 2018 - 2024 F8. Nền tảng học lập trình hàng đầu Việt Nam
+          <p style={{ textAlign: "center", padding: "20px 0" ,margin:0}}>
+            © 2018 - 2024 FDEMY. Nền tảng học lập trình hàng đầu Việt Nam
           </p>
         </div>
       </footer>

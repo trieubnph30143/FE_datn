@@ -37,10 +37,10 @@ import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-
 import product from "../images/product.png";
 import { useAuthMutation } from "@/hooks/useAuthMutation";
 import { useCoursesContext } from "@/App";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { getUserProgress } from "@/service/progress";
-import { getMyCourses, searchCourses } from "@/service/courses";
+import { getCourses, getMyCourses, searchCourses } from "@/service/courses";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { signInWithPopup } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -228,13 +228,20 @@ const Header = () => {
     setLoadingCourses(true);
     setAnchorEl(event.currentTarget);
     try {
-      let data: any = await getMyCourses(context.state.user[0]._id);
+      let data: any = await getCourses();
       let progress: any = await getUserProgress(context.state.user[0]._id);
-
-      if (data.status == 0 && progress.status == 0) {
+      if (data[0] && progress.status == 0) {
         let arr = calculateProgress(progress.data);
+        let checkRegisterCourses = progress.data.map(
+          (item: any) => item.courses_id[0]
+        );
+       
+        data = data.filter((item: any) =>
+          checkRegisterCourses.includes(item._id)
+        );
+        console.log(data);
         setProgressBar(arr);
-        setCourses(data.data);
+        setCourses(data);
         setLoadingCourses(false);
       }
     } catch (error) {
@@ -293,7 +300,7 @@ const Header = () => {
   const handleNotify = async (data: any) => {
     try {
       if (data.read) {
-        if(!(data.url ==" ")){
+        if (!(data.url == " ")) {
           navigate(data.url);
         }
         handleCloseNotify();
@@ -302,7 +309,7 @@ const Header = () => {
         queryClient.invalidateQueries({
           queryKey: ["notify"],
         });
-        if(!(data.url ==" ")){
+        if (!(data.url == " ")) {
           navigate(data.url);
         }
         handleCloseNotify();
@@ -393,18 +400,20 @@ const Header = () => {
       >
         <Stack direction={"row"} gap={5} alignItems={"center"}>
           <Box width={"50px"} height={"40px"}>
-            <img
-              src={logo}
-              width={85}
-              height={85}
-              style={{
-                borderRadius: "8px",
-                objectFit: "contain",
-                marginTop: "-20px",
-                marginLeft: "-10px",
-              }}
-              alt="logo"
-            />
+            <Link to={""}>
+              <img
+                src={logo}
+                width={85}
+                height={85}
+                style={{
+                  borderRadius: "8px",
+                  objectFit: "contain",
+                  marginTop: "-20px",
+                  marginLeft: "-10px",
+                }}
+                alt="logo"
+              />
+            </Link>
           </Box>
           <Typography fontWeight={700}>Học Lập Trình Để Đi Làm</Typography>
         </Stack>

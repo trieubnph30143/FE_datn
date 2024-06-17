@@ -142,12 +142,10 @@ const HomeView = ({
               >
                 <Box>
                   <Typography fontWeight={700} variant="h4">
-                    Mở bán áo logo Fdemyđợt 2
+                   FDEMY trên FaceBook
                   </Typography>
                   <Typography my={"18px"}>
-                    Áo Polo Fdemyvới thiết kế tối giản, lịch sự, phù hợp mặc mọi
-                    lúc, mọi nơi. Chất áo mềm mại, thoáng mát, ngực và tay áo in
-                    logo Fdemy- Fullstack.
+                  F8 được nhắc tới ở mọi nơi, ở đâu có cơ hội việc làm cho nghề IT và có những con người yêu thích lập trình F8 sẽ ở đó.
                   </Typography>
                   <Button
                     sx={{
@@ -156,7 +154,7 @@ const HomeView = ({
                       border: "2px solid white",
                     }}
                   >
-                    ĐẶT ÁO NGAY
+                   Tham gia nhóm
                   </Button>
                 </Box>
               </Box>
@@ -195,12 +193,10 @@ const HomeView = ({
               >
                 <Box>
                   <Typography fontWeight={700} variant="h4">
-                    Mở bán áo logo Fdemyđợt 2
+                   Lớp học offine tại Hà Nội
                   </Typography>
                   <Typography my={"18px"}>
-                    Áo Polo Fdemyvới thiết kế tối giản, lịch sự, phù hợp mặc mọi
-                    lúc, mọi nơi. Chất áo mềm mại, thoáng mát, ngực và tay áo in
-                    logo Fdemy- Fullstack.
+                  Hình thức học Offline phù hợp nếu bạn muốn được hướng dẫn và hỗ trợ trực tiếp tại lớp. Giờ học linh hoạt, phù hợp cả sinh viên và người đi làm.
                   </Typography>
                   <Button
                     sx={{
@@ -209,7 +205,7 @@ const HomeView = ({
                       border: "2px solid white",
                     }}
                   >
-                    ĐẶT ÁO NGAY
+                   Tư vẫn miên phí
                   </Button>
                 </Box>
               </Box>
@@ -223,59 +219,7 @@ const HomeView = ({
               </Box>
             </Stack>
           </Box>
-          <Box
-            height={"270px"}
-            borderRadius={"20px"}
-            padding={"0 50px"}
-            sx={{
-              background:
-                "linear-gradient(to right, rgb(104, 40, 250), rgb(255, 186, 164))",
-            }}
-          >
-            <Stack
-              direction={"row"}
-              height={"100%"}
-              justifyContent={"space-between"}
-            >
-              <Box
-                width={"40%"}
-                height={"100%"}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                color={"white"}
-              >
-                <Box>
-                  <Typography fontWeight={700} variant="h4">
-                    Mở bán áo logo Fdemyđợt 2
-                  </Typography>
-                  <Typography my={"18px"}>
-                    Áo Polo Fdemyvới thiết kế tối giản, lịch sự, phù hợp mặc mọi
-                    lúc, mọi nơi. Chất áo mềm mại, thoáng mát, ngực và tay áo in
-                    logo Fdemy- Fullstack.
-                  </Typography>
-                  <Button
-                    sx={{
-                      color: "white",
-                      height: "36px",
-                      border: "2px solid white",
-                    }}
-                  >
-                    ĐẶT ÁO NGAY
-                  </Button>
-                </Box>
-              </Box>
-              <Box
-                width={"60%"}
-                display={"flex"}
-                justifyContent={"center"}
-                color={"white"}
-              >
-                <img src={slider3} />
-              </Box>
-            </Stack>
-          </Box>
+         
         </Slider>
       </Box>
       <ProductList

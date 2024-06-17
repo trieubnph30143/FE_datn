@@ -109,6 +109,7 @@ const VouchersView = ({
               <StyledTableCell>End Date</StyledTableCell>
               <StyledTableCell>Discount Type</StyledTableCell>
               <StyledTableCell>Discount value</StyledTableCell>
+              <StyledTableCell>Status</StyledTableCell>
               <StyledTableCell>Action</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -143,6 +144,9 @@ const VouchersView = ({
                   <TableCell>
                     <Skeleton height={"25px"} width="80px" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="80px" />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -150,7 +154,14 @@ const VouchersView = ({
             <TableBody>
               {paginatedRows &&
                 paginatedRows.length &&
-                paginatedRows.map((row: any) => (
+                paginatedRows.map((row: any) => {
+                  const now = new Date();
+                  now.setHours(23, 59, 59, 999);
+                  const startDate = new Date(row.start_date);
+                  const endDate = new Date(row.end_date);
+                  endDate.setHours(23, 59, 59, 999)
+                  let check =   startDate <= now && endDate >= now;
+                  return(
                   <TableRow
                     key={row.name}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -175,6 +186,9 @@ const VouchersView = ({
                     <TableCell  align="left">
                       {row.discount_value}
                     </TableCell>
+                    <TableCell  align="left">
+                      {check?"Còn hạn":"Hết hạn"}
+                    </TableCell>
 
                     <TableCell align="left">
                       <Button onClick={() => handleOpenModal("UPDATE", row)}>
@@ -189,7 +203,7 @@ const VouchersView = ({
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                )})}
             </TableBody>
           )}
         </Table>

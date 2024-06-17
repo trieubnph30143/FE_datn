@@ -39,6 +39,7 @@ export const addUserVouchers = async (value: any) => {
 };
 export const updateUserVouchers = async (value: any) => {
   try {
+    console.log(value);
     const response:any = await axios.put(`/user_vouchers/${value._id}`, {
       status: value.status,
       user_id: value.user_id,

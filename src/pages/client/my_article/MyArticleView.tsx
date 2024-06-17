@@ -14,6 +14,7 @@ import { useState } from "react";
 import { RiFlagFill, RiMoreFill, RiUploadCloudFill } from "react-icons/ri";
 import demo from "../../../images/demo_learning.png";
 import { Editor } from "@tinymce/tinymce-react";
+import { calculateTimeAgoString } from "@/utils/utils";
 
 type Props = {
   id: any;
@@ -413,7 +414,7 @@ const MyArticleView = ({
                                     fontSize={"13px"}
                                     color={"#333"}
                                   >
-                                    6 Ngày trước • 6 phút đọc{" "}
+                                     {calculateTimeAgoString(new Date( item.createdAt), new Date)} 
                                     <Stack
                                       ml={"20px"}
                                       direction={"row"}
@@ -532,7 +533,7 @@ const MyArticleView = ({
                                 fontSize={"13px"}
                                 color={"#333"}
                               >
-                                6 Ngày trước • 6 phút đọc{" "}
+                                {calculateTimeAgoString(new Date( item.createdAt), new Date)} 
                                 <Stack
                                   ml={"20px"}
                                   direction={"row"}

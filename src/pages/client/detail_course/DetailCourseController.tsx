@@ -32,12 +32,13 @@ import { toast } from "react-toastify";
 import { getUserWallet, updateWallet } from "@/service/wallet";
 import { addTransactions } from "@/service/transactions";
 import { getStar } from "@/service/star";
-import { getVouchersUser } from "@/service/user_vouchers";
+import { getVouchersUser, updateUserVouchers } from "@/service/user_vouchers";
 
 const DetailCourseController = () => {
   const { id }: any = useParams();
   const [toggle, setToggle] = useState(true);
   const [totalLesson, setTotalLesson] = useState(0);
+  const [price, setPrice] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
   const [expanded, setExpanded]: any = useState([]);
@@ -47,6 +48,7 @@ const DetailCourseController = () => {
   const queryParams = new URLSearchParams(location.search);
   const paramTransactionStatus = queryParams.get("vnp_TransactionStatus");
   const paramOrder_id = queryParams.get("order_id");
+  const vouchers_id = queryParams.get("vouchers_id");
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   let count = 0;
 
@@ -67,21 +69,21 @@ const DetailCourseController = () => {
     refetchOnWindowFocus: false,
   });
 
-  const { data: star }:any = useQuery("star", {
+  const { data: star }: any = useQuery("star", {
     queryFn: () => {
-      return getStar(id,"averageRating");
+      return getStar(id, "averageRating");
     },
     refetchOnWindowFocus: false,
   });
-  const { data: vouchers }:any = useQuery(["voucher_user",open], {
+  const { data: vouchers }: any = useQuery(["voucher_user", open], {
     queryFn: () => {
-      if(open){
+      if (open) {
         return getVouchersUser(context.state.user[0]._id);
       }
     },
     refetchOnWindowFocus: false,
   });
-  
+
   useEffect(() => {
     if (!(Object.keys(context.state.user).length == 0)) {
       let message = "";
@@ -119,6 +121,7 @@ const DetailCourseController = () => {
         }
         if (message == "Giao dịch thành công") {
           setPaymentSuccess(true);
+
           updateStatusOrder();
           if (count == 0) {
             toast.success(message);
@@ -153,7 +156,24 @@ const DetailCourseController = () => {
     try {
       let data = await updateOrder(paramOrder_id);
       if (data?.status == 0) {
-        console.log("oke");
+        if (vouchers_id && Object.keys(context.state.user)[0]) {
+          let vouchers = await getVouchersUser(context.state.user[0]._id);
+          let vouchersArr = JSON.parse(vouchers_id);
+          if (vouchersArr.length > 0) {
+            for (let index = 0; index < vouchersArr.length; index++) {
+              const voucher = vouchers.filter(
+                (v: any) => v._id === vouchersArr[index]
+              );
+              await updateUserVouchers({
+                status: true,
+                user_id: [voucher[0].user_id[0]],
+                vouchers_id: [voucher[0].vouchers_id[0]._id],
+                _id: voucher[0]._id,
+              });
+            }
+            navigate(`/courses/${id}`);
+          }
+        }
       }
     } catch (error) {}
   };
@@ -166,7 +186,7 @@ const DetailCourseController = () => {
     } catch (error) {}
   };
 
-  const { data: courses } = useQuery("detail", {
+  const { data: courses }:any = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
     },
@@ -175,7 +195,9 @@ const DetailCourseController = () => {
       let total = 0;
       data.lesson.map((item: any) => (total += item.sub_lesson.length));
       setTotalLesson(total);
+      setPrice(data.price);
     },
+    refetchOnWindowFocus: false,
   });
 
   const handleTongle = (index: number) => {
@@ -305,25 +327,43 @@ const DetailCourseController = () => {
         if (paymentMethod == "wallet") {
           let wallet = await getUserWallet(context.state.user[0]._id);
           if (wallet?.status == 0) {
-            if (Number(wallet.data[0].balance) - Number(courses.price) >= 0) {
+            if (Number(wallet.data[0].balance) - Number(price) >= 0) {
               let res = await updateWallet({
                 _id: wallet.data[0]._id,
                 user_id: [wallet.data[0].user_id[0]],
-                balance: Number(wallet.data[0].balance) - Number(courses.price),
+                balance: Number(wallet.data[0].balance) - Number(price),
               });
               await addTransactions({
                 user_id: [context.state.user[0]._id],
                 type: "purchase",
                 status: "completed",
-                amount: courses.price,
+                amount: price,
               });
               if (res?.status == 0) {
                 let data = await addOrder({
                   status: true,
                   courses_id: [courses._id],
                   user_id: [context.state.user[0]._id],
+                  price: price,
                 });
                 if (data?.status == 0) {
+                  if (selectedVouchers.length > 0) {
+                    for (
+                      let index = 0;
+                      index < selectedVouchers.length;
+                      index++
+                    ) {
+                      const voucher = vouchers.filter(
+                        (v: any) => v._id === selectedVouchers[index]
+                      );
+                      await updateUserVouchers({
+                        status: true,
+                        user_id: [voucher[0].user_id[0]],
+                        vouchers_id: [voucher[0].vouchers_id[0]._id],
+                        _id: voucher[0]._id,
+                      });
+                    }
+                  }
                   setOpen(false);
                   setPaymentSuccess(true);
                   toast.success("Bạn đã thanh toán thành công");
@@ -338,13 +378,15 @@ const DetailCourseController = () => {
             status: false,
             courses_id: [courses._id],
             user_id: [context.state.user[0]._id],
+            price: price,
           });
           if (data?.status == 0) {
             let url: any = await getVnpay({
               order_id: data.data._id,
-              amount: courses.price,
+              amount: price,
               courses_id: courses._id,
               type: "payment",
+              vouchers: JSON.stringify(selectedVouchers),
             });
             if (url) {
               window.location.href = url;
@@ -356,16 +398,58 @@ const DetailCourseController = () => {
       console.log(error);
     }
   };
-  const [selectedVouchers, setSelectedVouchers]:any = useState([]);
-  const handleCheckboxChange = (event:any) => {
+  const [selectedVouchers, setSelectedVouchers]: any = useState([]);
+  const handleCheckboxChange = (event: any) => {
     const voucherId = event.target.name;
     if (event.target.checked) {
       setSelectedVouchers([...selectedVouchers, voucherId]);
     } else {
-      setSelectedVouchers(selectedVouchers.filter((id:any) => id !== voucherId));
+      setSelectedVouchers(
+        selectedVouchers.filter((id: any) => id !== voucherId)
+      );
+    }
+  };
+  const calculateTotalPrice = (vouchersList: any) => {
+    if (courses !== undefined && Object.keys(courses).length > 0) {
+      let totalPrice = courses.price;
+
+      // Tạo một danh sách các vouchers đã chọn
+      const selectedVouchersDetails = vouchersList
+        .map((voucherId: any) => {
+          const voucher = vouchers.find((v: any) => v._id === voucherId);
+          if (voucher) {
+            return {
+              id: voucher._id,
+              type: voucher.vouchers_id[0].discount_type,
+              value: voucher.vouchers_id[0].discount_value,
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      // Áp dụng giảm giá percentage trước
+      selectedVouchersDetails.forEach((voucherDetail: any) => {
+        if (voucherDetail.type === "percentage") {
+          totalPrice -= (totalPrice * voucherDetail.value) / 100;
+        }
+      });
+
+      // Sau đó áp dụng giảm giá fixed
+      selectedVouchersDetails.forEach((voucherDetail: any) => {
+        if (voucherDetail.type === "fixed") {
+          totalPrice -= voucherDetail.value;
+        }
+      });
+
+      // Đảm bảo giá không âm và cập nhật lại state
+      setPrice(Math.max(totalPrice, 0));
     }
   };
 
+  useEffect(() => {
+    calculateTotalPrice(selectedVouchers);
+  }, [selectedVouchers]);
   return (
     <>
       <DetailCourseView
@@ -378,7 +462,13 @@ const DetailCourseController = () => {
         totalLesson={totalLesson}
         navigate={navigate}
         handleProgress={handleProgress}
-        star={star!==undefined?star.status==0&&star.averageRating!==null?star.averageRating:0:0}
+        star={
+          star !== undefined
+            ? star.status == 0 && star.averageRating !== null
+              ? star.averageRating
+              : 0
+            : 0
+        }
       />
       <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
         <Box padding={"50px"} width={"100%"}>
@@ -431,29 +521,44 @@ const DetailCourseController = () => {
                 <Box>Giá bán : </Box>
                 <Box>{courses && convertToVND(courses.price)}</Box>
               </Stack>
-              <FormGroup sx={{ borderBottom:"1px dashed #dddddd"}}>
-          {vouchers!==undefined&& <>
-            <Box mt={"10px"}>Thêm mã giảm giá</Box>
-           { vouchers.map((voucher:any) => (
-            <FormControlLabel
-              key={voucher._id}
-              control={<Checkbox checked={selectedVouchers.includes(voucher._id)} onChange={handleCheckboxChange} name={voucher._id} />}
-              label={`${voucher.vouchers_id[0].code} - ${voucher.vouchers_id[0].discount_type === "percentage" ? `${voucher.vouchers_id[0].discount_value}%` : `${voucher.vouchers_id[0].discount_value} VND`}`}
-            />
-          ))}
-          </>}
-        </FormGroup>
+              <FormGroup sx={{ borderBottom: "1px dashed #dddddd" }}>
+                {vouchers !== undefined && vouchers.length > 0 && (
+                  <>
+                    <Box mt={"10px"}>Thêm mã giảm giá</Box>
+                    {vouchers.map((voucher: any) => (
+                      <FormControlLabel
+                        key={voucher._id}
+                        control={
+                          <Checkbox
+                            checked={selectedVouchers.includes(voucher._id)}
+                            onChange={handleCheckboxChange}
+                            name={voucher._id}
+                          />
+                        }
+                        label={<>
+                          <Typography>
+                          <b>{voucher.vouchers_id[0].code}</b> - {
+                            voucher.vouchers_id[0].discount_type === "percentage"
+                              ? `${voucher.vouchers_id[0].discount_value}%`
+                              : `${voucher.vouchers_id[0].discount_value} VND`
+                          }-Ngày hết hạn <b>{voucher.vouchers_id[0].end_date}</b>
+                          </Typography>
+                          </>}
+                      />
+                    ))}
+                  </>
+                )}
+              </FormGroup>
               <Stack
-             
-              borderBottom={"1px dashed #dddddd"}
-              pb={"15px"}
+                borderBottom={"1px dashed #dddddd"}
+                pb={"15px"}
                 direction={"row"}
                 pt={"15px"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
                 <Box>Tổng tiền : </Box>
-                <Box>{courses && convertToVND(courses.price)}</Box>
+                <Box>{courses && convertToVND(price)}</Box>
               </Stack>
               <FormControl sx={{ mt: "20px", display: "block" }}>
                 <FormLabel id="demo-radio-buttons-group-label">
