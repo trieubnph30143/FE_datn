@@ -11,6 +11,8 @@ export const getUserWallet = async (id:any) => {
   }
 };
 
+
+
 export const updateWallet = async (value: any) => {
   try {
     const response = await axios.put(`/wallet/${value._id}`, {

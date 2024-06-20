@@ -53,3 +53,44 @@ export function getCurrentDate() {
 export function roundToOneDecimal(num:any) {
   return parseFloat(num.toFixed(1));
 }
+export const getStartOfMonth = () => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  // Lấy ngày, tháng, năm cụ thể
+  const day = startOfMonth.getDate();
+  const month = startOfMonth.getMonth() + 1; // Tháng bắt đầu từ 0, cần phải cộng thêm 1
+  const year = startOfMonth.getFullYear();
+
+  // Chuyển định dạng ngày, tháng, năm thành chuỗi
+  const formattedDate = `${day}/${month}/${year}`;
+
+  return formattedDate;
+};
+
+export function calculateTimeAgoString(pastDate: Date, currentDate: Date = new Date()): string {
+  const timeDifference = currentDate.getTime() - pastDate.getTime();
+
+  // Chuyển milliseconds thành các đơn vị thời gian
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (years > 0) {
+      return `${years} năm trước`;
+  } else if (months > 0) {
+      return `${months} tháng trước`;
+  } else if (days > 0) {
+      return `${days} ngày trước`;
+  } else if (hours > 0) {
+      return `${hours} giờ trước`;
+  } else if (minutes > 0) {
+      return `${minutes} phút trước`;
+  } else {
+      return `${seconds} giây trước`;
+  }
+}

@@ -19,7 +19,7 @@ import {
 } from "react-share";
 import article from "../../../images/article.png";
 import user from "../../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
-import b from "../../../images/b.png";
+import b from "../../../images/fotor-ai-2024061716321.jpg";
 import {
   RiBookmarkLine,
   RiFacebookCircleFill,
@@ -28,6 +28,7 @@ import {
   RiTwitterFill,
 } from "react-icons/ri";
 import { useState } from "react";
+import { calculateTimeAgoString } from "@/utils/utils";
 type Props = {
   post: any;
   id: any;
@@ -56,6 +57,14 @@ const FeaturedArticleView = ({
     "https://fullstack.edu.vn/blog/la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua.html"; // Thay thế bằng URL bạn muốn chia sẻ
   const title: any =
     "la-thanh-vien-cua-f8-ban-da-thuc-su-su-dung-f8-hieu-qua-chua";
+
+
+   
+  
+  // Ví dụ sử dụng
+
+
+  
   return (
     <Box>
       <Typography variant="h4" fontWeight={"bold"}>
@@ -124,7 +133,7 @@ const FeaturedArticleView = ({
                         fontSize={"13px"}
                         color={"#333"}
                       >
-                        6 Ngày trước • 6 phút đọc{" "}
+                        {calculateTimeAgoString(new Date(item.createdAt), new Date)} 
                         <Stack ml={"20px"} direction={"row"} gap={"10px"}>
                           {arr.map((item: string) => {
                             return (

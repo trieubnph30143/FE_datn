@@ -18,12 +18,12 @@ const ProductList = ({
     progress.map((item: any) => item.courses_id[0]);
 
   return (
-    <Box mt={"20px"} px={"40px"}>
+    <Box mt={"20px"} pr={"40px"}>
       <Typography fontSize={30} fontWeight={"bold"}>
         {title}
       </Typography>
       <Grid container mt={"3px"} spacing={3}>
-        {data ? (
+        {data.length>0 ? (
           <>
             {data &&
               data.length &&

@@ -7,6 +7,14 @@ export const getStar = async (courses_id:any,type:any) => {
     console.log(`get_Star`, error);
   }
 };
+export const getAllStar = async () => {
+  try {
+    const response = await axios.get(`/star`);
+    return response;
+  } catch (error) {
+    console.log(`get_Star`, error);
+  }
+};
 
 export const addStar = async (value: any) => {
   try {

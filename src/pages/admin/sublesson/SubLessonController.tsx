@@ -295,7 +295,7 @@ const SubLessonController = () => {
         content={content}
         setQuestionCorrect={setQuestionCorrect}
         questionCorrect={questionCorrect}
-        courses={courses}
+        courses={courses!==undefined&&courses.length>0?courses:[]}
         handleArrange={handleArrange}
         toggleDrawer={toggleDrawer}
         openDrawer={openDrawer}

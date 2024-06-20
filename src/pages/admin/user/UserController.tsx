@@ -1,13 +1,11 @@
 import { useQuery } from "react-query";
-
 import Loading from "@/components/Loading";
-import { useRoleMutation } from "@/hooks/useRoleMutation";
 import { getRole } from "@/service/role";
 import React, { useState } from "react";
 import UserView from "./UserView";
 import { getUser } from "@/service/auth";
 import { useAuthMutation } from "@/hooks/useAuthMutation";
-
+import { useCoursesContext } from "@/App";
 
 const UserController = () => {
   const [openModal, setOpenModal] = React.useState(false);
@@ -17,6 +15,7 @@ const UserController = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
+  const context: any = useCoursesContext();
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
   const [valueUser, setValueUser] = useState("");
@@ -24,7 +23,7 @@ const UserController = () => {
   const { data } = useQuery("user", {
     queryFn: () => getUser(),
   });
-  const { data:role } = useQuery("role", {
+  const { data: role } = useQuery("role", {
     queryFn: () => getRole(),
   });
   const handleClick = (
@@ -37,28 +36,24 @@ const UserController = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  
+  console.log(context);
+  const { register, handleSubmit, onFinish, errors, reset } = useAuthMutation({
+    action: action,
+    onSuccess: () => {
+      reset();
+      setTimeout(() => {
+        handleCloseModal();
+        setLoading(false);
+      }, 1000);
+    },
+  });
 
-
-  const { register, handleSubmit, onFinish, errors, reset } =
-    useAuthMutation({
-      action: action,
-      onSuccess: () => {
-        reset();
-        setTimeout(() => {
-          handleCloseModal();
-          setLoading(false);
-        }, 1000);
-      },
-    });
-    
   const handleOpenModal = (type: any, data: any) => {
     setAction(type);
     if (type == "CREATE") {
-      
       setOpenModal(true);
     } else {
-      setValueUser(data.role)
+      setValueUser(data.role);
       reset(data);
       setOpenModal(true);
     }
@@ -89,7 +84,7 @@ const UserController = () => {
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
         openModal={openModal}
-        data={data}
+        data={data !== undefined && data.length > 0 ? data.filter((item:any)=>item._id!==context.state.user[0]._id) : []}
         onSubmit={onSubmit}
         handleDelete={handleDelete}
         handleClick={handleClick}

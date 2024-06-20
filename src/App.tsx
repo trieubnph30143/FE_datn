@@ -1,4 +1,5 @@
 import Router from "./routes/Routes";
+import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./App.css";

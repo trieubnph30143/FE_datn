@@ -1,11 +1,12 @@
+import { useCoursesContext } from "@/App";
+import { useLocalStorage } from "@/hooks/useStorage";
 import { useTheme } from "@emotion/react";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
   Box,
-  Button,
-  Container,
   CssBaseline,
-  DialogActions,
-  DialogContent,
+  Dialog,
   Divider,
   Drawer,
   IconButton,
@@ -14,45 +15,36 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
-  Typography,
-  styled,
-  Dialog,
-  DialogTitle,
-  Avatar,
   Menu,
   MenuItem,
-  Badge,
+  Toolbar,
+  Typography,
+  styled
 } from "@mui/material";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import React, { useState } from "react";
 import {
   RiArticleLine,
   RiBankCardFill,
-  RiCloseCircleFill,
+  RiBardLine,
   RiContactsLine,
   RiFileListFill,
   RiGitBranchFill,
-  RiInboxFill,
-  RiMailAddFill,
-  RiMenuFill,
+  RiLineChartFill,
+  RiLogoutCircleRLine,
   RiMessage3Fill,
-  RiNotification2Fill,
   RiOrganizationChart,
   RiPencilFill,
-  RiSearch2Fill,
+  RiPriceTag3Line,
   RiShuffleFill,
   RiSlideshow4Fill,
   RiTeamFill,
-  RiUserAddFill,
-  
-  
+  RiUserAddFill
 } from "react-icons/ri";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import { AiOutlineSearch } from "react-icons/ai";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import "../../App.css";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import profile from "../../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-su-dung-anh-dai-dien-e4abd14d.jpg";
+import logo from "../../images/logo4.png";
 
 const drawerWidth = 240;
 
@@ -102,7 +94,8 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: "flex-end",
+  justifyContent: "end",
+  gap: "40px",
 }));
 
 const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -116,15 +109,16 @@ const CustomListItemButton = styled(ListItemButton)(({ theme }) => ({
 }));
 
 const LayoutAdmin = () => {
-  const theme:any = useTheme();
+  const theme: any = useTheme();
   const [open, setOpen] = React.useState(true);
   const [selectedItem, setSelectedItem] = useState("");
   const location = useLocation();
-  
+  const [user, setUser] = useLocalStorage("user", {});
+  const context: any = useCoursesContext();
+  const navigate = useNavigate()
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -158,408 +152,946 @@ const LayoutAdmin = () => {
   const handleClosed = () => {
     setAnchorEl(null);
   };
+  const handleLogout = () => {
+    setUser({});
+    context.dispatch({
+      type: "LOGOUT",
+    });
+    navigate("/");
+    handleClosed()
+  };
   return (
     <div>
-      <Box sx={{ display: "flex",".css-123k39-MuiPaper-root-MuiAppBar-root":{
-        zIndex:9
-      } }}>
+      <Box
+        sx={{
+          display: "flex",
+          ".css-123k39-MuiPaper-root-MuiAppBar-root": {
+            zIndex: 9,
+          },
+        }}
+      >
         <CssBaseline />
         <AppBar
-          position='fixed'
+          position="fixed"
           open={open}
-          sx={{ backgroundColor: "white", color: "black" }}>
+          sx={{ background: "#262b40", color: "black" }}
+        >
           <Toolbar
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-            }}>
+            }}
+          >
             <div style={{ display: "flex" }}>
               <IconButton
-                color='inherit'
-                aria-label='open drawer'
+                color="inherit"
+                aria-label="open drawer"
                 onClick={handleDrawerOpen}
-                edge='start'
-                sx={{ mr: 2, ...(open && { display: "none" }) }}>
-                {/* <RiMenuFill style={{ color: "#ccc"}}/> */}
-                <ChevronLeftIcon sx={{ color: "#7d7c7c", width: "32px" }} />
+                edge="start"
+                sx={{ mr: 2, ...(open && { display: "none" }) }}
+              >
+                <ChevronLeftIcon sx={{ color: "white", fontSize: "30px" }} />
               </IconButton>
-              <div>
-                <IconButton>
-                  <AiOutlineSearch
-                    style={{ fontSize: "30px", color: "gray" }}
-                    onClick={handleClickOpen}
-                  />
-                </IconButton>
-              </div>
             </div>
-            <React.Fragment>
-              <BootstrapDialog
-                onClose={handleClose}
-                aria-labelledby='customized-dialog-title'
-                open={opened}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <AiOutlineSearch
-                    style={{
-                      margin: "15px",
-                      fontSize: "30px",
-                      color: "gray",
-                    }}></AiOutlineSearch>
-                  <input
-                    type='text'
-                    style={{
-                      outline: "none",
-                      border: "none",
-                      fontWeight: "bold",
-                      fontSize: "20px",
-                      color: "#ccc",
-                    }}
-                    className='search'
-                    placeholder='Search...'
-                  />
-                  <IconButton
-                    aria-label='close'
-                    onClick={handleClose}
-                    sx={{
-                      position: "absolute",
-                      right: 8,
-                      top: 8,
-                      color: (theme) => theme.palette.grey[500],
-                    }}>
-                    <RiCloseCircleFill />
-                  </IconButton>
-                </div>
-                <DialogContent dividers>
-                  <Typography gutterBottom>
-                    Cras mattis consectetur purus sit amet fermentum. Cras justo
-                    odio, dapibus ac facilisis in, egestas eget quam. Morbi leo
-                    risus, porta ac consectetur ac, vestibulum at eros.
-                  </Typography>
-                  <Typography gutterBottom>
-                    Praesent commodo cursus magna, vel scelerisque nisl
-                    consectetur et. Vivamus sagittis lacus vel augue laoreet
-                    rutrum faucibus dolor auctor.
-                  </Typography>
-                  <Typography gutterBottom>
-                    Aenean lacinia bibendum nulla sed consectetur. Praesent
-                    commodo cursus magna, vel scelerisque nisl consectetur et.
-                    Donec sed odio dui. Donec ullamcorper nulla non metus auctor
-                    fringilla.
-                  </Typography>
-                </DialogContent>
-                {/* <DialogActions>
-                <Button autoFocus onClick={handleClose}>
-                  Save changes
-                </Button>
-              </DialogActions> */}
-              </BootstrapDialog>
-            </React.Fragment>
-            <Box>
-              <Badge badgeContent={4} color='warning' sx={{ mr: 2 }}>
-                <IconButton>
-                  <RiNotification2Fill
-                    style={{ color: "gray", width: "20px", height: "20px" }}
-                  />
-                </IconButton>
-              </Badge>
 
-              <IconButton>
-                <Avatar
-                  alt='Nguyễn Ngọc Diệp'
-                  src='/static/images/avatar/1.jpg'
-                  sx={{ width: "35px", height: "35px" }}
-                  // id="basic-button"
-                  // ariaControls={openned ? "basic-menu" : undefined}
-                  // ariaHasPopup="true"
-                  // ariaExpande={openned ? "true" : undefined}
-                  onClick={handleClick}
+            <Box>
+              <IconButton onClick={handleClick}>
+                <img
+                  src={user.data[0].image.url?user.data[0].image.url: profile}
+                  width={34}
+                  height={34}
+                  style={{ borderRadius: "50%" }}
+                  alt=""
                 />
               </IconButton>
             </Box>
 
             <Menu
-              id='basic-menu'
+              id="basic-menu"
               anchorEl={anchorEl}
               open={openned}
               onClose={handleClosed}
               MenuListProps={{
                 "aria-labelledby": "basic-button",
-              }}>
-              <MenuItem onClick={handleClosed}>Profile</MenuItem>
-              <MenuItem onClick={handleClosed}>My account</MenuItem>
-              <MenuItem onClick={handleClosed} sx={{ color: "green" }}>
-                Logout
+              }}
+            >
+              
+              <MenuItem onClick={handleLogout} sx={{ color: "green" ,display:"flex",alignItems:"center",gap:"15px" }}>
+              <RiLogoutCircleRLine size={20} />  Logout
               </MenuItem>
             </Menu>
           </Toolbar>
         </AppBar>
-        <Box sx={{
-          ".css-12i7wg6-MuiPaper-root-MuiDrawer-paper":{
-            zIndex:9
-          }
-        }}>
-
-        <Drawer
+        <Box
           sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              boxSizing: "border-box",
+            ".css-12i7wg6-MuiPaper-root-MuiDrawer-paper": {
+              zIndex: 9,
             },
           }}
-          variant='persistent'
-          anchor='left'
-          open={open}>
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? (
-                <ChevronLeftIcon />
-              ) : (
-                <ChevronRightIcon />
-              )}
-            </IconButton>
-          </DrawerHeader>
-          <Divider />
+        >
+          <Drawer
+            sx={{
+              width: drawerWidth,
 
-          <List>
-              <Typography ml={"5px"}>Courses</Typography>
-              <ListItem   sx={{"a":{
-                color:"black",
-                textDecoration:"none"
+              "& .MuiDrawer-paper": {
+                width: drawerWidth,
+                boxSizing: "border-box",
               },
-              background:location.pathname=="/dashboard/courses"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/courses"}> 
-                <CustomListItemButton
-                  >
-                   <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiSlideshow4Fill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Courses"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-              <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
+              ".css-12i7wg6-MuiPaper-root-MuiDrawer-paper": {
+                background: "#262b40",
               },
-              background:location.pathname=="/dashboard/lesson"? "#e9e9e9":undefined}} disablePadding>
-                <Link to={"/dashboard/lesson"}> 
-                <CustomListItemButton
+              padding: "10px",
+            }}
+            variant="persistent"
+            anchor="left"
+            open={open}
+          >
+            <DrawerHeader>
+              <img
+                src={logo}
+                width={80}
+                height={80}
+                style={{ objectFit: "contain" }}
+                alt=""
+              />
+              <IconButton onClick={handleDrawerClose}>
+                {theme.direction === "ltr" ? (
+                  <ChevronLeftIcon sx={{ color: "white", fontSize: "30px" }} />
+                ) : (
+                  <ChevronRightIcon sx={{ color: "white", fontSize: "30px" }} />
+                )}
+              </IconButton>
+            </DrawerHeader>
+            {user.data[0].role == "admin" && (
+              <Box
+                className="see-more-admin"
+                sx={{ overflowY: "scroll", color: "white" }}
+              >
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Dashboard
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard" ? "5px" : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiFileListFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Lesson"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-              <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/sublesson"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/sublesson"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiLineChartFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Dashboard"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Courses
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/courses"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/courses"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/courses"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiOrganizationChart />
-                  </ListItemIcon>
-                  <ListItemText primary={"Sub Lesson"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-           
-          </List>
-          <Divider />
-          <List>
-          <Typography ml={"5px"}>Category</Typography>
-          <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              }
-              , background:location.pathname=="/dashboard/categories"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/categories"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/courses"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiSlideshow4Fill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Courses"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/lesson"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/lesson"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/lesson"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiGitBranchFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Category"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-          </List>
-          <Divider />
-          <List>
-            
-          <Typography ml={"5px"}>Post</Typography>
-          <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/post"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/post"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/lesson"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiFileListFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Lesson"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/sublesson"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/sublesson"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/sublesson"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiArticleLine />
-                  </ListItemIcon>
-                  <ListItemText primary={"Blog"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-          </List>
-          <Divider />
-          <List>
-            
-          <Typography ml={"5px"}>Wallet</Typography>
-          <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/wallet"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/wallet"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/sublesson"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiOrganizationChart color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Sub Lesson"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Category
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/categories"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/categories"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/categories"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiBankCardFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Wallet"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-          </List>
-          <Divider />
-          <List>
-          <Typography ml={"5px"}>Comment</Typography>
-          <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              }
-              , background:location.pathname=="/dashboard/comment"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/comment"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/categories"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiGitBranchFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Category"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Vouchers
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/vouchers"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/vouchers"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/vouchers"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiMessage3Fill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Comment"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-          </List>
-          <Divider />
-          <List>
-          <Typography ml={"5px"}>Contact</Typography>
-          <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/contact"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/contact"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/vouchers"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiPriceTag3Line  color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Vouchers"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/user_vouchers"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/user_vouchers"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/user_vouchers"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiContactsLine /> 
-                  </ListItemIcon>
-                  <ListItemText primary={"Contact"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-          </List>
-          <Divider />
-          <List>
-          <Typography ml={"5px"}>User</Typography>
-          <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/user"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/user"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/user_vouchers"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiBardLine   color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"User Vouchers"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Post
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/post"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/post"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/post" ? "5px" : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiUserAddFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"User"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-              <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/permission"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/permission"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/post"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiArticleLine color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Blog"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Wallet
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/wallet"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/wallet"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/wallet"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiTeamFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Permission"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-              <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              },
-              background:location.pathname=="/dashboard/role"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/role"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/wallet"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiBankCardFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Wallet"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Comment
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/comment"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/comment"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/comment"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiPencilFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Role"} />
-                </CustomListItemButton>
-                
-                </Link>
-              </ListItem>
-              <ListItem  sx={{"a":{
-                color:"black",
-                textDecoration:"none"
-              }
-              , background:location.pathname=="/dashboard/role_permission"? "#e9e9e9":undefined
-              }} disablePadding>
-                <Link to={"/dashboard/role_permission"}> 
-                <CustomListItemButton
+                    <Link to={"/dashboard/comment"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiMessage3Fill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Comment"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Contact
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/contact"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/contact"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/contact"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
                   >
-                  <ListItemIcon sx={{display:"flex",justifyContent:"center"}}>
-                  <RiShuffleFill />
-                  </ListItemIcon>
-                  <ListItemText primary={"Role Permission"} />
-                </CustomListItemButton>
+                    <Link to={"/dashboard/contact"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiContactsLine color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Contact"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    User
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/user"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/user"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/user" ? "5px" : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/user"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiUserAddFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"User"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/permission"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/permission"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/permission"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/permission"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiTeamFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Permission"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/role"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/role"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/role" ? "5px" : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/role"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiPencilFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Role"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/role_permission"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/role_permission"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/role_permission"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/role_permission"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiShuffleFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Role Permission"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+              </Box>
+            )}
+            {user.data[0].role == "interaction_management" && (
+              <Box
+                className="see-more-admin"
+                sx={{ overflowY: "scroll", color: "white" }}
+              >
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Post
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/post"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/post"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/post" ? "5px" : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/post"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiArticleLine color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Blog"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+
+                <Divider />
                 
-                </Link>
-              </ListItem>
-          </List>
-        </Drawer>
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Comment
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/comment"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/comment"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/comment"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/comment"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiMessage3Fill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Comment"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Contact
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/contact"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/contact"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/contact"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/contact"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiContactsLine color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Contact"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+              </Box>
+            )}
+
+            {user.data[0].role == "course_management"&&
+           <Box
+           className="see-more-admin"
+           sx={{ overflowY: "scroll", color: "white" }}
+         >
+            <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Courses
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/courses"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/courses"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/courses"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/courses"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiSlideshow4Fill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Courses"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/lesson"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/lesson"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/lesson"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/lesson"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiFileListFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Lesson"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/sublesson"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/sublesson"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/sublesson"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/sublesson"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiOrganizationChart color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Sub Lesson"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+                <Divider />
+                <List sx={{ px: "10px" }}>
+                  <Typography ml={"5px"} fontWeight={"bold"}>
+                    Category
+                  </Typography>
+                  <ListItem
+                    sx={{
+                      a: {
+                        color: "white",
+                       width:"100%",
+                        textDecoration: "none",
+                      },
+                      background:
+                        location.pathname == "/dashboard/categories"
+                          ? "#2e3650"
+                          : undefined,
+                      border:
+                        location.pathname == "/dashboard/categories"
+                          ? "1px solid #4c5680"
+                          : "none",
+                      borderRadius:
+                        location.pathname == "/dashboard/categories"
+                          ? "5px"
+                          : "none",
+                    }}
+                    disablePadding
+                  >
+                    <Link to={"/dashboard/categories"}>
+                      <CustomListItemButton>
+                        <ListItemIcon
+                          sx={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <RiGitBranchFill color={"white"} />
+                        </ListItemIcon>
+                        <ListItemText primary={"Category"} />
+                      </CustomListItemButton>
+                    </Link>
+                  </ListItem>
+                </List>
+            </Box>
+            }
+          </Drawer>
         </Box>
-        <Main open={open}>
+        <Main sx={{ background: "#f5f8fb", minHeight: "100vh" }} open={open}>
           <DrawerHeader />
-          <Outlet />
+          <Box>
+            <Outlet />
+          </Box>
         </Main>
       </Box>
     </div>

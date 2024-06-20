@@ -109,7 +109,7 @@ const RolePermissionController = () => {
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
         openModal={openModal}
-        data={data}
+        data={data!==undefined&&data.length>0?data:[]}
         onSubmit={onSubmit}
         handleDelete={handleDelete}
         handleClick={handleClick}

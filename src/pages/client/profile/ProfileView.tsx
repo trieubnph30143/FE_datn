@@ -44,7 +44,7 @@ const ProfileView = ({user,courses}:Props) => {
             </Box>
           </Box>
         </Box>
-        <Stack direction={"row"} mt={"170px"} gap={"5%"}>
+        <Stack direction={"row"} mt={"120px"} gap={"5%"}>
           <Box width={"40%"}>
             <Box
               sx={{

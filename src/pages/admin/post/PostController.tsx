@@ -93,7 +93,7 @@ const PostController = () => {
         openModal={openModal}
         handleOpenModal={handleOpenModal}
         handleCloseModal={handleCloseModal}
-        data={data}
+        data={data!==undefined&&data.length>0?data:[]}
         onSubmit={onSubmit}
         handleDelete={handleDelete}
         handleClick={handleClick}

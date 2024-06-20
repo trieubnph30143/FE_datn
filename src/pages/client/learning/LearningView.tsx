@@ -1,11 +1,13 @@
 import {
   Box,
   Button,
+  Checkbox,
   CircularProgress,
   Drawer,
   Fade,
   FormControl,
   FormControlLabel,
+  FormGroup,
   FormLabel,
   Paper,
   Popover,
@@ -99,6 +101,8 @@ import { addNotify } from "@/service/notify";
 import { io } from "socket.io-client";
 import { addStar, deleteStar, getStar, updateStar } from "@/service/star";
 import { useQuery, useQueryClient } from "react-query";
+import { getVouchersUser, updateUserVouchers } from "@/service/user_vouchers";
+import { filter } from "lodash";
 
 type Props = {
   courses: typeCourses;
@@ -130,7 +134,7 @@ type Props = {
   toggleDrawerDirection: any;
   openDirection: any;
   setOpenDirection: any;
-  handleOpenCertificate:any
+  handleOpenCertificate: any;
 };
 const LearningView = ({
   courses,
@@ -161,7 +165,7 @@ const LearningView = ({
   toggleDrawerDirection,
   openDirection,
   setOpenDirection,
-  handleOpenCertificate
+  handleOpenCertificate,
 }: Props) => {
   return (
     <Box>
@@ -249,8 +253,7 @@ export default LearningView;
 const Header = (props: any) => {
   let total = Math.round(100 / props.totalProgressBar);
   let success = Math.round(props.progressBar[0] / props.totalProgressBar);
-  
-  
+
   const steps = [
     {
       label: "Khu vực học tập",
@@ -307,6 +310,8 @@ const Header = (props: any) => {
   const paramTransactionStatus = queryParams.get("vnp_TransactionStatus");
   const paramOrder_id = queryParams.get("order_id");
   const user_id_gift = queryParams.get("user_id");
+  const vouchers_id = queryParams.get("vouchers_id");
+  const [price, setPrice] = useState(0);
   const queryClient = useQueryClient();
   let count = 0;
   useEffect(() => {
@@ -365,6 +370,23 @@ const Header = (props: any) => {
     try {
       let data = await updateOrder(paramOrder_id);
       if (data?.status == 0) {
+        if (vouchers_id && Object.keys(context.state.user)[0]) {
+          let vouchers = await getVouchersUser(context.state.user[0]._id);
+          let vouchersArr = JSON.parse(vouchers_id);
+          if (vouchersArr.length > 0) {
+            for (let index = 0; index < vouchersArr.length; index++) {
+              const voucher = vouchers.filter(
+                (v: any) => v._id === vouchersArr[index]
+              );
+              await updateUserVouchers({
+                status: true,
+                user_id: [voucher[0].user_id[0]],
+                vouchers_id: [voucher[0].vouchers_id[0]._id],
+                _id: voucher[0]._id,
+              });
+            }
+          }
+        }
         let arr = props.courses.lesson.map((item: any, index: number) => {
           return {
             lesson_id: item._id,
@@ -416,6 +438,63 @@ const Header = (props: any) => {
       }
     } catch (error) {}
   };
+  const { data: vouchers }: any = useQuery(["voucher_user", openGift], {
+    queryFn: () => {
+      if (openGift) {
+        return getVouchersUser(context.state.user[0]._id);
+      }
+    },
+    refetchOnWindowFocus: false,
+  });
+  console.log(vouchers);
+  const [selectedVouchers, setSelectedVouchers]: any = useState([]);
+  const handleCheckboxChange = (event: any) => {
+    const voucherId = event.target.name;
+    if (event.target.checked) {
+      setSelectedVouchers([...selectedVouchers, voucherId]);
+    } else {
+      setSelectedVouchers(
+        selectedVouchers.filter((id: any) => id !== voucherId)
+      );
+    }
+  };
+  const calculateTotalPrice = (vouchersList: any) => {
+    if (props.courses !== undefined && Object.keys(props.courses).length > 0) {
+      let totalPrice = props.courses.price;
+      const selectedVouchersDetails = vouchersList
+        .map((voucherId: any) => {
+          const voucher = vouchers.find((v: any) => v._id === voucherId);
+          if (voucher) {
+            return {
+              id: voucher._id,
+              type: voucher.vouchers_id[0].discount_type,
+              value: voucher.vouchers_id[0].discount_value,
+            };
+          }
+          return null;
+        })
+        .filter(Boolean);
+      selectedVouchersDetails.forEach((voucherDetail: any) => {
+        if (voucherDetail.type === "percentage") {
+          totalPrice -= (totalPrice * voucherDetail.value) / 100;
+        }
+      });
+
+      // Sau đó áp dụng giảm giá fixed
+      selectedVouchersDetails.forEach((voucherDetail: any) => {
+        if (voucherDetail.type === "fixed") {
+          totalPrice -= voucherDetail.value;
+        }
+      });
+
+      // Đảm bảo giá không âm và cập nhật lại state
+      setPrice(Math.max(totalPrice, 0));
+    }
+  };
+
+  useEffect(() => {
+    calculateTotalPrice(selectedVouchers);
+  }, [selectedVouchers]);
   const handlePayment = async () => {
     try {
       if (emailGift == context.state.user[0].email) {
@@ -430,8 +509,7 @@ const Header = (props: any) => {
             if (paymentMethod == "wallet") {
               let wallet = await getUserWallet(context.state.user[0]._id);
               if (wallet?.status == 0) {
-                console.log(Number(wallet.data[0].balance));
-                console.log(Number(props.courses.price));
+              
                 if (
                   Number(wallet.data[0].balance) -
                     Number(props.courses.price) >=
@@ -442,21 +520,39 @@ const Header = (props: any) => {
                     user_id: [wallet.data[0].user_id[0]],
                     balance:
                       Number(wallet.data[0].balance) -
-                      Number(props.courses.price),
+                      Number(price),
                   });
                   await addTransactions({
                     user_id: [context.state.user[0]._id],
                     type: "purchase",
                     status: "completed",
-                    amount: props.courses.price,
+                    amount: price,
                   });
                   if (res?.status == 0) {
                     let order = await addOrder({
                       status: true,
                       courses_id: [props.courses._id],
                       user_id: [context.state.user[0]._id],
+                      price: price,
                     });
                     if (order?.status == 0) {
+                      if (selectedVouchers.length > 0) {
+                        for (
+                          let index = 0;
+                          index < selectedVouchers.length;
+                          index++
+                        ) {
+                          const voucher = vouchers.filter(
+                            (v: any) => v._id === selectedVouchers[index]
+                          );
+                          await updateUserVouchers({
+                            status: true,
+                            user_id: [voucher[0].user_id[0]],
+                            vouchers_id: [voucher[0].vouchers_id[0]._id],
+                            _id: voucher[0]._id,
+                          });
+                        }
+                      }
                       let arr = props.courses.lesson.map(
                         (item: any, index: number) => {
                           return {
@@ -515,14 +611,16 @@ const Header = (props: any) => {
                 status: false,
                 courses_id: [props.courses._id],
                 user_id: [context.state.user[0]._id],
+                price: price,
               });
               if (order?.status == 0) {
                 let url: any = await getVnpay({
                   order_id: order.data._id,
-                  amount: props.courses.price,
+                  amount: price,
                   courses_id: props.courses._id,
                   user_id: data.data[0]._id,
                   type: "gift",
+                  vouchers: JSON.stringify(selectedVouchers),
                 });
                 if (url) {
                   window.location.href = url;
@@ -661,7 +759,7 @@ const Header = (props: any) => {
         </Typography>
       </Stack>
       <Stack direction={"row"} sx={{ cursor: "pointer" }} gap={"20px"}>
-        {props.progress[0].user_name||props.progress[0].completed==true ? (
+        {props.progress[0].user_name || props.progress[0].completed == true ? (
           <Stack
             onClick={props.handleOpenCertificate}
             direction={"row"}
@@ -670,7 +768,13 @@ const Header = (props: any) => {
             gap={0.5}
           >
             <RiVipCrown2Fill />
-            <Typography fontSize={"13px"}>{props.progress[0].completed==true&&!props.progress[0].user_name?"Nhận":"Xem"} chứng chỉ</Typography>
+            <Typography fontSize={"13px"}>
+              {props.progress[0].completed == true &&
+              !props.progress[0].user_name
+                ? "Nhận"
+                : "Xem"}{" "}
+              chứng chỉ
+            </Typography>
           </Stack>
         ) : (
           ""
@@ -956,18 +1060,51 @@ const Header = (props: any) => {
                 direction={"row"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
+                borderBottom={"1px dashed #dddddd"}
+                paddingBottom={"20px"}
               >
                 <Box>Giá bán : </Box>
                 <Box>{convertToVND(props.courses.price)}</Box>
               </Stack>
+              <FormGroup sx={{ borderBottom: "1px dashed #dddddd" }}>
+                {vouchers !== undefined && vouchers.length > 0 && (
+                  <>
+                    <Box mt={"20px"}>Thêm mã giảm giá</Box>
+                    {vouchers.map((voucher: any) => (
+                      <FormControlLabel
+                      sx={{mt:"10px"}}
+                        key={voucher._id}
+                        control={
+                          <Checkbox
+                            checked={selectedVouchers.includes(voucher._id)}
+                            onChange={handleCheckboxChange}
+                            name={voucher._id}
+                          />
+                        }
+                        label={<>
+                        <Typography>
+                        <b>{voucher.vouchers_id[0].code}</b> - {
+                          voucher.vouchers_id[0].discount_type === "percentage"
+                            ? `${voucher.vouchers_id[0].discount_value}%`
+                            : `${voucher.vouchers_id[0].discount_value} VND`
+                        }-Ngày hết hạn <b>{voucher.vouchers_id[0].end_date}</b>
+                        </Typography>
+                        </>}
+                      />
+                    ))}
+                  </>
+                )}
+              </FormGroup>
               <Stack
+                borderBottom={"1px dashed #dddddd"}
+                paddingBottom={"20px"}
                 direction={"row"}
                 mt={"15px"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
               >
                 <Box>Tổng tiền : </Box>
-                <Box>{convertToVND(props.courses.price)}</Box>
+                <Box>{convertToVND(price)}</Box>
               </Stack>
               <FormControl sx={{ mt: "20px", display: "block" }}>
                 <FormLabel id="demo-radio-buttons-group-label">
@@ -1257,37 +1394,6 @@ const Header = (props: any) => {
                 <Box>
                   <Typography display={"flex"} gap={"20px"} fontWeight={"bold"}>
                     {userStar[0].user_id[0].user_name}{" "}
-                    <Box display={"flex"} gap={"10px"}>
-                      <Button
-                        onClick={handleDeleteStar}
-                        sx={{
-                          background: "red",
-                          color: "white",
-                          borderRadius: "4px",
-                          fontSize: "13px",
-                          height: "20px",
-                        }}
-                      >
-                        Xóa
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setMessageStar(userStar[0].message);
-                          setValue(userStar[0].star);
-                          setUpdateUserStar(userStar[0]);
-                        }}
-                        sx={{
-                          background:
-                            "linear-gradient(to right bottom, #ff8f26, #ff5117)",
-                          color: "white",
-                          borderRadius: "4px",
-                          fontSize: "13px",
-                          height: "20px",
-                        }}
-                      >
-                        Sửa
-                      </Button>
-                    </Box>
                   </Typography>
                   <Rating
                     name="read-only"
@@ -1296,6 +1402,37 @@ const Header = (props: any) => {
                     readOnly
                   />
                   <Typography>{userStar[0].message}</Typography>
+                  <Box display={"flex"} gap={"10px"}>
+                    <Button
+                      onClick={handleDeleteStar}
+                      sx={{
+                        background: "red",
+                        color: "white",
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        height: "20px",
+                      }}
+                    >
+                      Xóa
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setMessageStar(userStar[0].message);
+                        setValue(userStar[0].star);
+                        setUpdateUserStar(userStar[0]);
+                      }}
+                      sx={{
+                        background:
+                          "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                        color: "white",
+                        borderRadius: "4px",
+                        fontSize: "13px",
+                        height: "20px",
+                      }}
+                    >
+                      Sửa
+                    </Button>
+                  </Box>
                 </Box>
               </Stack>
             )}
@@ -1907,7 +2044,7 @@ const ContentLeftExercise = (props: any) => {
   const [exerciseHtml, setexerciseHtml] = React.useState(
     JSON.parse(props.data.type_exercise).html
   );
-  const [message, setMessage]: any = useState("");
+  const [message, setMessage]: any = useState([]);
   const [success, setSuccess]: any = useState(false);
   const [exerciseCss, setexerciseCss] = React.useState(
     JSON.parse(props.data.type_exercise).css
@@ -1920,7 +2057,11 @@ const ContentLeftExercise = (props: any) => {
   useEffect(() => {
     if (props.data.solution_key == "...") {
       setSuccess(true);
-      setMessage("Nhấn nút kiểm tra để hoàn thành bài học");
+      setMessage([
+        { status: true, message: "Nhấn nút kiểm tra để hoàn thành bài học" },
+      ]);
+    } else {
+      setMessage([]);
     }
     if (props.typeCode == "html") {
       setexerciseHtml(JSON.parse(props.data.type_exercise).html);
@@ -1962,17 +2103,28 @@ const ContentLeftExercise = (props: any) => {
               : `${exerciseHtml}<style>${exerciseCss}</style>`,
         });
         if (data?.status == 0) {
-          setSuccess(true);
-          setMessage(data.message);
-          props.setDone(true);
-          Confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 1 },
+          let check = false;
+          data.results.map((e: any) => {
+            if (e.status == false) {
+              check = true;
+            }
           });
-        } else {
-          setMessage(data.message);
-          setSuccess(false);
+          if (check) {
+            setSuccess(false);
+            setMessage(data.results);
+          } else {
+            setSuccess(true);
+            setMessage(data.results);
+            props.setDone(true);
+            if (data.code) {
+              eval(data.code);
+            }
+            Confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 1 },
+            });
+          }
         }
       } else {
         props.setDone(true);
@@ -2316,22 +2468,30 @@ const ContentLeftExercise = (props: any) => {
             </Button>
           </Stack>
           <Stack padding={"20px"}>
-            <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
-              {message !== "" ? (
+            <Stack direction={"column"} gap={"10px"}>
+              {message.length > 0 && (
                 <>
-                  <Box>
-                    {success ? (
-                      <RiCheckLine color="#5db85c" size={"25px"} />
-                    ) : (
-                      <RiCloseLine size={"25px"} color="red" />
-                    )}
-                  </Box>
-                  <Typography fontWeight={"400"} fontSize={"16px"}>
-                    {message}
-                  </Typography>
+                  {message.map((item: any) => {
+                    return (
+                      <>
+                        <Box
+                          display={"flex"}
+                          alignItems={"center"}
+                          gap={"10px"}
+                        >
+                          {item.status ? (
+                            <RiCheckLine color="#5db85c" size={"25px"} />
+                          ) : (
+                            <RiCloseLine size={"25px"} color="red" />
+                          )}
+                          <Typography fontWeight={"400"} fontSize={"16px"}>
+                            {item.message}
+                          </Typography>
+                        </Box>
+                      </>
+                    );
+                  })}
                 </>
-              ) : (
-                ""
               )}
             </Stack>
           </Stack>

@@ -4,20 +4,33 @@ import {
   Button,
   Modal,
   Popover,
+  Skeleton,
   Stack,
+  TablePagination,
   TextField,
   Typography,
+  styled,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import * as React from "react";
+
 import { RiCloseFill } from "react-icons/ri";
 import { Editor } from "@tinymce/tinymce-react";
+import { useEffect, useState } from "react";
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#ff5117",
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 type typeProps = {
   data: any;
   handleOpenModal: any;
@@ -47,6 +60,23 @@ const PostView = ({
   detailPost,
   handelChangeActive
 }: typeProps) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [paginatedRows, setPaginatedRows]: any = useState([]);
+  const handleChangePage = (event: any, newPage: any) => {
+    setPage(newPage);
+  };
+  useEffect(() => {
+    if (data) {
+      setPaginatedRows(
+        data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      );
+    }
+  }, [page, rowsPerPage, data]);
+  const handleChangeRowsPerPage = (event: any) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
@@ -56,15 +86,49 @@ const PostView = ({
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Image</TableCell>
-              <TableCell>Readers</TableCell>
-              <TableCell align="left">Description</TableCell>
-              <TableCell>Active</TableCell>
+              <StyledTableCell>Title</StyledTableCell>
+              <StyledTableCell>Image</StyledTableCell>
+              <StyledTableCell>Readers</StyledTableCell>
+              <StyledTableCell align="left">Description</StyledTableCell>
+              <StyledTableCell>Active</StyledTableCell>
 
-              <TableCell align="left">Action</TableCell>
+              <StyledTableCell align="left">Action</StyledTableCell>
             </TableRow>
           </TableHead>
+          {data.length == 0 ? (
+            <TableBody>
+              {Array.from({ length: 5 }, (value, index) => (
+                <TableRow
+                  sx={{
+                    "&:last-child td, &:last-child th": {
+                      border: 0,
+                    },
+                  }}
+                >
+                  <TableCell>
+                    <Skeleton height={"35px"} width="150px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton height={"25px"} width="200px" />
+                  </TableCell>
+                  
+                </TableRow>
+              ))}
+            </TableBody>
+          ) :
           <TableBody>
             {data &&
               data.length &&
@@ -106,9 +170,18 @@ const PostView = ({
                   </TableCell>
                 </TableRow>
               ))}
-          </TableBody>
+          </TableBody>}
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <Popover
         id={id}
         open={open}

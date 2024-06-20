@@ -21,9 +21,14 @@ import github from "../images/github-18px.svg";
 import fb from "../images/facebook-18px.svg";
 
 import {
+  RiAccountCircleLine,
+  RiAdminLine,
   RiArrowLeftSLine,
+  RiArticleLine,
   RiCloseLine,
+  RiLogoutCircleRLine,
   RiSearchLine,
+  RiSettings2Line,
   RiWalletLine,
 } from "react-icons/ri";
 import { useEffect, useRef, useState } from "react";
@@ -32,10 +37,10 @@ import profile from "../images/facebook-cap-nhat-avatar-doi-voi-tai-khoan-khong-
 import product from "../images/product.png";
 import { useAuthMutation } from "@/hooks/useAuthMutation";
 import { useCoursesContext } from "@/App";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "react-query";
 import { getUserProgress } from "@/service/progress";
-import { getMyCourses, searchCourses } from "@/service/courses";
+import { getCourses, getMyCourses, searchCourses } from "@/service/courses";
 import { useLocalStorage } from "@/hooks/useStorage";
 import { signInWithPopup } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -119,7 +124,7 @@ const Header = () => {
     debouncedSearch();
   }, [changeSearch, isTyping]);
   const handleChangrSearch = (e: any) => {
-    setIsFocused(true)
+    setIsFocused(true);
     setLoadingSearch(false);
     setChangeSearch(e);
     setIsTyping(true);
@@ -223,13 +228,20 @@ const Header = () => {
     setLoadingCourses(true);
     setAnchorEl(event.currentTarget);
     try {
-      let data: any = await getMyCourses(context.state.user[0]._id);
+      let data: any = await getCourses();
       let progress: any = await getUserProgress(context.state.user[0]._id);
-
-      if (data.status == 0 && progress.status == 0) {
+      if (data[0] && progress.status == 0) {
         let arr = calculateProgress(progress.data);
+        let checkRegisterCourses = progress.data.map(
+          (item: any) => item.courses_id[0]
+        );
+       
+        data = data.filter((item: any) =>
+          checkRegisterCourses.includes(item._id)
+        );
+        console.log(data);
         setProgressBar(arr);
-        setCourses(data.data);
+        setCourses(data);
         setLoadingCourses(false);
       }
     } catch (error) {
@@ -288,14 +300,18 @@ const Header = () => {
   const handleNotify = async (data: any) => {
     try {
       if (data.read) {
-        navigate(data.url);
+        if (!(data.url == " ")) {
+          navigate(data.url);
+        }
         handleCloseNotify();
       } else {
         await updateUserReadNotify(data._id);
         queryClient.invalidateQueries({
           queryKey: ["notify"],
         });
-        navigate(data.url);
+        if (!(data.url == " ")) {
+          navigate(data.url);
+        }
         handleCloseNotify();
       }
     } catch (error) {
@@ -347,17 +363,20 @@ const Header = () => {
     }
   };
 
-  const searchBoxRef:any = useRef(null);
+  const searchBoxRef: any = useRef(null);
   useEffect(() => {
-    const handleClickOutside = (event:any ) => {
-      if (searchBoxRef.current && !searchBoxRef.current.contains(event.target)) {
+    const handleClickOutside = (event: any) => {
+      if (
+        searchBoxRef.current &&
+        !searchBoxRef.current.contains(event.target)
+      ) {
         setIsFocused(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
   const handleFocus = () => {
@@ -381,14 +400,20 @@ const Header = () => {
       >
         <Stack direction={"row"} gap={5} alignItems={"center"}>
           <Box width={"50px"} height={"40px"}>
-         <img
-            src={logo}
-            width={85}
-            height={85}
-            style={{ borderRadius: "8px", objectFit: "contain",marginTop:"-20px",marginLeft:"-10px" }}
-            alt="logo"
-          />
-
+            <Link to={""}>
+              <img
+                src={logo}
+                width={85}
+                height={85}
+                style={{
+                  borderRadius: "8px",
+                  objectFit: "contain",
+                  marginTop: "-20px",
+                  marginLeft: "-10px",
+                }}
+                alt="logo"
+              />
+            </Link>
           </Box>
           <Typography fontWeight={700}>Học Lập Trình Để Đi Làm</Typography>
         </Stack>
@@ -419,9 +444,9 @@ const Header = () => {
               ),
             }}
           />
-          {isFocused &&changeSearch.length>0&& (
+          {isFocused && changeSearch.length > 0 && (
             <div
-            ref={searchBoxRef}
+              ref={searchBoxRef}
               style={{
                 position: "absolute",
                 width: "100%",
@@ -806,7 +831,7 @@ const Header = () => {
                       horizontal: "right",
                     }}
                   >
-                    <Box p={"20px"} width={"200px"}>
+                    <Box p={"20px"} sx={{ cursor: "pointer" }} width={"200px"}>
                       <Stack
                         direction={"row"}
                         alignItems={"center"}
@@ -833,7 +858,7 @@ const Header = () => {
                       </Stack>
                       <Stack direction={"column"} mt={"20px"} gap={"18px"}>
                         <Box
-                          borderBottom={"1px solid #dddddd"}
+                          borderBottom={"1px dashed #dddddd"}
                           paddingBottom={"8px"}
                         >
                           <Typography
@@ -843,12 +868,35 @@ const Header = () => {
                               handleCloseProfile();
                               navigate("/profile");
                             }}
+                            sx={{ display: "flex" }}
+                            alignItems={"center"}
+                            gap={"8px"}
                           >
-                            Trang cá nhân
+                            <RiAccountCircleLine size={18} /> Trang cá nhân
                           </Typography>
                         </Box>
+                        {context.state.user[0].role !== "member" && (
+                          <Box
+                            borderBottom={"1px dashed #dddddd"}
+                            paddingBottom={"8px"}
+                          >
+                            <Typography
+                              fontSize={"14px"}
+                              color={"#333"}
+                              onClick={() => {
+                                handleCloseProfile();
+                                navigate("/dashboard");
+                              }}
+                              sx={{ display: "flex" }}
+                              alignItems={"center"}
+                              gap={"8px"}
+                            >
+                              <RiAdminLine size={18} /> Quản trị
+                            </Typography>
+                          </Box>
+                        )}
                         <Box
-                          borderBottom={"1px solid #dddddd"}
+                          borderBottom={"1px dashed #dddddd"}
                           paddingBottom={"8px"}
                         >
                           <Typography
@@ -858,20 +906,29 @@ const Header = () => {
                               handleCloseProfile();
                               navigate("/my_article");
                             }}
+                            sx={{ display: "flex" }}
+                            alignItems={"center"}
+                            gap={"8px"}
                           >
-                            Bài viết của tôi
+                            <RiArticleLine size={18} /> Bài viết của tôi
                           </Typography>
                         </Box>
                         <Box
-                          borderBottom={"1px solid #dddddd"}
+                          borderBottom={"1px dashed #dddddd"}
                           onClick={() => {
                             handleCloseProfile();
                             navigate("/setting");
                           }}
                           paddingBottom={"8px"}
                         >
-                          <Typography fontSize={"14px"} color={"#333"}>
-                            Cài đặt{" "}
+                          <Typography
+                            fontSize={"14px"}
+                            color={"#333"}
+                            sx={{ display: "flex" }}
+                            alignItems={"center"}
+                            gap={"8px"}
+                          >
+                            <RiSettings2Line size={20} /> Cài đặt
                           </Typography>
                         </Box>
 
@@ -879,8 +936,11 @@ const Header = () => {
                           onClick={handleLogout}
                           fontSize={"14px"}
                           color={"#333"}
+                          sx={{ display: "flex" }}
+                          alignItems={"center"}
+                          gap={"8px"}
                         >
-                          Đăng xuất{" "}
+                          <RiLogoutCircleRLine size={20} /> Đăng xuất
                         </Typography>
                       </Stack>
                     </Box>
@@ -975,9 +1035,9 @@ const Header = () => {
 
               <Box>
                 <img
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "10px" }}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: "10px", objectFit: "contain" }}
                   src={logo}
                   alt=""
                 />
@@ -988,7 +1048,7 @@ const Header = () => {
                 variant="h5"
                 fontSize={"27px"}
               >
-                Đăng nhập tài khoản f8
+                Đăng nhập tài khoản FDemy
               </Typography>
               <Typography my={"10px"} fontSize={"13px"} color={"#f33a58"}>
                 Mỗi người nên sử dụng riêng một tài khoản, tài khoản nhiều người
@@ -1178,9 +1238,9 @@ const Header = () => {
               )}
               <Box>
                 <img
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "10px" }}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: "10px", objectFit: "contain" }}
                   src={logo}
                   alt=""
                 />
@@ -1191,7 +1251,7 @@ const Header = () => {
                 variant="h5"
                 fontSize={"27px"}
               >
-                Đăng ký tài khoản f8
+                Đăng ký tài khoản FDemy
               </Typography>
               <Typography my={"10px"} fontSize={"13px"} color={"#f33a58"}>
                 Mỗi người nên sử dụng riêng một tài khoản, tài khoản nhiều người
@@ -1356,9 +1416,9 @@ const Header = () => {
 
               <Box>
                 <img
-                  width={40}
-                  height={40}
-                  style={{ borderRadius: "10px" }}
+                  width={100}
+                  height={100}
+                  style={{ borderRadius: "10px", objectFit: "contain" }}
                   src={logo}
                   alt=""
                 />
