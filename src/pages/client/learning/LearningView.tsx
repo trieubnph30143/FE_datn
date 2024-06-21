@@ -215,7 +215,7 @@ const LearningView = ({
               />
             )}
             {dataLesson && dataLesson.type == "blog" && (
-              <ContentLeftBlog data={dataLesson} />
+              <ContentLeftBlog  setDone={setDone}  data={dataLesson} />
             )}
             {dataLesson && dataLesson.type == "quiz" && (
               <ContentLeftQuiz setDone={setDone} data={dataLesson} />
@@ -2501,9 +2501,28 @@ const ContentLeftExercise = (props: any) => {
   );
 };
 const ContentLeftBlog = (props: any) => {
+  const blogRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight }:any = blogRef.current;
+      if (scrollTop + clientHeight >= scrollHeight) {
+       props.setDone(true)
+      }
+    };
+
+    const blogElement:any = blogRef.current;
+    blogElement.addEventListener('scroll', handleScroll);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      blogElement.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   return (
     <Box width={"75%"}>
       <Box
+      ref={blogRef} 
         width={"100%"}
         paddingLeft={"95px"}
         className="resultCourses"

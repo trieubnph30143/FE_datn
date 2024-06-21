@@ -136,9 +136,9 @@ const LearningController = () => {
               setExpanded(arr);
               setActiveLesson(itemChild._id);
               setDataLesson(itemChild);
-              if (itemChild.type == "blog") {
-                setDone(true);
-              }
+              // if (itemChild.type == "blog") {
+              //   setDone(true);
+              // }
               if (itemChild.type == "code") {
                 if (
                   Object.keys(JSON.parse(itemChild.type_exercise)).length == 2
@@ -162,9 +162,9 @@ const LearningController = () => {
                 progress[0].lesson_progress[0].sub_lesson[0].sub_lesson_id
               );
               setDataLesson(data.lesson[0].sub_lesson[0]);
-              if (data.lesson[0].sub_lesson[0].type == "blog") {
-                setDone(true);
-              }
+              // if (data.lesson[0].sub_lesson[0].type == "blog") {
+              //   setDone(true);
+              // }
               if (data.lesson[0].sub_lesson[0].type == "code") {
                 if (
                   Object.keys(
