@@ -9,11 +9,11 @@ type Props = {
   data: any;
   handleDeleteNote: any;
   edit: any;
-  handleEditNote:any;
-  setEdit:any;
-  handleEditorChange:any;
-        content:any;
-        handleChangeEdit:any
+  handleEditNote: any;
+  setEdit: any;
+  handleEditorChange: any;
+  content: any;
+  handleChangeEdit: any;
 };
 
 const NoteView = ({
@@ -26,28 +26,26 @@ const NoteView = ({
   setEdit,
   handleEditorChange,
   content,
-  handleChangeEdit
+  handleChangeEdit,
 }: Props) => {
   return (
     <Box>
-      <Drawer open={openNote} anchor="right" onClose={toggleDrawerNote(false)}>
+      <Drawer open={openNote} anchor='right' onClose={toggleDrawerNote(false)}>
         <Box
           width={"800px"}
           height={"100vh"}
           padding={"50px"}
-          className="comment-tab"
-          sx={{ position: "relative", overflowY: "scroll" }}
-        >
+          className='comment-tab'
+          sx={{ position: "relative", overflowY: "scroll" }}>
           <Box
             position={"absolute"}
             onClick={toggleDrawerNote(false)}
             top={20}
-            right={20}
-          >
+            right={20}>
             <RiCloseLine size={30} />
           </Box>
           <Box>
-            <Typography variant="h5" fontWeight={"bold"}>
+            <Typography variant='h5' fontWeight={"bold"}>
               Ghi chú của tôi
             </Typography>
             {data.length == 0 ? (
@@ -58,11 +56,10 @@ const NoteView = ({
                 flexDirection={"column"}
                 gap={"5px"}
                 alignItems={"center"}
-                justifyContent={"center"}
-              >
+                justifyContent={"center"}>
                 <img
-                  src="https://fullstack.edu.vn/static/media/no-note-yet.17b90847cc48c790cb73ed2d495e0ea3.svg"
-                  alt=""
+                  src='https://fullstack.edu.vn/assets/no-note-yet-Cz1TLb5Q.svg'
+                  alt=''
                 />
                 <Typography fontSize={"15px"} fontWeight={"bold"}>
                   Bạn chưa có ghi chú nào
@@ -79,13 +76,11 @@ const NoteView = ({
                       <Box>
                         <Stack
                           direction={"row"}
-                          justifyContent={"space-between"}
-                        >
+                          justifyContent={"space-between"}>
                           <Stack
                             direction={"row"}
                             gap={"15px"}
-                            alignItems={"center"}
-                          >
+                            alignItems={"center"}>
                             <Button
                               sx={{
                                 background:
@@ -93,8 +88,7 @@ const NoteView = ({
                                 color: "white",
                                 borderRadius: "99px",
                                 padding: "2px 5px",
-                              }}
-                            >
+                              }}>
                               {item.time}
                             </Button>
                             <Typography fontSize={"14px"} fontWeight={"bold"}>
@@ -102,7 +96,10 @@ const NoteView = ({
                             </Typography>
                           </Stack>
                           <Stack direction={"row"} gap={"18px"}>
-                            <RiEdit2Fill  onClick={() => handleEditNote(item)} color={"rgb(102, 102, 102)"} />
+                            <RiEdit2Fill
+                              onClick={() => handleEditNote(item)}
+                              color={"rgb(102, 102, 102)"}
+                            />
                             <RiDeleteBin2Line
                               onClick={() => handleDeleteNote(item._id)}
                               color={"rgb(102, 102, 102)"}
@@ -113,8 +110,7 @@ const NoteView = ({
                           mt={"10px"}
                           bgcolor={"rgb(247, 248, 250)"}
                           borderRadius={"5px"}
-                          p={"3px 20px"}
-                        >
+                          p={"3px 20px"}>
                           <BlogContent content={item.content} />
                         </Box>
                         <Box
@@ -122,20 +118,18 @@ const NoteView = ({
                             maxHeight: edit ? "500px" : "0px",
                             overflow: "hidden",
                             transition: ".3s",
-                          }}
-                        >
+                          }}>
                           <Box
                             sx={{
                               ".tox-statusbar": {
                                 display: "none !important",
                               },
                               width: "100%",
-                            }}
-                          >
+                            }}>
                             <Editor
                               initialValue={content}
                               onChange={handleEditorChange}
-                              apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+                              apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
                               init={{
                                 plugins:
                                   "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -227,9 +221,12 @@ const NoteView = ({
                             display={"flex"}
                             gap={"10px"}
                             justifyContent={"end"}
-                            mt={"30px"}
-                          >
-                            <Button onClick={()=>setEdit(null)} sx={{ color: "black" }}>Hủy bỏ</Button>
+                            mt={"30px"}>
+                            <Button
+                              onClick={() => setEdit(null)}
+                              sx={{ color: "black" }}>
+                              Hủy bỏ
+                            </Button>
                             <Button
                               onClick={handleChangeEdit}
                               sx={{
@@ -238,8 +235,7 @@ const NoteView = ({
                                 color: "white",
 
                                 height: "34px",
-                              }}
-                            >
+                              }}>
                               Tạo ghi chú
                             </Button>
                           </Box>

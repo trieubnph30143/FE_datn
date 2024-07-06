@@ -16,7 +16,9 @@ import { getOneUser } from "@/service/auth";
 import { io } from "socket.io-client";
 import { addNotify } from "@/service/notify";
 import { convertToVND } from "@/utils/utils";
-import { getbanks } from "@/service/qr_code";
+import { generateQrCode, getbanks } from "@/service/qr_code";
+
+import Progress from "@/components/Process";
 const MyWalletController = () => {
   const socket = io("http://localhost:4000");
   const [value, setValue]: any = useState(0);
@@ -26,10 +28,12 @@ const MyWalletController = () => {
   const [searchEmail, setSearchEmail] = useState("");
   const [stk, setStk] = useState("");
   const [amount, setAmount] = useState("");
-  const [bank, setBank] = useState("");
-
+  const [bank, setBank]: any = useState("");
+  const [optionBank, setOptionBank] = useState([]);
   const [dataEmail, setDataEmail]: any = useState([]);
   const [transfer, setTransfer] = useState("");
+  const [showProgress, setShowProgress] = useState(false);
+  const [nameBank, setNameBank]: any = useState(null);
   const handleChangeTabs = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -65,13 +69,26 @@ const MyWalletController = () => {
     },
     refetchOnWindowFocus: false,
   });
-  const { data: banks }: any = useQuery("banks", {
+  const {}: any = useQuery("banks", {
     queryFn: () => {
-        return getbanks();
+      return getbanks();
+    },
+    onSuccess(data: any) {
+      if (data?.data.length > 0) {
+        let option = data.data.map((item: any) => {
+          return {
+            image: item.logo,
+            name: item.name,
+            short: item.shortName,
+            bin: item.bin,
+          };
+        });
+        setOptionBank(option);
+      }
     },
     refetchOnWindowFocus: false,
   });
-  console.log(banks);
+
   useEffect(() => {
     (async () => {
       let message = "";
@@ -204,10 +221,12 @@ const MyWalletController = () => {
     setOpen(newOpen);
   };
 
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-    };
+  const handleChange = (panel: string) => (
+    event: React.SyntheticEvent,
+    isExpanded: boolean
+  ) => {
+    setExpanded(isExpanded ? panel : false);
+  };
   const handleRechanrge = async () => {
     try {
       let data = await addTransactions({
@@ -300,10 +319,8 @@ const MyWalletController = () => {
             read: false,
           });
 
-         
           setTransfer("");
           setTimeout(() => {
-            
             socket.emit("getNewNotify", {
               user_id: dataEmail[0]._id,
             });
@@ -321,7 +338,6 @@ const MyWalletController = () => {
           queryClient.invalidateQueries({
             queryKey: ["statistical"],
           });
-         
         }
       } else {
         toast.warning("Bạn không đủ số dư");
@@ -333,41 +349,55 @@ const MyWalletController = () => {
 
   const handleWithdraw = async () => {
     try {
-      if (Number(data.data[0].balance) - Number(amount) >= 0) {
-        let transactions = await addTransactions({
-          user_id: [user.data[0]._id],
-          type: "withdraw",
-          status: "pending",
+      if (bank !== "" && stk !== "" && amount !== "") {
+        const response: any = await generateQrCode({
+          bank: bank.bin,
+          accountName: nameBank.message,
+          accountNumber: stk,
           amount: amount,
-          stk: stk,
-          bankAccount: bank,
+          memo: "",
         });
-        if (transactions?.status == 0) {
-          updateWalletSuccess(
-            Number(data.data[0].balance) - Number(amount),
-            user.data[0]._id,
-            true
-          );
-          queryClient.invalidateQueries({
-            queryKey: ["wallet"],
+        console.log("handleWithdraw", response);
+        if (Number(data.data[0].balance) - Number(amount) >= 0) {
+          let transactions = await addTransactions({
+            user_id: [user.data[0]._id],
+            type: "withdraw",
+            status: "pending",
+            amount: amount,
+            stk: stk,
+            bankAccount: bank.short,
+            qr_code: response.qrCode.data.qrCode,
           });
-          queryClient.invalidateQueries({
-            queryKey: ["transtion"],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["statistical"],
-          });
-          toast.success("Thành công");
+          if (transactions?.status == 0) {
+            updateWalletSuccess(
+              Number(data.data[0].balance) - Number(amount),
+              user.data[0]._id,
+              true
+            );
+            queryClient.invalidateQueries({
+              queryKey: ["wallet"],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["transtion"],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["statistical"],
+            });
+            toast.success("Thành công");
+          }
+        } else {
         }
       } else {
-        toast.warning("Bạn không đủ số dư");
+        toast.warning("Cần nhập đầy đủ thông tin.");
       }
     } catch (error) {
       console.log(error);
     }
   };
+  console.log("AAAA showProgress", showProgress);
   return (
     <>
+      <Progress showProgress={showProgress} />
       <MyWalletView
         handleRechanrge={handleRechanrge}
         wallet={
@@ -405,6 +435,10 @@ const MyWalletController = () => {
         setBank={setBank}
         handleWithdraw={handleWithdraw}
         statistical={statistical}
+        optionBank={optionBank}
+        setShowProgress={setShowProgress}
+        setNameBank={setNameBank}
+        nameBank={nameBank}
       />
     </>
   );

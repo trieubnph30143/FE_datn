@@ -2,6 +2,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Box,
   Button,
   Drawer,
@@ -56,6 +57,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import axios from "axios";
 
 ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
 type Props = {
@@ -85,6 +87,10 @@ type Props = {
   setBank: any;
   handleWithdraw: any;
   statistical: any;
+  optionBank: any;
+  setShowProgress: any;
+  setNameBank: any;
+  nameBank: any;
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -97,48 +103,6 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const tenVietTatNganHangVN = [
-  "Agribank",
-  "BIDV",
-  "Vietcombank",
-  "Vietinbank",
-  "BIDV SeABank",
-  "CB",
-  "ACB",
-  "ABBANK",
-  "Viet Capital Bank",
-  "BacA Bank",
-  "Bac Giang Bank",
-  "BMT Bank",
-  "BIDV SeABank",
-  "VietinBank",
-  "OceanBank",
-  "Dong A Bank",
-  "GPBank",
-  "MSB",
-  "Techcombank",
-  "Kien Long Bank",
-  "Techcombank",
-  "Red River Bank",
-  "NAB",
-  "Navibank",
-  "Agribank",
-  "HDBank",
-  "HDBank",
-  "BIDV SeABank",
-  "VIB",
-  "Sacombank",
-  "SHB",
-  "Shinhan Bank",
-  "LienVietPostBank",
-  "Vietbank",
-  "TPBank",
-  "UOB Việt Nam",
-  "VIB",
-  "VietABank",
-  "VPBank",
-  "Eximbank",
-];
 const MyWalletView = ({
   handleChangeTabs,
   value,
@@ -166,9 +130,14 @@ const MyWalletView = ({
   setBank,
   handleWithdraw,
   statistical,
+  optionBank,
+  setShowProgress,
+  setNameBank,
+  nameBank,
 }: Props) => {
   const [user, setUser]: any = useLocalStorage("user", {});
   const [page, setPage] = useState(0);
+
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [paginatedRows, setPaginatedRows] = useState([]);
   const handleChangePage = (event: any, newPage: any) => {
@@ -185,34 +154,78 @@ const MyWalletView = ({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const handleFocus = async () => {
+    setShowProgress(true);
+    try {
+      if (stk.length > 0) {
+        var data = JSON.stringify({
+          bin: `${bank.bin}`,
+          accountNumber: `${stk}`,
+        });
+
+        var config = {
+          method: "post",
+          url: "https://api.vietqr.io/v2/lookup",
+          headers: {
+            "x-client-id": "e32a70a5-3e34-43b6-8a93-372e3a8dc4e3",
+            "x-api-key": "6d1b178c-8a60-47a1-821b-0e1c69417007",
+            "Content-Type": "application/json",
+          },
+          data: data,
+        };
+
+        axios(config)
+          .then(function(response: any) {
+            console.log(response.data);
+            if (response.data.data != null) {
+              setNameBank({
+                isCheck: true,
+                message: response.data.data.accountName,
+              });
+            } else {
+              setNameBank({
+                isCheck: false,
+                message: response.data.desc,
+              });
+            }
+            setShowProgress(false);
+          })
+          .catch(function(error: any) {
+            console.log(error);
+          });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box>
-      <Drawer open={open} anchor="right" onClose={toggleDrawer(false)}>
+      <Drawer open={open} anchor='right' onClose={toggleDrawer(false)}>
         <Box width={"600px"} padding={"60px 30px"}>
-          <img src={vnpay} width={"90%"} alt="" />
+          <img src={vnpay} width={"90%"} alt='' />
 
           <TextField
             value={rechanrge}
             onChange={(e) => setRechanrge(e.target.value)}
             sx={{ mt: "20px" }}
-            id="outlined-basic"
+            id='outlined-basic'
             fullWidth
-            label="Nhập số tiền"
-            variant="outlined"
+            label='Nhập số tiền'
+            variant='outlined'
           />
           <FormControl sx={{ mt: "20px", display: "block" }}>
-            <FormLabel id="demo-radio-buttons-group-label">
+            <FormLabel id='demo-radio-buttons-group-label'>
               Cổng thanh toán trực tuyến
             </FormLabel>
             <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="vnpay"
-              name="radio-buttons-group"
-            >
+              aria-labelledby='demo-radio-buttons-group-label'
+              defaultValue='vnpay'
+              name='radio-buttons-group'>
               <FormControlLabel
-                value="vnpay"
+                value='vnpay'
                 control={<Radio />}
-                label="VNPAY"
+                label='VNPAY'
               />
             </RadioGroup>
           </FormControl>
@@ -230,8 +243,7 @@ const MyWalletView = ({
               height: "35px",
               px: "15px",
               mt: "20px",
-            }}
-          >
+            }}>
             Nạp tiền
             <RiWalletLine style={{ marginLeft: "5px" }} size={20} />
           </Button>
@@ -242,14 +254,12 @@ const MyWalletView = ({
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
-            alignItems={"end"}
-          >
+            alignItems={"end"}>
             <Typography
-              variant="h4"
+              variant='h4'
               fontWeight={"bold"}
               display={"flex"}
-              alignItems={"center"}
-            >
+              alignItems={"center"}>
               <RiWalletLine style={{ marginRight: "10px" }} /> Ví của tôi
             </Typography>
 
@@ -258,8 +268,7 @@ const MyWalletView = ({
                 direction={"row"}
                 justifyContent={"center"}
                 alignItems={"end"}
-                gap={"10px"}
-              >
+                gap={"10px"}>
                 <Typography>Tổng tiền :</Typography>
                 <Typography color={"red"} fontWeight={"bold"}>
                   {convertToVND(
@@ -278,8 +287,7 @@ const MyWalletView = ({
                   border: "2px solid #ff5117",
                   height: "35px",
                   px: "15px",
-                }}
-              >
+                }}>
                 Nạp tiền vào ví
                 <RiWalletLine style={{ marginLeft: "5px" }} size={20} />
               </Button>
@@ -296,8 +304,7 @@ const MyWalletView = ({
                   ".css-1aquho2-MuiTabs-indicator": {
                     background: "#ff5117",
                   },
-                }}
-              >
+                }}>
                 <Tabs value={value} onChange={handleChangeTabs}>
                   <Tab
                     label={
@@ -334,7 +341,7 @@ const MyWalletView = ({
               {value == 0 && (
                 <>
                   <TableContainer sx={{ mt: "30px" }} component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <Table sx={{ minWidth: 650 }} aria-label='simple table'>
                       <TableHead>
                         <TableRow>
                           <StyledTableCell>Kiểu</StyledTableCell>
@@ -353,25 +360,24 @@ const MyWalletView = ({
                                 "&:last-child td, &:last-child th": {
                                   border: 0,
                                 },
-                              }}
-                            >
+                              }}>
                               <TableCell>
-                                <Skeleton height={"35px"} width="150px" />
+                                <Skeleton height={"35px"} width='150px' />
                               </TableCell>
                               <TableCell>
-                                <Skeleton height={"25px"} width="100px" />
+                                <Skeleton height={"25px"} width='100px' />
                               </TableCell>
                               <TableCell>
-                                <Skeleton height={"35px"} width="100px" />
+                                <Skeleton height={"35px"} width='100px' />
                               </TableCell>
                               <TableCell>
-                                <Skeleton height={"25px"} width="200px" />
+                                <Skeleton height={"25px"} width='200px' />
                               </TableCell>
                               <TableCell>
-                                <Skeleton height={"25px"} width="140px" />
+                                <Skeleton height={"25px"} width='140px' />
                               </TableCell>
                               <TableCell>
-                                <Skeleton height={"25px"} width="80px" />
+                                <Skeleton height={"25px"} width='80px' />
                               </TableCell>
                             </TableRow>
                           ))}
@@ -476,9 +482,8 @@ const MyWalletView = ({
                                     "&:last-child td, &:last-child th": {
                                       border: 0,
                                     },
-                                  }}
-                                >
-                                  <TableCell component="th" scope="row">
+                                  }}>
+                                  <TableCell component='th' scope='row'>
                                     <Box
                                       sx={{
                                         display: "flex",
@@ -488,8 +493,7 @@ const MyWalletView = ({
                                         padding: "5px",
                                         borderRadius: "8px",
                                         justifyContent: "center",
-                                      }}
-                                    >
+                                      }}>
                                       {row.type == "transfer" && (
                                         <RiArrowLeftRightFill />
                                       )}
@@ -528,7 +532,7 @@ const MyWalletView = ({
                   </TableContainer>
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
+                    component='div'
                     count={transtions.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
@@ -538,14 +542,12 @@ const MyWalletView = ({
                   <Box
                     p={"15px"}
                     border={"1px solid #dddddd"}
-                    borderRadius={"10px"}
-                  >
+                    borderRadius={"10px"}>
                     <Typography fontWeight={"bold"}>Ghi chú</Typography>
                     <Typography
                       ml={"10px"}
                       fontWeight={"bold"}
-                      fontSize={"15px"}
-                    >
+                      fontSize={"15px"}>
                       1.Kiểu
                     </Typography>
                     <ul
@@ -553,8 +555,7 @@ const MyWalletView = ({
                         margin: " 0",
                         fontSize: "14px",
                         color: "#423a3a",
-                      }}
-                    >
+                      }}>
                       <li style={{ margin: "0" }}>
                         Rechanrge : Nạp tiền vào ví{" "}
                       </li>
@@ -574,8 +575,7 @@ const MyWalletView = ({
                     <Typography
                       ml={"10px"}
                       fontWeight={"bold"}
-                      fontSize={"15px"}
-                    >
+                      fontSize={"15px"}>
                       2.Trạng thái
                     </Typography>
                     <ul
@@ -583,8 +583,7 @@ const MyWalletView = ({
                         margin: " 0",
                         fontSize: "14px",
                         color: "#423a3a",
-                      }}
-                    >
+                      }}>
                       <li style={{ margin: "0" }}>Completed : Thành công </li>
                       <li style={{ margin: "0" }}>Pending : Đang xử lý </li>
                       <li style={{ margin: "0" }}>Failed : Thất bại </li>
@@ -600,35 +599,31 @@ const MyWalletView = ({
                     mt={"20px"}
                     flexDirection={"column"}
                     alignItems={"start"}
-                    width={"100%"}
-                  >
+                    width={"100%"}>
                     <Box>
                       <TextField
                         value={searchEmail}
-                        size="small"
+                        size='small'
                         onChange={(e) => setSearchEmail(e.target.value)}
                         type={"email"}
                         sx={{
                           width: "420px",
 
-                          ".css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input":
-                            {
-                              padding: "5px",
-                            },
-                          ".css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root":
-                            {
-                              borderRadius: "20px",
-                              height: "40px",
-                            },
+                          ".css-1o9s3wi-MuiInputBase-input-MuiOutlinedInput-input": {
+                            padding: "5px",
+                          },
+                          ".css-1q6at85-MuiInputBase-root-MuiOutlinedInput-root": {
+                            borderRadius: "20px",
+                            height: "40px",
+                          },
                         }}
-                        placeholder="Tìm kiếm người dùng bằng email..."
+                        placeholder='Tìm kiếm người dùng bằng email...'
                         InputProps={{
                           endAdornment: (
-                            <InputAdornment position="start">
+                            <InputAdornment position='start'>
                               <Box
                                 onClick={handleSearchEmail}
-                                sx={{ cursor: "pointer" }}
-                              >
+                                sx={{ cursor: "pointer" }}>
                                 <RiSearchLine />
                               </Box>
                             </InputAdornment>
@@ -640,18 +635,15 @@ const MyWalletView = ({
                       <Accordion
                         sx={{ width: "100%", marginTop: "20px" }}
                         expanded={expanded === "panel1"}
-                        onChange={handleChange("panel1")}
-                      >
+                        onChange={handleChange("panel1")}>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon />}
-                          aria-controls="panel1bh-content"
-                          id="panel1bh-header"
-                        >
+                          aria-controls='panel1bh-content'
+                          id='panel1bh-header'>
                           <Stack
                             direction={"row"}
                             alignItems={"center"}
-                            gap={"10px"}
-                          >
+                            gap={"10px"}>
                             <img
                               src={
                                 dataEmail[0].image.url
@@ -661,7 +653,7 @@ const MyWalletView = ({
                               width={"30px"}
                               height={"30px"}
                               style={{ borderRadius: "50%" }}
-                              alt=""
+                              alt=''
                             />
                             <Typography>{dataEmail[0].user_name}</Typography>
                           </Stack>
@@ -670,10 +662,10 @@ const MyWalletView = ({
                           <Stack direction={"row"} gap={"20px"}>
                             <TextField
                               value={transfer}
-                              id="outlined-basic"
-                              size="small"
-                              placeholder="Nhập số tiền cần chuyển"
-                              variant="outlined"
+                              id='outlined-basic'
+                              size='small'
+                              placeholder='Nhập số tiền cần chuyển'
+                              variant='outlined'
                               onChange={(e) => setTransfer(e.target.value)}
                             />
                             <Button
@@ -683,8 +675,7 @@ const MyWalletView = ({
                                 border: "2px solid #ff5117",
 
                                 px: "15px",
-                              }}
-                            >
+                              }}>
                               Chuyển tiền
                               <RiArrowLeftRightFill
                                 style={{ marginLeft: "5px" }}
@@ -700,8 +691,7 @@ const MyWalletView = ({
                     mt={"15px"}
                     p={"15px"}
                     border={"1px solid #dddddd"}
-                    borderRadius={"10px"}
-                  >
+                    borderRadius={"10px"}>
                     <Typography fontWeight={"bold"}>Ghi chú</Typography>
                     <Typography fontSize={"14px"}>
                       Tìm kiếm đúng Email nguời dùng
@@ -715,20 +705,17 @@ const MyWalletView = ({
                     display={"flex"}
                     width={"100%"}
                     mt={"20px"}
-                    justifyContent={"center"}
-                  >
+                    justifyContent={"center"}>
                     <Box
                       width={"100%"}
                       border={"1px solid #dddddd"}
-                      borderRadius={"10px"}
-                    >
+                      borderRadius={"10px"}>
                       <Stack
                         p={"15px"}
                         borderBottom={"1px solid #dddddd"}
                         direction={"row"}
                         gap={"30px"}
-                        alignItems={"end"}
-                      >
+                        alignItems={"end"}>
                         <RiBankCardFill size={30} style={{ color: "#333" }} />
                         <Typography>Thanh toán bằng thẻ</Typography>
                       </Stack>
@@ -737,58 +724,73 @@ const MyWalletView = ({
                         p={"15px"}
                         width={"100%"}
                         borderBottom={"1px solid #dddddd"}
-                        gap={"30px"}
-                      >
+                        gap={"30px"}>
                         <img
                           width={"50%"}
-                          src="http://cafefcdn.com/thumb_w/650/2019/1/15/logo-cac-ngan-hang-o1-1504769513088-1-15426822036241306429105-crop-15426822135161921260068-15475498874711162616360-crop-15475498929411148016221.jpg"
-                          alt=""
+                          src='http://cafefcdn.com/thumb_w/650/2019/1/15/logo-cac-ngan-hang-o1-1504769513088-1-15426822036241306429105-crop-15426822135161921260068-15475498874711162616360-crop-15475498929411148016221.jpg'
+                          alt=''
                         />
                         <Box width={"50%"} mt={"15px"}>
                           <FormControl sx={{ m: 1, width: "95%" }}>
-                            <InputLabel id="demo-select-small-label">
-                              Chọn ngân hàng
-                            </InputLabel>
-                            <Select
-                              value={bank}
-                              onChange={(e) => setBank(e.target.value)}
-                              labelId="demo-select-small-label"
-                              id="demo-select-small"
-                              label="Chọn ngân hàng"
-                              fullWidth
-                            >
-                              {tenVietTatNganHangVN.map((item) => {
-                                return <MenuItem value={item}>{item}</MenuItem>;
-                              })}
-                            </Select>
+                            <BankSelect
+                              optionBank={optionBank}
+                              setBank={setBank}
+                            />
                           </FormControl>
                           <TextField
                             value={stk}
+                            error={
+                              nameBank !== null && !nameBank.isCheck
+                                ? true
+                                : false
+                            }
                             onChange={(e) => setStk(e.target.value)}
-                            id="outlined-basic"
+                            id='outlined-basic'
                             sx={{ width: "95%", m: 1 }}
-                            label="Số tài khoản"
-                            variant="outlined"
+                            label='Số tài khoản'
+                            variant='outlined'
+                            autoComplete='off'
+                            onBlur={handleFocus}
                           />
+                          {nameBank !== null && (
+                            <>
+                              {nameBank.isCheck ? (
+                                <TextField
+                                  defaultValue={nameBank.message}
+                                  id='outlined-basic'
+                                  sx={{ width: "95%", m: 1 }}
+                                  label='Tên Tài khoản'
+                                  variant='outlined'
+                                />
+                              ) : (
+                                <Typography
+                                  color={"red"}
+                                  ml={"15px"}
+                                  fontSize={"13px"}>
+                                  {nameBank.message}
+                                </Typography>
+                              )}
+                            </>
+                          )}
                           <TextField
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            id="outlined-basic"
+                            id='outlined-basic'
                             sx={{ width: "95%", m: 1 }}
-                            label="Số tiền"
-                            variant="outlined"
+                            label='Số tiền'
+                            variant='outlined'
+                            autoComplete='off'
                           />
                           <Button
                             onClick={handleWithdraw}
-                            size="small"
+                            size='small'
                             sx={{
                               color: "#ff5117",
                               border: "2px solid #ff5117",
                               m: 1,
                               width: "95%",
-                              height:'50px'
-                            }}
-                          >
+                              height: "50px",
+                            }}>
                             Rút tiền
                             <RiArrowLeftRightFill
                               style={{ marginLeft: "5px" }}
@@ -803,8 +805,7 @@ const MyWalletView = ({
                     mt={"15px"}
                     p={"15px"}
                     border={"1px solid #dddddd"}
-                    borderRadius={"10px"}
-                  >
+                    borderRadius={"10px"}>
                     <Typography fontWeight={"bold"}>Ghi chú</Typography>
                     <Typography fontSize={"14px"}>
                       Chọn đúng ngân hàng
@@ -826,8 +827,7 @@ const MyWalletView = ({
                     mt={"20px"}
                     justifyContent={"center"}
                     alignItems={"center"}
-                    gap={"40px"}
-                  >
+                    gap={"40px"}>
                     <Typography>
                       Thông kê từ ngày {getStartOfMonth()}
                     </Typography>
@@ -844,7 +844,7 @@ const MyWalletView = ({
             width={"100%"}
             height={"400px"}
             style={{ borderRadius: "10px" }}
-            alt=""
+            alt=''
           />
         </Box>
       </Stack>
@@ -923,3 +923,47 @@ const PolarAreaChart = (props: any) => {
     </Box>
   );
 };
+
+function BankSelect(props: any) {
+  return (
+    <Autocomplete
+      id='country-select-demo'
+      options={props.optionBank}
+      autoHighlight
+      onChange={(e, value) => {
+        props.setBank(value);
+      }}
+      getOptionLabel={(option: any) => option.short}
+      renderOption={(props, option) => {
+        const { key, ...optionProps }: any = props;
+        return (
+          <Box
+            key={key}
+            component='li'
+            sx={{ "& > img": { mr: 2, flexShrink: 0 }, fontSize: "15px" }}
+            {...optionProps}>
+            <img
+              loading='lazy'
+              width='60'
+              style={{ objectFit: "cover" }}
+              src={option.image}
+              alt=''
+            />
+            {option.short} : {option.name}
+          </Box>
+        );
+      }}
+      freeSolo
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label='Select Bank...'
+          inputProps={{
+            ...params.inputProps,
+            autoComplete: "off",
+          }}
+        />
+      )}
+    />
+  );
+}
