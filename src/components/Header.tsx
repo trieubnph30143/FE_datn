@@ -271,8 +271,11 @@ const Header = () => {
     context.dispatch({
       type: "LOGOUT",
     });
-    navigate("/");
     setAnchorElProfile(null);
+    setTimeout(()=>{
+      navigate("/")
+    },500)
+    
   };
 
   const {} = useQuery(["notify", context.state.user[0]], {

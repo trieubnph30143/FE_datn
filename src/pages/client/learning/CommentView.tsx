@@ -1030,7 +1030,7 @@ const CommentView = ({
 export default CommentView;
 
 function Chat() {
-  const khoa = process.env.KEY_OPEN_AI;
+  const khoa = "";
   const systemMessage = {
     role: "system",
     content:

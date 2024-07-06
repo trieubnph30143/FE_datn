@@ -16,7 +16,6 @@ const queryClient = new QueryClient();
 export const coursesContext = createContext({});
 
 const reducer = (state: any, action: any) => {
-  console.log(action);
   switch (action.type) {
     case "LOGIN":
       return {

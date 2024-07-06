@@ -19,7 +19,7 @@ import {
   MenuItem,
   Toolbar,
   Typography,
-  styled
+  styled,
 } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import React, { useState } from "react";
@@ -39,7 +39,7 @@ import {
   RiShuffleFill,
   RiSlideshow4Fill,
   RiTeamFill,
-  RiUserAddFill
+  RiUserAddFill,
 } from "react-icons/ri";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import "../../App.css";
@@ -115,7 +115,7 @@ const LayoutAdmin = () => {
   const location = useLocation();
   const [user, setUser] = useLocalStorage("user", {});
   const context: any = useCoursesContext();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -153,12 +153,12 @@ const LayoutAdmin = () => {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    setUser({});
+    localStorage.setItem("user",JSON.stringify({}))
     context.dispatch({
       type: "LOGOUT",
     });
     navigate("/");
-    handleClosed()
+    handleClosed();
   };
   return (
     <div>
@@ -198,7 +198,9 @@ const LayoutAdmin = () => {
             <Box>
               <IconButton onClick={handleClick}>
                 <img
-                  src={user.data[0].image.url?user.data[0].image.url: profile}
+                  src={
+                    user.data[0].image.url ? user.data[0].image.url : profile
+                  }
                   width={34}
                   height={34}
                   style={{ borderRadius: "50%" }}
@@ -212,14 +214,23 @@ const LayoutAdmin = () => {
               anchorEl={anchorEl}
               open={openned}
               onClose={handleClosed}
+              sx={{padding:"5px"}}
               MenuListProps={{
                 "aria-labelledby": "basic-button",
               }}
             >
-              
-              <MenuItem onClick={handleLogout} sx={{ color: "green" ,display:"flex",alignItems:"center",gap:"15px" }}>
-              <RiLogoutCircleRLine size={20} />  Logout
-              </MenuItem>
+              <Typography
+                onClick={handleLogout}
+                fontSize={"14px"}
+                color={"#333"}
+                sx={{ display: "flex",cursor:"pointer" }}
+                alignItems={"center"}
+                gap={"8px"}
+                p={"5px"}
+                
+              >
+                <RiLogoutCircleRLine size={20} /> Đăng xuất
+              </Typography>
             </Menu>
           </Toolbar>
         </AppBar>
@@ -276,7 +287,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -314,7 +325,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -347,7 +358,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -380,7 +391,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -419,7 +430,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -458,7 +469,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -481,7 +492,7 @@ const LayoutAdmin = () => {
                         <ListItemIcon
                           sx={{ display: "flex", justifyContent: "center" }}
                         >
-                          <RiPriceTag3Line  color={"white"} />
+                          <RiPriceTag3Line color={"white"} />
                         </ListItemIcon>
                         <ListItemText primary={"Vouchers"} />
                       </CustomListItemButton>
@@ -491,7 +502,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -514,7 +525,7 @@ const LayoutAdmin = () => {
                         <ListItemIcon
                           sx={{ display: "flex", justifyContent: "center" }}
                         >
-                          <RiBardLine   color={"white"} />
+                          <RiBardLine color={"white"} />
                         </ListItemIcon>
                         <ListItemText primary={"User Vouchers"} />
                       </CustomListItemButton>
@@ -530,7 +541,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -567,7 +578,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -606,7 +617,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -645,7 +656,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -684,7 +695,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -715,7 +726,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -748,7 +759,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -779,7 +790,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -824,7 +835,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -854,7 +865,7 @@ const LayoutAdmin = () => {
                 </List>
 
                 <Divider />
-                
+
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
                     Comment
@@ -863,7 +874,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -902,7 +913,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -935,12 +946,12 @@ const LayoutAdmin = () => {
               </Box>
             )}
 
-            {user.data[0].role == "course_management"&&
-           <Box
-           className="see-more-admin"
-           sx={{ overflowY: "scroll", color: "white" }}
-         >
-            <List sx={{ px: "10px" }}>
+            {user.data[0].role == "course_management" && (
+              <Box
+                className="see-more-admin"
+                sx={{ overflowY: "scroll", color: "white" }}
+              >
+                <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
                     Courses
                   </Typography>
@@ -948,7 +959,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -981,7 +992,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -1014,7 +1025,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -1053,7 +1064,7 @@ const LayoutAdmin = () => {
                     sx={{
                       a: {
                         color: "white",
-                       width:"100%",
+                        width: "100%",
                         textDecoration: "none",
                       },
                       background:
@@ -1083,8 +1094,8 @@ const LayoutAdmin = () => {
                     </Link>
                   </ListItem>
                 </List>
-            </Box>
-            }
+              </Box>
+            )}
           </Drawer>
         </Box>
         <Main sx={{ background: "#f5f8fb", minHeight: "100vh" }} open={open}>

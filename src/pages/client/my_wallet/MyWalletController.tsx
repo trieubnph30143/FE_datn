@@ -16,6 +16,7 @@ import { getOneUser } from "@/service/auth";
 import { io } from "socket.io-client";
 import { addNotify } from "@/service/notify";
 import { convertToVND } from "@/utils/utils";
+import { getbanks } from "@/service/qr_code";
 const MyWalletController = () => {
   const socket = io("http://localhost:4000");
   const [value, setValue]: any = useState(0);
@@ -64,7 +65,13 @@ const MyWalletController = () => {
     },
     refetchOnWindowFocus: false,
   });
-  console.log(statistical);
+  const { data: banks }: any = useQuery("banks", {
+    queryFn: () => {
+        return getbanks();
+    },
+    refetchOnWindowFocus: false,
+  });
+  console.log(banks);
   useEffect(() => {
     (async () => {
       let message = "";
