@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import MyWalletView from "./MyWalletView";
 import { useQuery, useQueryClient } from "react-query";
-import { getUserWallet, updateWallet } from "@/service/wallet";
+import {
+  getUserWallet,
+  sendPinCodeWallet,
+  updateWallet,
+} from "@/service/wallet";
 import { useLocalStorage } from "@/hooks/useStorage";
 import {
   addTransactions,
@@ -34,6 +38,10 @@ const MyWalletController = () => {
   const [transfer, setTransfer] = useState("");
   const [showProgress, setShowProgress] = useState(false);
   const [nameBank, setNameBank]: any = useState(null);
+  const [isSendPinCode, setIsSendPinCode] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [typeTransaction, setTypeTransaction] = useState("");
+
   const handleChangeTabs = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
@@ -41,6 +49,10 @@ const MyWalletController = () => {
   const paramTransactionStatus = queryParams.get("vnp_TransactionStatus");
   const paramOrder_id = queryParams.get("order_id");
   const [user, setUser]: any = useLocalStorage("user", {});
+  const [isPinVerified, setIsPinVerified] = useState({
+    isTrans: false,
+    isWith: false,
+  });
   let count = 0;
 
   const queryClient = useQueryClient();
@@ -269,75 +281,84 @@ const MyWalletController = () => {
     }
   };
   const handleTrander = async () => {
+    setTypeTransaction("tranfer");
     try {
       if (Number(data.data[0].balance) - Number(transfer) >= 0) {
-        let transactionsUser = await addTransactions({
-          user_id: [user.data[0]._id],
-          type: "transfer",
-          status: "completed",
-          amount: transfer,
-          email_transfer: `Đến Email : ${dataEmail[0].email}`,
-        });
-        let transactionsTranfer = await addTransactions({
-          user_id: [dataEmail[0]._id],
-          type: "transfer",
-          status: "completed",
-          amount: transfer,
-          email_transfer: `Từ Email: ${user.data[0].email}`,
-        });
-        let wallet = await getUserWallet(dataEmail[0]._id);
-        if (transactionsUser?.status == 0 && transactionsTranfer?.status == 0) {
-          toast.success("Chuyển tiền thành công");
-          await updateWalletSuccess(
-            Number(data.data[0].balance) - Number(transfer),
-            user.data[0]._id,
-            true
-          );
-          await updateWalletSuccess(
-            wallet?.data[0].balance + Number(transfer),
-            dataEmail[0]._id,
-            true
-          );
-          await addNotify({
-            user_id: [dataEmail[0]._id],
-            title: "Ví của bạn.",
-            message: `Bạn vừa nhận ${convertToVND(
-              transfer
-            )} vào ví của mình được chuyển từ tài khoản có email là ${
-              user.data[0].email
-            }.`,
-            url: "/my_wallet",
-            read: false,
-          });
-          await addNotify({
+        if (!isPinVerified.isTrans) {
+          setIsSendPinCode(true);
+        } else {
+          let transactionsUser = await addTransactions({
             user_id: [user.data[0]._id],
-            title: "Ví của bạn.",
-            message: `Bạn vừa chuyển ${convertToVND(
-              transfer
-            )} vào ví của tài khoản có email là ${dataEmail[0].email}.`,
-            url: "/my_wallet",
-            read: false,
+            type: "transfer",
+            status: "completed",
+            amount: transfer,
+            email_transfer: `Đến Email : ${dataEmail[0].email}`,
           });
-
-          setTransfer("");
-          setTimeout(() => {
-            socket.emit("getNewNotify", {
-              user_id: dataEmail[0]._id,
+          let transactionsTranfer = await addTransactions({
+            user_id: [dataEmail[0]._id],
+            type: "transfer",
+            status: "completed",
+            amount: transfer,
+            email_transfer: `Từ Email: ${user.data[0].email}`,
+          });
+          let wallet = await getUserWallet(dataEmail[0]._id);
+          if (
+            transactionsUser?.status == 0 &&
+            transactionsTranfer?.status == 0
+          ) {
+            toast.success("Chuyển tiền thành công");
+            await updateWalletSuccess(
+              Number(data.data[0].balance) - Number(transfer),
+              user.data[0]._id,
+              true
+            );
+            await updateWalletSuccess(
+              wallet?.data[0].balance + Number(transfer),
+              dataEmail[0]._id,
+              true
+            );
+            await addNotify({
+              user_id: [dataEmail[0]._id],
+              title: "Ví của bạn.",
+              message: `Bạn vừa nhận ${convertToVND(
+                transfer
+              )} vào ví của mình được chuyển từ tài khoản có email là ${
+                user.data[0].email
+              }.`,
+              url: "/my_wallet",
+              read: false,
             });
-          }, 1000);
-          socket.emit("getNewNotify", {
-            user_id: user.data[0]._id,
-          });
+            await addNotify({
+              user_id: [user.data[0]._id],
+              title: "Ví của bạn.",
+              message: `Bạn vừa chuyển ${convertToVND(
+                transfer
+              )} vào ví của tài khoản có email là ${dataEmail[0].email}.`,
+              url: "/my_wallet",
+              read: false,
+            });
+            setIsPinVerified({ ...isPinVerified, isTrans: false });
+            setOtp("");
+            setTransfer("");
+            setTimeout(() => {
+              socket.emit("getNewNotify", {
+                user_id: dataEmail[0]._id,
+              });
+            }, 1000);
+            socket.emit("getNewNotify", {
+              user_id: user.data[0]._id,
+            });
 
-          queryClient.invalidateQueries({
-            queryKey: ["wallet"],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["transtion"],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["statistical"],
-          });
+            queryClient.invalidateQueries({
+              queryKey: ["wallet"],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["transtion"],
+            });
+            queryClient.invalidateQueries({
+              queryKey: ["statistical"],
+            });
+          }
         }
       } else {
         toast.warning("Bạn không đủ số dư");
@@ -348,44 +369,54 @@ const MyWalletController = () => {
   };
 
   const handleWithdraw = async () => {
+    setTypeTransaction("with");
     try {
       if (bank !== "" && stk !== "" && amount !== "") {
-        const response: any = await generateQrCode({
-          bank: bank.bin,
-          accountName: nameBank.message,
-          accountNumber: stk,
-          amount: amount,
-          memo: "",
-        });
-        console.log("handleWithdraw", response);
         if (Number(data.data[0].balance) - Number(amount) >= 0) {
-          let transactions = await addTransactions({
-            user_id: [user.data[0]._id],
-            type: "withdraw",
-            status: "pending",
+          setShowProgress(true);
+          const response: any = await generateQrCode({
+            bank: bank.bin,
+            accountName: nameBank.message,
+            accountNumber: stk,
             amount: amount,
-            stk: stk,
-            bankAccount: bank.short,
-            qr_code: response.qrCode.data.qrCode,
+            memo: "",
           });
-          if (transactions?.status == 0) {
-            updateWalletSuccess(
-              Number(data.data[0].balance) - Number(amount),
-              user.data[0]._id,
-              true
-            );
-            queryClient.invalidateQueries({
-              queryKey: ["wallet"],
+          setShowProgress(false);
+          console.log("handleWithdraw", response);
+
+          if (!isPinVerified.isWith) {
+            setIsSendPinCode(true);
+          } else {
+            let transactions = await addTransactions({
+              user_id: [user.data[0]._id],
+              type: "withdraw",
+              status: "pending",
+              amount: amount,
+              stk: stk,
+              bankAccount: bank.short,
+              qr_code: response.qrCode.data.qrCode,
             });
-            queryClient.invalidateQueries({
-              queryKey: ["transtion"],
-            });
-            queryClient.invalidateQueries({
-              queryKey: ["statistical"],
-            });
-            toast.success("Thành công");
+            if (transactions?.status == 0) {
+              updateWalletSuccess(
+                Number(data.data[0].balance) - Number(amount),
+                user.data[0]._id,
+                true
+              );
+
+              setIsPinVerified({ ...isPinVerified, isWith: false });
+              setOtp("");
+              queryClient.invalidateQueries({
+                queryKey: ["wallet"],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["transtion"],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["statistical"],
+              });
+              toast.success("Thành công");
+            }
           }
-        } else {
         }
       } else {
         toast.warning("Cần nhập đầy đủ thông tin.");
@@ -394,7 +425,46 @@ const MyWalletController = () => {
       console.log(error);
     }
   };
-  console.log("AAAA showProgress", showProgress);
+  // send pin code
+
+  const handleChangeOtp = (otp: any) => {
+    if (/^\d*$/.test(otp)) {
+      setOtp(otp);
+    } else {
+      toast.warning("Mã Pin phải là số");
+    }
+  };
+
+  useEffect(() => {
+    if (isPinVerified.isTrans) {
+      handleTrander();
+    }
+    if (isPinVerified.isWith) {
+      handleWithdraw();
+    }
+  }, [isPinVerified]);
+  const handleSubmitPin = async () => {
+    try {
+      if (otp.length == 6) {
+        let result = await sendPinCodeWallet({
+          pin_code_new: otp,
+          pin_code_old: data.data[0].pin_code,
+        });
+        if (result?.status == 0) {
+          setIsSendPinCode(false);
+          if (typeTransaction == "with") {
+            setIsPinVerified({ ...isPinVerified, isWith: true });
+          } else {
+            setIsPinVerified({ ...isPinVerified, isTrans: true });
+          }
+        } else {
+          toast.error("Sai mã Pin");
+        }
+      } else {
+        toast.warning("Nhập đủ 6 ký tự");
+      }
+    } catch (error) {}
+  };
   return (
     <>
       <Progress showProgress={showProgress} />
@@ -439,6 +509,12 @@ const MyWalletController = () => {
         setShowProgress={setShowProgress}
         setNameBank={setNameBank}
         nameBank={nameBank}
+        queryClient={queryClient}
+        isSendPinCode={isSendPinCode}
+        setIsSendPinCode={setIsSendPinCode}
+        otp={otp}
+        handleChangeOtp={handleChangeOtp}
+        handleSubmitPin={handleSubmitPin}
       />
     </>
   );

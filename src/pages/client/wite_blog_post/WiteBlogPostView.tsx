@@ -13,9 +13,9 @@ type Props = {
   register: any;
   handleSubmit: any;
   onFinish: any;
-  onSubmit:any
-  errors:any
-  file:any
+  onSubmit: any;
+  errors: any;
+  file: any;
 };
 const WiteBlogPostView = ({
   content,
@@ -27,7 +27,7 @@ const WiteBlogPostView = ({
   onFinish,
   onSubmit,
   errors,
-  file
+  file,
 }: Props) => {
   return (
     <Box>
@@ -40,8 +40,7 @@ const WiteBlogPostView = ({
           ml={"50px"}
           fontWeight={"bold"}
           sx={{ display: "flex", alignItems: "end" }}
-          fontSize={"18px"}
-        >
+          fontSize={"18px"}>
           Ảnh minh họa
         </Typography>
       </Stack>
@@ -50,17 +49,23 @@ const WiteBlogPostView = ({
           <Stack width={"28%"} direction={"column"} gap={"15px"}>
             <Box>
               <Typography fontSize={"12px"} color={"#333"}>
-                <TextField fullWidth {...register("title")} error={errors.title}  label="Tiêu đề" id="fullWidth" />
+                <TextField
+                  fullWidth
+                  {...register("title")}
+                  error={errors.title}
+                  label='Tiêu đề'
+                  id='fullWidth'
+                />
                 <b>Lưu ý</b>: Viết đúng với nội dung
               </Typography>
             </Box>
 
             <Box>
               <TextField
-              {...register("description")}
+                {...register("description")}
                 fullWidth
-                label="Mô tả khi tin được hiển thị"
-                id="fullWidth"
+                label='Mô tả khi tin được hiển thị'
+                id='fullWidth'
                 error={errors.description}
               />
 
@@ -72,10 +77,10 @@ const WiteBlogPostView = ({
 
             <Box>
               <TextField
-              {...register("readers")}
+                {...register("readers")}
                 fullWidth
-                label="Thêm tối đa 5 thẻ để độc giả biết bài viết của bạn nói về điều gì."
-                id="fullWidth"
+                label='Thêm tối đa 5 thẻ để độc giả biết bài viết của bạn nói về điều gì.'
+                id='fullWidth'
                 error={errors.readers}
               />
               <Typography fontSize={"12px"} color={"#333"}>
@@ -85,14 +90,13 @@ const WiteBlogPostView = ({
           </Stack>
           <Box sx={{ width: "19.5%" }}>
             <div
-              className="container"
+              className='container'
               style={{
                 width: "100%",
-              }}
-            >
+              }}>
               <label
-                htmlFor="input-img"
-                className="preview"
+                htmlFor='input-img'
+                className='preview'
                 style={{
                   border: "2px dashed  #ff5117",
                   width: "100%",
@@ -107,8 +111,7 @@ const WiteBlogPostView = ({
                   justifyContent: "center",
                   flexDirection: "column",
                   cursor: "pointer",
-                }}
-              >
+                }}>
                 {imageUrl ? (
                   <img
                     src={imageUrl}
@@ -120,7 +123,7 @@ const WiteBlogPostView = ({
                       top: 0,
                       left: 0,
                     }}
-                    alt=""
+                    alt=''
                   />
                 ) : (
                   ""
@@ -132,14 +135,14 @@ const WiteBlogPostView = ({
               </label>
               <input
                 onChange={handleImageChange}
-                type="file"
+                type='file'
                 hidden
-                id="input-img"
+                id='input-img'
               />
             </div>
           </Box>
           <Box width={"45%"}>
-            <img src={minhhoa} width={"100%"} height={263} alt="" />
+            <img src={minhhoa} width={"100%"} height={263} alt='' />
           </Box>
         </Stack>
         <Stack direction={"row"} gap={"46.5%"} mt={"10px"}>
@@ -157,10 +160,9 @@ const WiteBlogPostView = ({
                 display: "none !important",
               },
               width: "50%",
-            }}
-          >
+            }}>
             <Editor
-              apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+              apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
               onEditorChange={handleEditorChange}
               init={{
                 plugins:
@@ -235,11 +237,9 @@ const WiteBlogPostView = ({
               },
               width: "50%",
               height: "600px",
-             
-            }}
-          >
+            }}>
             <Editor
-              apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+              apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
               initialValue={content}
               init={{
                 height: "600px",
@@ -250,8 +250,8 @@ const WiteBlogPostView = ({
         </Box>
         <Box mt={"20px"}>
           <Button
-          disabled={content==""||file==null?true:false}
-            type="submit"
+            disabled={content == "" || file == null ? true : false}
+            type='submit'
             onClick={onSubmit}
             sx={{
               background: "linear-gradient(to right bottom, #ff8f26, #ff5117)",
@@ -259,8 +259,7 @@ const WiteBlogPostView = ({
 
               width: "92px",
               height: "34px",
-            }}
-          >
+            }}>
             Xuất bản
           </Button>
         </Box>

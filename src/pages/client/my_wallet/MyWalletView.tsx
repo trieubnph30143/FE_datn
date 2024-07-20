@@ -12,6 +12,7 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
+  Modal,
   Paper,
   Radio,
   RadioGroup,
@@ -58,7 +59,11 @@ import {
   Legend,
 } from "chart.js";
 import axios from "axios";
-
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import { SendOtp } from "@/service/otp";
+import { createWalletPinCode } from "@/service/wallet";
+import OTPInput from "react-otp-input";
 ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend);
 type Props = {
   handleChangeTabs: any;
@@ -91,6 +96,12 @@ type Props = {
   setShowProgress: any;
   setNameBank: any;
   nameBank: any;
+  queryClient: any;
+  isSendPinCode: any;
+  setIsSendPinCode: any;
+  otp: any;
+  handleChangeOtp: any;
+  handleSubmitPin: any;
 };
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -134,14 +145,24 @@ const MyWalletView = ({
   setShowProgress,
   setNameBank,
   nameBank,
+  queryClient,
+  isSendPinCode,
+  setIsSendPinCode,
+  otp,
+  handleChangeOtp,
+  handleSubmitPin,
 }: Props) => {
   const [user, setUser]: any = useLocalStorage("user", {});
   const [page, setPage] = useState(0);
+  const [openAuthen, setOpenAuthen] = useState(false);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [paginatedRows, setPaginatedRows] = useState([]);
   const handleChangePage = (event: any, newPage: any) => {
     setPage(newPage);
+  };
+  const toggleDrawerAuthen = (newOpen: boolean) => () => {
+    setOpenAuthen(newOpen);
   };
   useEffect(() => {
     if (transtions) {
@@ -199,8 +220,159 @@ const MyWalletView = ({
       console.log(error);
     }
   };
+  // authen
+  const [passwordNew, setPasswordNew] = useState("");
+
+  const [passwordOld, setPasswordOld] = useState("");
+  const [confirmPasswordNew, setConfirmPasswordNew] = useState("");
+  const handleForgotPassword = async () => {
+    try {
+      if (wallet && wallet.length > 0 && wallet[0].pin_code) {
+        if (
+          passwordNew.length == 6 &&
+          passwordOld.length == 6 &&
+          confirmPasswordNew.length == 6
+        ) {
+          if (passwordNew == confirmPasswordNew) {
+            let data: any = await createWalletPinCode({
+              _id: wallet[0]._id,
+              pin_code: passwordNew,
+              pin_code_new: passwordOld,
+              pin_code_old: wallet[0].pin_code,
+              type: "UPDATE",
+            });
+            if (data?.status == 0) {
+              setOpenAuthen(false);
+              toast.success("Đổi mã pin thành công ");
+              queryClient.invalidateQueries({
+                queryKey: ["wallet"],
+              });
+            } else {
+              toast.error(data.message);
+            }
+          } else {
+            toast.warning("Mật khẩu không trùng khớp.");
+          }
+        }
+      } else {
+        if (passwordNew == confirmPasswordNew) {
+          let data = await createWalletPinCode({
+            _id: wallet[0]._id,
+            pin_code: passwordNew,
+            type: "CREATE",
+          });
+          if (data?.status == 0) {
+            setOpenAuthen(false);
+            toast.success("Đặt mã pin thành công ");
+            queryClient.invalidateQueries({
+              queryKey: ["wallet"],
+            });
+          }
+        } else {
+          toast.warning("Mật khẩu không trùng khớp.");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleChangePassword = (e: any) => {
+    const inputValue = e.target.value;
+
+    // Kiểm tra nếu input chỉ chứa các ký tự số và độ dài <= 6
+    if (/^\d*$/.test(inputValue)) {
+      if (inputValue.length <= 6) {
+        setPasswordNew(inputValue);
+      } else {
+        toast.warning("Tối đa 6 ký tự");
+      }
+    } else {
+      toast.warning("Mã Pin phải là số");
+    }
+  };
+  const handleChangePasswordOld = (e: any) => {
+    const inputValue = e.target.value;
+
+    // Kiểm tra nếu input chỉ chứa các ký tự số và độ dài <= 6
+    if (/^\d*$/.test(inputValue)) {
+      if (inputValue.length <= 6) {
+        setPasswordOld(inputValue);
+      } else {
+        toast.warning("Tối đa 6 ký tự");
+      }
+    } else {
+      toast.warning("Mã Pin phải là số");
+    }
+  };
+  const handleChangeConfirmPassword = (e: any) => {
+    const inputValue = e.target.value;
+
+    if (/^\d*$/.test(inputValue)) {
+      if (inputValue.length <= 6) {
+        setConfirmPasswordNew(inputValue);
+      } else {
+        toast.warning("Tối đa 6 ký tự");
+      }
+    } else {
+      toast.warning("Mã Pin phải là số");
+    }
+  };
+
+  const style = {
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "40%",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
   return (
     <Box>
+      <Modal
+        onClose={() => setIsSendPinCode(false)}
+        open={isSendPinCode}
+        aria-labelledby='modal-modal-title'
+        aria-describedby='modal-modal-description'>
+        <Box sx={style}>
+          <Box
+            textAlign={"center"}
+            width={"430px"}
+            padding={"20px"}
+            height={300}>
+            <Typography my={"20px"} variant='h4'>
+              Xác thực mã Pin
+            </Typography>
+            <OTPInput
+              inputStyle='inputStyle'
+              value={otp}
+              onChange={handleChangeOtp}
+              numInputs={6}
+              renderInput={(props) => <input {...props} type='password' />}
+            />
+            <Button
+              sx={{
+                mt: "30px",
+                width: "100%",
+                height: "44px",
+                background:
+                  "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
+                color: "white",
+                borderRadius: "30px",
+                fontWeight: "700",
+              }}
+              onClick={handleSubmitPin}>
+              Xác nhận
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
       <Drawer open={open} anchor='right' onClose={toggleDrawer(false)}>
         <Box width={"600px"} padding={"60px 30px"}>
           <img src={vnpay} width={"90%"} alt='' />
@@ -249,19 +421,129 @@ const MyWalletView = ({
           </Button>
         </Box>
       </Drawer>
+      <Drawer
+        open={openAuthen}
+        anchor='right'
+        onClose={toggleDrawerAuthen(false)}>
+        <Box width={"600px"} padding={"60px 30px"}>
+          <Typography variant='h5' my={"15px"} textAlign={"center"}>
+            {wallet && wallet.length > 0 && wallet[0].pin_code
+              ? "Đổi mã PIN"
+              : "Bật xác thực bằng mã PIN"}
+          </Typography>
+          <Box padding={"0 65px"}>
+            <>
+              {wallet && wallet.length > 0 && wallet[0].pin_code && (
+                <Box mt={"10px"}>
+                  <TextField
+                    type='password'
+                    value={passwordOld}
+                    onChange={(e: any) => handleChangePasswordOld(e)}
+                    sx={{
+                      width: "100%",
+                      height: "42px",
+                      mt: "5px",
+                      borderRadius: "30px",
+                      ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ": {
+                        borderRadius: "30px",
+                      },
+                      ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input": {
+                        height: "28px",
+                      },
+                    }}
+                    helperText=' '
+                    placeholder={"Mật khẩu cũ"}
+                    id='demo-helper-text-aligned-no-helper'
+                    size='small'
+                  />
+                </Box>
+              )}
+              <Box mt={"10px"}>
+                <TextField
+                  type='password'
+                  value={passwordNew}
+                  onChange={(e: any) => handleChangePassword(e)}
+                  sx={{
+                    width: "100%",
+                    height: "42px",
+                    mt: "5px",
+                    borderRadius: "30px",
+                    ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ": {
+                      borderRadius: "30px",
+                    },
+                    ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input": {
+                      height: "28px",
+                    },
+                  }}
+                  helperText=' '
+                  placeholder={"Mật khẩu mới"}
+                  id='demo-helper-text-aligned-no-helper'
+                  size='small'
+                />
+              </Box>
+              <Box mt={"10px"}>
+                <TextField
+                  type='password'
+                  value={confirmPasswordNew}
+                  onChange={(e: any) => handleChangeConfirmPassword(e)}
+                  sx={{
+                    width: "100%",
+                    height: "42px",
+                    mt: "5px",
+                    borderRadius: "30px",
+                    ".css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root ": {
+                      borderRadius: "30px",
+                    },
+                    ".css-1n4twyu-MuiInputBase-input-MuiOutlinedInput-input": {
+                      height: "28px",
+                    },
+                  }}
+                  helperText=' '
+                  placeholder={"Nhập lại mật khẩu mới"}
+                  id='demo-helper-text-aligned-no-helper'
+                  size='small'
+                />
+              </Box>
+            </>
+            <Box my={"12px"}>
+              <Typography ml={"12px"} fontSize={"13px"} color={"#333"}>
+                Bắt buộc mã Pin phải là số và 6 ký tự
+              </Typography>
+            </Box>
+            <Box>
+              <Button
+                onClick={handleForgotPassword}
+                disabled={!passwordNew || !confirmPasswordNew}
+                sx={{
+                  width: "100%",
+                  height: "44px",
+                  background:
+                    "linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%)",
+                  color: "white",
+                  borderRadius: "30px",
+                  fontWeight: "700",
+                }}>
+                Bật xác thực
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+      </Drawer>
       <Stack direction={"row"} gap={"40px"}>
         <Box width={"70%"}>
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"end"}>
-            <Typography
-              variant='h4'
-              fontWeight={"bold"}
-              display={"flex"}
-              alignItems={"center"}>
-              <RiWalletLine style={{ marginRight: "10px" }} /> Ví của tôi
-            </Typography>
+            <Box>
+              <Typography
+                variant='h4'
+                fontWeight={"bold"}
+                display={"flex"}
+                alignItems={"center"}>
+                <RiWalletLine style={{ marginRight: "10px" }} /> Ví của tôi
+              </Typography>
+            </Box>
 
             <Stack>
               <Stack
@@ -839,13 +1121,31 @@ const MyWalletView = ({
           </Stack>
         </Box>
         <Box width={"27%"} display={"flex"} justifyContent={"center"}>
-          <img
-            src={bg}
-            width={"100%"}
-            height={"400px"}
-            style={{ borderRadius: "10px" }}
-            alt=''
-          />
+          <Box>
+            <Box display={"flex"} my={"25px"} justifyContent={"center"}>
+              <Button
+                onClick={toggleDrawerAuthen(true)}
+                sx={{
+                  color: "#ff5117",
+                  border: "2px solid #ff5117",
+                  height: "35px",
+                  px: "15px",
+
+                  float: "right",
+                }}>
+                {wallet && wallet.length > 0 && wallet[0].pin_code
+                  ? "Đổi mã PIN"
+                  : "Bật xác thực bằng mã PIN"}
+              </Button>
+            </Box>
+            <img
+              src={bg}
+              width={"100%"}
+              height={"400px"}
+              style={{ borderRadius: "10px" }}
+              alt=''
+            />
+          </Box>
         </Box>
       </Stack>
     </Box>

@@ -3,17 +3,17 @@ import WiteBlogPostView from "./WiteBlogPostView";
 import { usePostMutation } from "@/hooks/usePostMutation";
 import Loading from "@/components/Loading";
 import { toast } from "react-toastify";
+import Progress from "@/components/Process";
 
 const WiteBlogPostController = () => {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
   const handleEditorChange = (e: any, editor: any) => {
     setContent(editor.getContent());
   };
-
-  
 
   const handleImageChange = (e: any) => {
     let file = e.target.files[0];
@@ -35,24 +35,26 @@ const WiteBlogPostController = () => {
     content,
     onSuccess: () => {
       reset();
+
       setTimeout(() => {
-        toast.success("Tạo bài viết thành công.")
-        setLoading(false)
+        setShowProgress(false);
+        toast.success("Tạo bài viết thành công.");
+        setLoading(false);
         setFile(null);
         setImageUrl("");
       }, 1000);
     },
   });
-  
-  const onSubmit = ()=>{
-    if(Object.keys(errors)[0]&&content!=""&&file!=null){
-      setLoading(true)
 
+  const onSubmit = () => {
+    setShowProgress(true);
+    if (Object.keys(errors)[0] && content != "" && file != null) {
     }
-  }
+  };
   return (
     <>
-      {loading&&<Loading/>}
+      <Progress showProgress={showProgress} />
+      {loading && <Loading />}
       <WiteBlogPostView
         content={content}
         imageUrl={imageUrl}
