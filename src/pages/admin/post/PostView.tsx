@@ -80,19 +80,19 @@ const PostView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Post</Typography>
+        <Typography variant="h5">Bài viết</Typography>
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Title</StyledTableCell>
-              <StyledTableCell>Image</StyledTableCell>
-              <StyledTableCell>Readers</StyledTableCell>
-              <StyledTableCell align="left">Description</StyledTableCell>
-              <StyledTableCell>Active</StyledTableCell>
+              <StyledTableCell>Tên</StyledTableCell>
+              <StyledTableCell>Ảnh</StyledTableCell>
+              <StyledTableCell>Độc giả</StyledTableCell>
+              <StyledTableCell align="left">Mô tả</StyledTableCell>
+              <StyledTableCell>Trạng thái</StyledTableCell>
 
-              <StyledTableCell align="left">Action</StyledTableCell>
+              <StyledTableCell align="left">Hành động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data.length == 0 ? (
@@ -153,19 +153,19 @@ const PostView = ({
 
                   <TableCell align="left">
 
-                    {!row.active ==true&&<Button onClick={()=>handelChangeActive(row)}>Change Active</Button>}
+                    {!row.active ==true&&<Button onClick={()=>handelChangeActive(row)}>Duyệt bài viết</Button>}
                     <Button
                       color="secondary"
                       onClick={() => handleOpenModal(row)}
                     >
-                      Detail
+                      Chi tiết
                     </Button>
                     <Button
                       aria-describedby={id}
                       onClick={(e) => handleClick(e, row)}
                       sx={{ color: "red" }}
                     >
-                      Delete
+                      Xóa 
                     </Button>
                   </TableCell>
                 </TableRow>

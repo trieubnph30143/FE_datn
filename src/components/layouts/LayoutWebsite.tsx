@@ -31,7 +31,7 @@ const LayoutWebsite = () => {
     };
   }, []);
   return (
-    <div>
+    <Box >
       <Header />
       <Box
         width={"96px"}
@@ -44,6 +44,7 @@ const LayoutWebsite = () => {
         sx={{ transition: ".1s" }}
         flexDirection={"column"}
         alignItems={"center"}
+        
         zIndex={2}>
         <SideBar />
       </Box>
@@ -51,7 +52,7 @@ const LayoutWebsite = () => {
         <Outlet />
       </Box>
       <Footer />
-    </div>
+    </Box>
   );
 };
 

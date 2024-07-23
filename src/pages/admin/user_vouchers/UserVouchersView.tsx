@@ -111,9 +111,9 @@ const UserVouchersView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Give Away Vouchers</Typography>
+        <Typography variant="h5">Tặng phiếu quà tặng</Typography>
         <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add Give Away Vouchers
+          Thêm Tặng phiếu quà tặng
         </Button>
       </Stack>
       <TableContainer component={Paper}>
@@ -122,9 +122,9 @@ const UserVouchersView = ({
             <TableRow>
               <StyledTableCell>Email</StyledTableCell>
 
-              <StyledTableCell>Code</StyledTableCell>
-              <StyledTableCell>Status</StyledTableCell>
-              <StyledTableCell>Action</StyledTableCell>
+              <StyledTableCell>Mã </StyledTableCell>
+              <StyledTableCell>Trạng thái</StyledTableCell>
+              <StyledTableCell>Hành động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data.length == 0 ? (
@@ -169,14 +169,14 @@ const UserVouchersView = ({
 
                     <TableCell align="left">
                       <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                        Edit
+                        Sửa
                       </Button>
                       <Button
                         aria-describedby={id}
                         onClick={(e) => handleClick(e, row)}
                         sx={{ color: "red" }}
                       >
-                        Delete
+                        Xóa
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -267,8 +267,8 @@ const ModalForm = (props: any) => {
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
           {props.action == "CREATE"
-            ? "Add Give Away Vouchers"
-            : "Update  Vouchers"}
+            ? "Tạo phiếu quà tặng"
+            : "Sửa phiếu quà tặng"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -281,12 +281,12 @@ const ModalForm = (props: any) => {
             {props.checkUpdate?<>
               <Box width={"100%"}>
               <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Vouchers</InputLabel>
+                <InputLabel id="demo-simple-select-label">Mã giảm giá</InputLabel>
                 <Select
                   {...props.register("vouchers_id")}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Vouchers"
+                  label="Mã giảm giá"
                   value={props.valueVouchers}
                   onChange={(e) => props.setValueVouchers(e.target.value)}
                 >
@@ -300,12 +300,12 @@ const ModalForm = (props: any) => {
             <>
             <Box width={"100%"}>
               <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Vouchers</InputLabel>
+                <InputLabel id="demo-simple-select-label">Mã giảm giá</InputLabel>
                 <Select
                   {...props.register("vouchers_id")}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  label="Vouchers"
+                  label="Mã giảm giá"
                   value={props.valueVouchers}
                   onChange={(e) => props.setValueVouchers(e.target.value)}
                 >
@@ -327,12 +327,12 @@ const ModalForm = (props: any) => {
                     <FormControlLabel
                       value="all"
                       control={<Radio />}
-                      label="Add all give away vouchers"
+                      label="Tặng cho tất cả"
                     />
                     <FormControlLabel
                       value="one"
                       control={<Radio />}
-                      label="Add one give away voucher"
+                      label="Tặng từng người"
                     />
                   </RadioGroup>
                 </FormControl>
@@ -377,7 +377,7 @@ const ModalForm = (props: any) => {
                   border: "1px solid #333",
                 }}
               >
-                Close
+                Đóng
               </Button>
               <Button
                 onClick={props.onSubmit}
@@ -391,7 +391,7 @@ const ModalForm = (props: any) => {
                   height: "34px",
                 }}
               >
-                Add
+                Thêm
               </Button>
             </Box>
           </Stack>

@@ -70,7 +70,7 @@ const SettingProfileView = ({
             padding={"10px"}
             height={"48px"}
           >
-            <RiUserSettingsFill size={25} color={"#ff5117"} />{" "}
+            <RiUserSettingsFill size={25} color={"#1250dc"} />{" "}
             <Typography>Cài đặt tài khoản</Typography>
           </Box>
           {!user.data[0].uid && (
@@ -87,7 +87,7 @@ const SettingProfileView = ({
               padding={"10px"}
               height={"48px"}
             >
-              <RiAdminFill size={25} color={"#ff5117"} />
+              <RiAdminFill size={25} color={"#1250dc"} />
               <Typography>Bảo mật</Typography>
             </Box>
           )}
@@ -140,8 +140,8 @@ const SettingProfileView = ({
                         onClick={() => handleSaveChange("name")}
                         sx={{
                           borderRadius: "30px",
-                          border: "1px solid #ff5117",
-                          color: "#ff5117",
+                          border: "1px solid #1250dc",
+                          color: "#1250dc",
                           fontSize: "12px",
                           float: "right",
                         }}
@@ -208,8 +208,8 @@ const SettingProfileView = ({
                         onClick={() => handleSaveChange("bio")}
                         sx={{
                           borderRadius: "30px",
-                          border: "1px solid #ff5117",
-                          color: "#ff5117",
+                          border: "1px solid #1250dc",
+                          color: "#1250dc",
                           fontSize: "12px",
                           float: "right",
                         }}
@@ -261,10 +261,10 @@ const SettingProfileView = ({
                         htmlFor="input-img"
                         className="preview"
                         style={{
-                          border: "2px dashed  #ff5117",
+                          border: "2px dashed  #1250dc",
                           width: "100%",
                           height: "100px",
-                          color: " #ff5117",
+                          color: " #1250dc",
                           fontSize: "22px",
                           position: "relative",
                           borderRadius: "6px",
@@ -337,8 +337,8 @@ const SettingProfileView = ({
                         onClick={() => handleSaveChange("image")}
                         sx={{
                           borderRadius: "30px",
-                          border: "1px solid #ff5117",
-                          color: "#ff5117",
+                          border: "1px solid #1250dc",
+                          color: "#1250dc",
                           fontSize: "12px",
                           float: "right",
                         }}
@@ -431,8 +431,8 @@ const SettingProfileView = ({
               <Button
                 type="submit"
                 sx={{
-                  color: "#ff5117",
-                  border: "2px solid #ff5117",
+                  color: "#1250dc",
+                  border: "2px solid #1250dc",
                   height: "35px",
                   px: "15px",
                 }}

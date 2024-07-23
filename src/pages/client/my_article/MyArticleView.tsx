@@ -116,10 +116,10 @@ const MyArticleView = ({
                     htmlFor="input-img"
                     className="preview"
                     style={{
-                      border: "2px dashed  #ff5117",
+                      border: "2px dashed  #1250dc",
                       width: "100%",
                       height: "250px",
-                      color: " #ff5117",
+                      color: " #1250dc",
                       fontSize: "22px",
                       position: "relative",
                       borderRadius: "6px",
@@ -272,7 +272,7 @@ const MyArticleView = ({
                 type="submit"
                 sx={{
                   background:
-                    "linear-gradient(to right bottom, #ff8f26, #ff5117)",
+                    "linear-gradient(to right bottom, #ff8f26, #1250dc)",
                   color: "white",
 
                   width: "92px",
@@ -292,10 +292,10 @@ const MyArticleView = ({
         mt={"20px"}
         sx={{
           ".css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected": {
-            color: " #ff5117",
+            color: " #1250dc",
           },
           ".css-1aquho2-MuiTabs-indicator": {
-            background: "#ff5117",
+            background: "#1250dc",
           },
         }}
       >

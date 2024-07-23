@@ -129,9 +129,9 @@ const LessonView = ({
         </Box>
       </Drawer>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Lesson</Typography>
+        <Typography variant="h5">Chương</Typography>
         <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add Lesson
+          Thêm Chương
         </Button>
       </Stack>
       {courses.length == 0 ? (
@@ -173,17 +173,17 @@ const LessonView = ({
                         <TableHead>
                           <TableRow>
                             <StyledTableCell align="left">
-                              Title
+                              Tên
                             </StyledTableCell>
                             <StyledTableCell align="left">
-                              Description
+                              Mô tả
                             </StyledTableCell>
                             <StyledTableCell align="left">
-                              Duration
+                              Thời gian
                             </StyledTableCell>
 
                             <StyledTableCell align="left">
-                              Action
+                              Hành động
                             </StyledTableCell>
                           </TableRow>
                         </TableHead>
@@ -219,14 +219,14 @@ const LessonView = ({
                                             handleOpenModal("UPDATE", row)
                                           }
                                         >
-                                          Edit
+                                          Sửa
                                         </Button>
                                         <Button
                                           aria-describedby={id}
                                           onClick={(e) => handleClick(e, row)}
                                           sx={{ color: "red" }}
                                         >
-                                          Delete
+                                          Xóa
                                         </Button>
                                       </TableCell>
                                     </TableRow>
@@ -236,7 +236,7 @@ const LessonView = ({
                           ) : (
                             <TableRow>
                               {" "}
-                              <TableCell>Not Found Data</TableCell>
+                              <TableCell>Không có dữ liệu</TableCell>
                             </TableRow>
                           )}
                         </TableBody>
@@ -366,7 +366,7 @@ const ModalForm = (props: any) => {
     >
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
-          {props.action == "CREATE" ? "Add Lesson" : "Update Lesson"}
+          {props.action == "CREATE" ? "Thêm chương" : "Sửa chương"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -381,7 +381,7 @@ const ModalForm = (props: any) => {
                 {...props.register("title")}
                 fullWidth
                 id="outlined-basic"
-                label="Title"
+                label="Tên"
                 variant="outlined"
                 size="small"
               />
@@ -392,20 +392,20 @@ const ModalForm = (props: any) => {
                 type="number"
                 fullWidth
                 id="outlined-basic"
-                label="Duration"
+                label="Thời gian"
                 variant="outlined"
                 size="small"
               />
             </Box>
             <Box width={"98%"}>
               <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Courses</InputLabel>
+                <InputLabel id="demo-simple-select-label">Khóa học</InputLabel>
                 <Select
                   {...props.register("courses_id")}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={props.valueCourses}
-                  label="Courses"
+                  label="Khóa học"
                   onChange={(e) => props.setValueCourses(e.target.value)}
                 >
                   {props.courses &&
@@ -420,7 +420,7 @@ const ModalForm = (props: any) => {
               <TextField
                 {...props.register("description")}
                 id="outlined-multiline-static"
-                label="Description"
+                label="Mô tả"
                 multiline
                 rows={9.5}
                 fullWidth
@@ -443,7 +443,7 @@ const ModalForm = (props: any) => {
                   border: "1px solid #333",
                 }}
               >
-                Close
+                Đóng
               </Button>
               <Button
                 onClick={props.onSubmit}
@@ -457,7 +457,7 @@ const ModalForm = (props: any) => {
                   height: "34px",
                 }}
               >
-                Add
+                Thêm
               </Button>
             </Box>
           </Stack>

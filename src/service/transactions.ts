@@ -31,9 +31,9 @@ export const getUserStatisticalTransaction = async (id:any) => {
     console.log(`get_wallet`, error);
   }
 };
-export const getAdminStatisticalTransaction = async () => {
+export const getAdminStatisticalTransaction = async (date:any) => {
   try {
-    const response = await axios.get(`/transaction/statistical/admin/line`);
+    const response = await axios.get(`/transaction/statistical/admin/line/${date}`);
     return response;
   } catch (error) {
     console.log(`get_wallet`, error);

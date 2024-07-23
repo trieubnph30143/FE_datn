@@ -197,7 +197,7 @@ const SubLessonView = ({
         </Box>
       </Drawer>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">SubLesson</Typography>
+        <Typography variant="h5">Bài học</Typography>
       </Stack>
 
       {courses.length == 0 ? (
@@ -233,7 +233,7 @@ const SubLessonView = ({
                     }
                     variant="contained"
                   >
-                    Add SubLesson
+                    Thêm bài học
                   </Button>
                   {item_courses.lesson &&
                     item_courses.lesson.length &&
@@ -265,13 +265,13 @@ const SubLessonView = ({
                             >
                               <TableHead>
                                 <TableRow>
-                                  <StyledTableCell align="left">Title</StyledTableCell>
+                                  <StyledTableCell align="left">Tên</StyledTableCell>
                                   <StyledTableCell align="left">
-                                    Description
+                                    Mô tả
                                   </StyledTableCell>
-                                  <StyledTableCell align="left">Duration</StyledTableCell>
-                                  <StyledTableCell align="left">Type</StyledTableCell>
-                                  <StyledTableCell align="left">Action</StyledTableCell>
+                                  <StyledTableCell align="left">Thời gian</StyledTableCell>
+                                  <StyledTableCell align="left">Kiểu</StyledTableCell>
+                                  <StyledTableCell align="left">Hành động</StyledTableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -317,7 +317,7 @@ const SubLessonView = ({
                                                     )
                                                   }
                                                 >
-                                                  Edit
+                                                  Sửa
                                                 </Button>
                                                 <Button
                                                   aria-describedby={id}
@@ -326,7 +326,7 @@ const SubLessonView = ({
                                                   }
                                                   sx={{ color: "red" }}
                                                 >
-                                                  Delete
+                                                  Xóa
                                                 </Button>
                                               </TableCell>
                                             </TableRow>
@@ -337,7 +337,7 @@ const SubLessonView = ({
                                 ) : (
                                   <TableRow>
                                     {" "}
-                                    <TableCell>Not Found Data</TableCell>
+                                    <TableCell>Không có dữ liệu</TableCell>
                                   </TableRow>
                                 )}
                               </TableBody>
@@ -445,7 +445,7 @@ const ModalForm = (props: any) => {
     >
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
-          {props.action == "CREATE" ? "Add SubLesson" : "Update SubLesson"}
+          {props.action == "CREATE" ? "Thêm bài học" : "Sửa bài học"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -460,7 +460,7 @@ const ModalForm = (props: any) => {
                 fullWidth
                 {...props.register("title")}
                 id="outlined-basic"
-                label="Title"
+                label="Tên"
                 variant="outlined"
                 size="small"
               />
@@ -471,7 +471,7 @@ const ModalForm = (props: any) => {
                 type="number"
                 fullWidth
                 id="outlined-basic"
-                label="Duration"
+                label="Thời gian"
                 variant="outlined"
                 size="small"
               />
@@ -481,7 +481,7 @@ const ModalForm = (props: any) => {
                 {...props.register("description")}
                 fullWidth
                 id="outlined-basic"
-                label="Description"
+                label="Mô tả"
                 variant="outlined"
                 size="small"
               />
@@ -489,14 +489,14 @@ const ModalForm = (props: any) => {
 
             <Box width={"24%"}>
               <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Lesson</InputLabel>
+                <InputLabel id="demo-simple-select-label">Chương</InputLabel>
                 <Select
                   {...props.register("lesson_id")}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={props.valueLesson}
                   onChange={(e) => props.setValueLesson(e.target.value)}
-                  label="Lesson"
+                  label="Chương"
                 >
                   {props.lesson &&
                     props.lesson.length &&
@@ -511,7 +511,7 @@ const ModalForm = (props: any) => {
                 {...props.register("source")}
                 fullWidth
                 id="outlined-basic"
-                label="Source"
+                label="Tài nguyên"
                 variant="outlined"
                 size="small"
               />
@@ -526,7 +526,7 @@ const ModalForm = (props: any) => {
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"5px"}>
                       <RiPlayCircleFill size={"14px"} />
-                      <Typography textTransform={"lowercase"}>Video</Typography>
+                      <Typography textTransform={"lowercase"}>Bài học video</Typography>
                     </Stack>
                   }
                 />
@@ -534,7 +534,7 @@ const ModalForm = (props: any) => {
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"5px"}>
                       <RiQuestionFill size={"14px"} />
-                      <Typography textTransform={"lowercase"}>Quizz</Typography>
+                      <Typography textTransform={"lowercase"}>Bài học trắc nghiệm</Typography>
                     </Stack>
                   }
                 />
@@ -542,7 +542,7 @@ const ModalForm = (props: any) => {
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"5px"}>
                       <RiFileTextLine size={"14px"} />
-                      <Typography textTransform={"lowercase"}>Blog</Typography>
+                      <Typography textTransform={"lowercase"}>Bài đọc tài liệu</Typography>
                     </Stack>
                   }
                 />
@@ -550,7 +550,7 @@ const ModalForm = (props: any) => {
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"5px"}>
                       <RiPencilFill size={"14px"} />
-                      <Typography textTransform={"lowercase"}>Code</Typography>
+                      <Typography textTransform={"lowercase"}>Bài học code</Typography>
                     </Stack>
                   }
                 />
@@ -565,7 +565,7 @@ const ModalForm = (props: any) => {
                       tabIndex={-1}
                       startIcon={<CloudUploadIcon />}
                     >
-                      Upload file
+                      Thêm video
                       <VisuallyHiddenInput
                         onChange={props.handleImageChange}
                         accept="video/*"
@@ -691,7 +691,7 @@ const ModalForm = (props: any) => {
                             {...props.register("answerOne")}
                             fullWidth
                             id="outlined-basic"
-                            label="AnswerOne"
+                            label="Câu trả lời 1"
                             variant="outlined"
                             size="small"
                           />
@@ -713,7 +713,7 @@ const ModalForm = (props: any) => {
                                   correctOne: e.target.value,
                                 })
                               }
-                              label="Correct"
+                              label="Đáp án"
                             >
                               <MenuItem value={`true`}>True</MenuItem>
                               <MenuItem value={`false`}>False</MenuItem>
@@ -727,7 +727,7 @@ const ModalForm = (props: any) => {
                             {...props.register("answerTwo")}
                             fullWidth
                             id="outlined-basic"
-                            label="AnswerTwo"
+                            label="Câu trả lời 2"
                             variant="outlined"
                             size="small"
                           />
@@ -742,7 +742,7 @@ const ModalForm = (props: any) => {
                               {...props.register("correctTwo")}
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
-                              label="Correct"
+                              label="Đáp án"
                               value={props.questionCorrect.correctTwo}
                               onChange={(e) =>
                                 props.setQuestionCorrect({
@@ -763,7 +763,7 @@ const ModalForm = (props: any) => {
                             {...props.register("answerThree")}
                             fullWidth
                             id="outlined-basic"
-                            label="AnswerThree"
+                            label="Câu trả lời 3"
                             variant="outlined"
                             size="small"
                           />
@@ -778,7 +778,7 @@ const ModalForm = (props: any) => {
                               {...props.register("correctThree")}
                               labelId="demo-simple-select-label"
                               id="demo-simple-select"
-                              label="Correct"
+                              label="Đáp án"
                               value={props.questionCorrect.correctThree}
                               onChange={(e) =>
                                 props.setQuestionCorrect({
@@ -906,7 +906,7 @@ const ModalForm = (props: any) => {
                         {...props.register("solution_key")}
                         fullWidth
                         id="outlined-basic"
-                        label="Solution Key"
+                        label="Khóa bài học"
                         variant="outlined"
                         size="small"
                       />
@@ -914,14 +914,14 @@ const ModalForm = (props: any) => {
                     <Box width={"49%"}>
                       <FormControl fullWidth size="small">
                         <InputLabel id="demo-simple-select-label">
-                          Type Exercise
+                          Kiểu bài tập
                         </InputLabel>
                         <Select
                           {...props.register("type_exercise")}
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
                           onChange={props.handleChangeTypeExercise}
-                          label="Type Exercise"
+                          label="Kiểu bài tập"
                           value={props.typeExersice}
                         >
                           <MenuItem value={`html`}>Html</MenuItem>
@@ -1273,7 +1273,7 @@ const ModalForm = (props: any) => {
                   border: "1px solid #333",
                 }}
               >
-                Close
+                Đóng 
               </Button>
               <Button
                 type="submit"
@@ -1287,7 +1287,7 @@ const ModalForm = (props: any) => {
                   height: "34px",
                 }}
               >
-                Add
+                Thêm
               </Button>
             </Box>
           </Stack>

@@ -83,7 +83,7 @@ const CommentView = (props: Props) => {
   return (
     <div>
       <Typography variant="h4" gutterBottom>
-        Reported Comments
+        Bình luận bị báo cáo
       </Typography>
       {comments.length > 0 ? (
         comments.map((comment: any) => (
@@ -114,7 +114,7 @@ const CommentView = (props: Props) => {
             )}
             <div>
               <Typography fontWeight={"bold"} gutterBottom>
-                Child Comments
+                Bình luận con bị báo cáo
               </Typography>
               {comment.comments_child.map((child: any) => (
                 <StyledChildPaper key={child._id}>
@@ -148,7 +148,7 @@ const CommentView = (props: Props) => {
           </StyledPaper>
         ))
       ) : (
-        <Typography variant="body1">No reported comments found.</Typography>
+        <Typography variant="body1">Không có bình luận nào bị báo cáo </Typography>
       )}
     </div>
   );

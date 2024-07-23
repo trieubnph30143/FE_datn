@@ -102,18 +102,18 @@ const RolePermissionView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">RolePermission</Typography>
+        <Typography variant="h5">Quyền của vai trò</Typography>
         <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add RolePermission
+          Thêm quyền của vai trò
         </Button>
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Role</StyledTableCell>
-              <StyledTableCell>Permission</StyledTableCell>
-              <StyledTableCell align="left">Action</StyledTableCell>
+              <StyledTableCell>Vai trò</StyledTableCell>
+              <StyledTableCell>Chức năng</StyledTableCell>
+              <StyledTableCell align="left">Hành động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data.length == 0 ? (
@@ -173,14 +173,14 @@ const RolePermissionView = ({
                   </TableCell>
                   <TableCell align="left">
                     <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                      Edit
+                      Sửa
                     </Button>
                     <Button
                       aria-describedby={id}
                       onClick={(e) => handleClick(e, row)}
                       sx={{ color: "red" }}
                     >
-                      Delete
+                      Xóa
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -267,8 +267,8 @@ const ModalForm = (props: any) => {
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
           {props.action == "CREATE"
-            ? "Add RolePermission"
-            : "Update RolePermission"}
+            ? "Thêm quyền của vai trò"
+            : "Sửa quyền của vai trò"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           {props.role && props.role[0] ? (
@@ -284,7 +284,7 @@ const ModalForm = (props: any) => {
                 fullWidth
                 size="small"
               >
-                <InputLabel id="demo-simple-select-label">Role</InputLabel>
+                <InputLabel id="demo-simple-select-label">Vai trò</InputLabel>
 
                 <Select
                   {...props.register("role_id")}
@@ -302,7 +302,7 @@ const ModalForm = (props: any) => {
                 </Select>
               </FormControl>
               <FormControl sx={{ mt: "10px", width: "100%" }} size="small">
-                <InputLabel id="demo-multiple-name-label">Select</InputLabel>
+                <InputLabel id="demo-multiple-name-label">Chức năng</InputLabel>
                 <Select
                   labelId="demo-multiple-name-label"
                   id="demo-multiple-name"
@@ -334,7 +334,7 @@ const ModalForm = (props: any) => {
                     border: "1px solid #333",
                   }}
                 >
-                  Close
+                  Đóng 
                 </Button>
                 <Button
                   onClick={props.onSubmit}
@@ -348,7 +348,7 @@ const ModalForm = (props: any) => {
                     height: "34px",
                   }}
                 >
-                  Add
+                  Thêm
                 </Button>
               </Box>
             </Stack>
@@ -375,7 +375,7 @@ const ModalForm = (props: any) => {
                     border: "1px solid #333",
                   }}
                 >
-                  Close
+                  Đóng
                 </Button>
               </Box>
             </>

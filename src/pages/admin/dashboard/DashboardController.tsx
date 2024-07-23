@@ -8,13 +8,26 @@ import { getAllStar } from "@/service/star";
 import { roundToOneDecimal } from "@/utils/utils";
 
 const DashboardController = () => {
-  const [orderStatistical, setOrderStatistical] = useState([
-    0, 0, 0, 0, 0, 0, 0,
-  ]);
+  const [orderStatistical, setOrderStatistical]:any = useState([]);
   const [topRevenua,setTopRevenua]:any = useState([])
   const [topStar,setTopStar]:any = useState([])
-  const { data }: any = useQuery("statistical_line", {
-    queryFn: () => getAdminStatisticalTransaction(),
+  const [value,setValue]:any = useState(30)
+  const [valueTime,setValueTime]:any = useState(0)
+
+  const handleChangeTabs = (event: React.SyntheticEvent, newValue: any) => {
+    if(newValue==0){
+      setValue(30)
+    }
+    if(newValue==1){
+      setValue(60)
+    }
+    if(newValue==2){
+      setValue(90)
+    }
+    setValueTime(newValue);
+  };
+  const { data }: any = useQuery(["statistical_line",value], {
+    queryFn: () => getAdminStatisticalTransaction(value),
   });
   const { data: count }: any = useQuery("count_user", {
     queryFn: () => countUser(),
@@ -23,6 +36,8 @@ const DashboardController = () => {
     queryFn: () => getAllStar(),
     onSuccess(data) {
       if(data?.status==0){
+        
+       
         setTopStar(groupAndAverageStarRatings(data.data).sort((a:any, b:any) => b.averageStars - a.averageStars).slice(0, 3))
       }
     },
@@ -52,32 +67,34 @@ const DashboardController = () => {
   
     return result;
   };
-  const {}: any = useQuery("all_order", {
+  const {}: any = useQuery(["all_order",value], {
     queryFn: () => getAllOrder(),
     onSuccess(data) {
       if (data?.status == 0) {
         const today: any = new Date();
-        today.setHours(0, 0, 0, 0);  
-        
-        const orderTotals = Array(7).fill(0);
+        today.setHours(0, 0, 0, 0);
+      
+        // Initialize array for 30 days
+        const orderTotals = Array(value).fill(0);
+      
         data.data.forEach((order: any) => {
           const transactionDate: any = new Date(order.createdAt);
-          transactionDate.setHours(0, 0, 0, 0);  
-        
+          transactionDate.setHours(0, 0, 0, 0);
+      
           const daysDifference = Math.floor(
             (today - transactionDate) / (1000 * 60 * 60 * 24)
           );
-        
-          if (daysDifference < 7) {
-            const index = 6 - daysDifference;
+      
+          if (daysDifference < value) {
+            const index = (value-1) - daysDifference; // 30 days total, index from 0 to 29
             orderTotals[index] += parseFloat(order.courses_id[0].price);
           }
         });
-        
+      
         setOrderStatistical(orderTotals);
-        
+      
         const totalPriceByCourse: any = {};
-        
+      
         data.data.forEach((order: any) => {
           order.courses_id.forEach((course: any) => {
             const { _id, title, price, image, description } = course;
@@ -87,12 +104,12 @@ const DashboardController = () => {
             totalPriceByCourse[_id].totalPrice += price;
           });
         });
-        
+      
         const result = Object.values(totalPriceByCourse);
-        
+      
         setTopRevenua(result.sort((a: any, b: any) => b.totalPrice - a.totalPrice).slice(0, 3));
-        
       }
+      
     },
   });
 
@@ -113,6 +130,9 @@ const DashboardController = () => {
         orderStatistical={orderStatistical}
         topRevenua={topRevenua}
         topStar={topStar}
+        handleChangeTabs={handleChangeTabs}
+        value={value}
+        valueTime={valueTime}
       />
     </>
   );

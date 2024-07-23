@@ -281,7 +281,7 @@ const LayoutAdmin = () => {
               >
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Dashboard
+                    Thống kê
                   </Typography>
                   <ListItem
                     sx={{
@@ -310,7 +310,7 @@ const LayoutAdmin = () => {
                         >
                           <RiLineChartFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Dashboard"} />
+                        <ListItemText primary={"Thống kê"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -319,7 +319,7 @@ const LayoutAdmin = () => {
 
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Courses
+                    Khóa học
                   </Typography>
                   <ListItem
                     sx={{
@@ -350,7 +350,7 @@ const LayoutAdmin = () => {
                         >
                           <RiSlideshow4Fill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Courses"} />
+                        <ListItemText primary={"Khóa học"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -383,7 +383,7 @@ const LayoutAdmin = () => {
                         >
                           <RiFileListFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Lesson"} />
+                        <ListItemText primary={"Chương"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -416,7 +416,7 @@ const LayoutAdmin = () => {
                         >
                           <RiOrganizationChart color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Sub Lesson"} />
+                        <ListItemText primary={"Bài học"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -424,7 +424,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Category
+                    Danh mục
                   </Typography>
                   <ListItem
                     sx={{
@@ -455,7 +455,7 @@ const LayoutAdmin = () => {
                         >
                           <RiGitBranchFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Category"} />
+                        <ListItemText primary={"Danh mục"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -463,7 +463,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Vouchers
+                    Mã giảm giá
                   </Typography>
                   <ListItem
                     sx={{
@@ -494,7 +494,7 @@ const LayoutAdmin = () => {
                         >
                           <RiPriceTag3Line color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Vouchers"} />
+                        <ListItemText primary={"Mã giảm giá"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -527,7 +527,7 @@ const LayoutAdmin = () => {
                         >
                           <RiBardLine color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"User Vouchers"} />
+                        <ListItemText primary={"Mã giảm giá người dùng"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -535,7 +535,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Post
+                    Bài viết 
                   </Typography>
                   <ListItem
                     sx={{
@@ -564,7 +564,7 @@ const LayoutAdmin = () => {
                         >
                           <RiArticleLine color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Blog"} />
+                        <ListItemText primary={"Bài viết "} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -572,7 +572,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Wallet
+                    Ví
                   </Typography>
                   <ListItem
                     sx={{
@@ -603,7 +603,7 @@ const LayoutAdmin = () => {
                         >
                           <RiBankCardFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Wallet"} />
+                        <ListItemText primary={"Ví"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -611,7 +611,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Comment
+                    Bình Luận
                   </Typography>
                   <ListItem
                     sx={{
@@ -642,7 +642,7 @@ const LayoutAdmin = () => {
                         >
                           <RiMessage3Fill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Comment"} />
+                        <ListItemText primary={"Bình Luận"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -650,7 +650,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    Contact
+                    Liên Hệ
                   </Typography>
                   <ListItem
                     sx={{
@@ -681,7 +681,7 @@ const LayoutAdmin = () => {
                         >
                           <RiContactsLine color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Contact"} />
+                        <ListItemText primary={"Liên Hệ"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -689,7 +689,7 @@ const LayoutAdmin = () => {
                 <Divider />
                 <List sx={{ px: "10px" }}>
                   <Typography ml={"5px"} fontWeight={"bold"}>
-                    User
+                    Người dùng 
                   </Typography>
                   <ListItem
                     sx={{
@@ -718,7 +718,7 @@ const LayoutAdmin = () => {
                         >
                           <RiUserAddFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"User"} />
+                        <ListItemText primary={"Người dùng "} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -751,7 +751,7 @@ const LayoutAdmin = () => {
                         >
                           <RiTeamFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Permission"} />
+                        <ListItemText primary={"Chức năng"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -782,7 +782,7 @@ const LayoutAdmin = () => {
                         >
                           <RiPencilFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Role"} />
+                        <ListItemText primary={"Vai trò"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>
@@ -815,7 +815,7 @@ const LayoutAdmin = () => {
                         >
                           <RiShuffleFill color={"white"} />
                         </ListItemIcon>
-                        <ListItemText primary={"Role Permission"} />
+                        <ListItemText primary={"Quyền của vai trò"} />
                       </CustomListItemButton>
                     </Link>
                   </ListItem>

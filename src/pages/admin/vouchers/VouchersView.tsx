@@ -94,23 +94,23 @@ const VouchersView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Vouchers</Typography>
+        <Typography variant="h5">Mã giảm giá</Typography>
         <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add Vouchers
+          Thêm mã giảm giá
         </Button>
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>code</StyledTableCell>
-              <StyledTableCell>Description</StyledTableCell>
-              <StyledTableCell>Start Date</StyledTableCell>
-              <StyledTableCell>End Date</StyledTableCell>
-              <StyledTableCell>Discount Type</StyledTableCell>
-              <StyledTableCell>Discount value</StyledTableCell>
-              <StyledTableCell>Status</StyledTableCell>
-              <StyledTableCell>Action</StyledTableCell>
+              <StyledTableCell>Mã</StyledTableCell>
+              <StyledTableCell>Mô tả</StyledTableCell>
+              <StyledTableCell>Ngày bắt đầu</StyledTableCell>
+              <StyledTableCell>Ngày kết thúc</StyledTableCell>
+              <StyledTableCell>Kiểu giảm giá</StyledTableCell>
+              <StyledTableCell>Giá trị</StyledTableCell>
+              <StyledTableCell>Trạng thái</StyledTableCell>
+              <StyledTableCell>Hành động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data.length == 0 ? (
@@ -192,14 +192,14 @@ const VouchersView = ({
 
                     <TableCell align="left">
                       <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                        Edit
+                        Sửa
                       </Button>
                       <Button
                         aria-describedby={id}
                         onClick={(e) => handleClick(e, row)}
                         sx={{ color: "red" }}
                       >
-                        Delete
+                        Xóa
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -282,7 +282,7 @@ const ModalForm = (props: any) => {
     >
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
-          {props.action == "CREATE" ? "Add Vouchers" : "Update Vouchers"}
+          {props.action == "CREATE" ? "Thêm mã giảm giá" : "Sửa mã giảm giá"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -297,7 +297,7 @@ const ModalForm = (props: any) => {
                 {...props.register("code")}
                 fullWidth
                 id="outlined-basic"
-                label="Title"
+                label="Tên"
                 variant="outlined"
                 size="small"
                 error={props.errors.name?.message}
@@ -309,14 +309,14 @@ const ModalForm = (props: any) => {
                 {...props.register("description")}
                 fullWidth
                 id="outlined-basic"
-                label="Description"
+                label="Mô tả"
                 variant="outlined"
                 size="small"
                 error={props.errors.description?.message}
               />
             </Box>
             <Box width={"48%"}>
-              <label htmlFor="">Start Date</label>
+              <label htmlFor="">Ngày bắt đầu</label>
               <TextField
                 type="date"
                 {...props.register("start_date")}
@@ -328,7 +328,7 @@ const ModalForm = (props: any) => {
               />
             </Box>
             <Box width={"48%"}>
-              <label htmlFor="">End Date</label>
+              <label htmlFor="">Ngày kết thúc</label>
               <TextField
                 type="date"
                 {...props.register("end_date")}
@@ -386,7 +386,7 @@ const ModalForm = (props: any) => {
                   border: "1px solid #333",
                 }}
               >
-                Close
+                Đóng
               </Button>
               <Button
                 onClick={props.onSubmit}
@@ -400,7 +400,7 @@ const ModalForm = (props: any) => {
                   height: "34px",
                 }}
               >
-                Add
+                Thêm
               </Button>
             </Box>
           </Stack>

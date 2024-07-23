@@ -84,17 +84,17 @@ const ContactView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Contact</Typography>
+        <Typography variant="h5">Liên hệ</Typography>
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Tên</StyledTableCell>
               <StyledTableCell align="left">Email</StyledTableCell>
-              <StyledTableCell align="left">Subject</StyledTableCell>
-              <StyledTableCell align="left">Message</StyledTableCell>
-              <StyledTableCell align="left">Action</StyledTableCell>
+              <StyledTableCell align="left">Tiêu đề</StyledTableCell>
+              <StyledTableCell align="left">Nội dung</StyledTableCell>
+              <StyledTableCell align="left">Hành động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data.length == 0 ? (
@@ -143,7 +143,7 @@ const ContactView = ({
 
                     <TableCell align="left">
                       <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                        Reply
+                        Phản hồi
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -222,7 +222,7 @@ const ModalForm = (props: any) => {
     >
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
-          Reply Contact
+          Phản hồi liên hệ
         </Typography>
         <form onSubmit={props.handleSubmit(props.onSubmit)}>
           <Stack
@@ -237,7 +237,7 @@ const ModalForm = (props: any) => {
                 {...props.register("name")}
                 fullWidth
                 id="outlined-basic"
-                label="Title"
+                label="Tên"
                 variant="outlined"
                 size="small"
               />
@@ -258,7 +258,7 @@ const ModalForm = (props: any) => {
                 {...props.register("subject")}
                 fullWidth
                 id="outlined-basic"
-                label="Subject"
+                label="Tiêu đề"
                 variant="outlined"
                 size="small"
               />
@@ -269,7 +269,7 @@ const ModalForm = (props: any) => {
                 {...props.register("message")}
                 fullWidth
                 id="outlined-basic"
-                label="Message"
+                label="Nội dung"
                 variant="outlined"
                 size="small"
               />
@@ -280,7 +280,7 @@ const ModalForm = (props: any) => {
                 {...props.register("reply")}
                 fullWidth
                 id="outlined-basic"
-                label="Reply"
+                label="Nội dung phản hồi"
                 variant="outlined"
                 size="small"
               />
@@ -301,7 +301,7 @@ const ModalForm = (props: any) => {
                   border: "1px solid #333",
                 }}
               >
-                Close
+                Đóng
               </Button>
               <Button
                 type="submit"
@@ -314,7 +314,7 @@ const ModalForm = (props: any) => {
                   height: "34px",
                 }}
               >
-                Add
+                Phản hồi
               </Button>
             </Box>
           </Stack>

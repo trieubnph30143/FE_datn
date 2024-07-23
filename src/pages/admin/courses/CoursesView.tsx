@@ -138,21 +138,21 @@ const CoursesView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Courses</Typography>
+        <Typography variant="h5">Khóa học</Typography>
         <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add Courses
+          Thêm khóa học
         </Button>
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Title</StyledTableCell>
-              <StyledTableCell align="left">Image</StyledTableCell>
-              <StyledTableCell align="left">Category</StyledTableCell>
-              <StyledTableCell align="left">Price</StyledTableCell>
-              <StyledTableCell align="left">Description</StyledTableCell>
-              <StyledTableCell align="left">Action</StyledTableCell>
+              <StyledTableCell>Tên</StyledTableCell>
+              <StyledTableCell align="left">Ảnh</StyledTableCell>
+              <StyledTableCell align="left">Danh mục</StyledTableCell>
+              <StyledTableCell align="left">Giá</StyledTableCell>
+              <StyledTableCell align="left">Mô tả</StyledTableCell>
+              <StyledTableCell align="left">Hành động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data && data[0] ? (
@@ -184,14 +184,14 @@ const CoursesView = ({
                       <TableCell align="left">{row.description}</TableCell>
                       <TableCell align="left">
                         <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                          Edit
+                          Sửa
                         </Button>
                         <Button
                           aria-describedby={id}
                           onClick={(e) => handleClick(e, row)}
                           sx={{ color: "red" }}
                         >
-                          Delete
+                          Xóa
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -341,7 +341,7 @@ const ModalForm = (props: any) => {
     >
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
-          {props.action == "CREATE" ? "Add Courses" : "Update Courses"}
+          {props.action == "CREATE" ? "Thêm khóa học" : "Sửa khóa học"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -356,7 +356,7 @@ const ModalForm = (props: any) => {
                 {...props.register("title")}
                 fullWidth
                 id="outlined-basic"
-                label="Title"
+                label="Tên"
                 variant="outlined"
                 size="small"
               />
@@ -367,7 +367,7 @@ const ModalForm = (props: any) => {
                 {...props.register("price")}
                 fullWidth
                 id="outlined-basic"
-                label="Price"
+                label="Giá"
                 variant="outlined"
                 size="small"
               />
@@ -377,20 +377,20 @@ const ModalForm = (props: any) => {
                 {...props.register("instructor")}
                 fullWidth
                 id="outlined-basic"
-                label="Instructor"
+                label="Tác giả"
                 variant="outlined"
                 size="small"
               />
             </Box>
             <Box width={"24%"}>
               <FormControl fullWidth size="small">
-                <InputLabel id="demo-simple-select-label">Category</InputLabel>
+                <InputLabel id="demo-simple-select-label">Danh mục</InputLabel>
                 <Select
                   {...props.register("category_id")}
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={props.valueCategory}
-                  label="Category"
+                  label="Danh mục"
                   onChange={(e) => props.setValueCategory(e.target.value)}
                 >
                   {props.category &&
@@ -460,7 +460,7 @@ const ModalForm = (props: any) => {
               <TextField
                 {...props.register("description")}
                 id="outlined-multiline-static"
-                label="Description"
+                label="Mô tả"
                 multiline
                 rows={9.5}
                 fullWidth
@@ -469,7 +469,7 @@ const ModalForm = (props: any) => {
             <Box width={"24%"}>
               <TextField
                 id="outlined-multiline-static"
-                label="Result Courses"
+                label="Kết quả đạt được"
                 fullWidth
                 size="small"
                 value={props.textResultCourses}
@@ -555,7 +555,7 @@ const ModalForm = (props: any) => {
             <Box width={"24%"}>
               <TextField
                 id="outlined-multiline-static"
-                label="Courses Requirements"
+                label="Yêu cầu khóa học"
                 fullWidth
                 size="small"
                 value={props.textCoursesRequirements}

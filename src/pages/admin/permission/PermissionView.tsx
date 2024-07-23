@@ -86,17 +86,17 @@ const PermissionView = ({
   return (
     <>
       <Stack my={"20px"} direction={"row"} justifyContent={"space-between"}>
-        <Typography variant="h5">Permission</Typography>
+        <Typography variant="h5">Chức năng Người dùng</Typography>
         <Button onClick={() => handleOpenModal("CREATE")} variant="contained">
-          Add Permission
+          Thêm Chức năng
         </Button>
       </Stack>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell align="left">Action</StyledTableCell>
+              <StyledTableCell>Tên</StyledTableCell>
+              <StyledTableCell align="left">Hành  động</StyledTableCell>
             </TableRow>
           </TableHead>
           {data.length == 0 ? (
@@ -133,14 +133,14 @@ const PermissionView = ({
                   </TableCell>
                   <TableCell align="left">
                     <Button onClick={() => handleOpenModal("UPDATE", row)}>
-                      Edit
+                      Sửa
                     </Button>
                     <Button
                       aria-describedby={id}
                       onClick={(e) => handleClick(e, row)}
                       sx={{ color: "red" }}
                     >
-                      Delete
+                      Xóa
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -220,7 +220,7 @@ const ModalForm = (props: any) => {
     >
       <Box sx={style}>
         <Typography variant="h5" textAlign={"center"}>
-          {props.action == "CREATE" ? "Add Permission" : "Update Permission"}
+          {props.action == "CREATE" ? "Thêm chức năng" : "Sửa chức năng"}
         </Typography>
         <form onSubmit={props.handleSubmit(props.onFinish)}>
           <Stack
@@ -235,7 +235,7 @@ const ModalForm = (props: any) => {
                 {...props.register("name")}
                 fullWidth
                 id="outlined-basic"
-                label="Title"
+                label="Tên"
                 variant="outlined"
                 size="small"
                 error={props.errors.name?.message}
@@ -258,7 +258,7 @@ const ModalForm = (props: any) => {
                   border: "1px solid #333",
                 }}
               >
-                Close
+                Đóng
               </Button>
               <Button
                 onClick={props.onSubmit}
@@ -272,7 +272,7 @@ const ModalForm = (props: any) => {
                   height: "34px",
                 }}
               >
-                Add
+                Thêm
               </Button>
             </Box>
           </Stack>

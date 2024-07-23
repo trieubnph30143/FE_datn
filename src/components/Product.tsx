@@ -36,7 +36,7 @@ const Product = ({
             <img
               src={item.image.url}
               width={"100%"}
-              height={"167px"}
+             
               style={{ borderRadius: "18px", objectFit: "cover" }}
               alt=''
             />
