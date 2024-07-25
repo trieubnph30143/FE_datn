@@ -6,7 +6,12 @@ import {
   updateCertificate,
   updateProgress,
 } from "@/service/progress";
-import { calculateProgress, convertToVND, getCurrentDate, roundToOneDecimal } from "@/utils/utils";
+import {
+  calculateProgress,
+  convertToVND,
+  getCurrentDate,
+  roundToOneDecimal,
+} from "@/utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -96,9 +101,9 @@ const LearningController = () => {
         let total = 0;
         data[0].lesson_progress.map((item: any) => {
           item.sub_lesson.map(() => total++);
-        });   
-        const percentagePerItem = roundToOneDecimal(100 / total) ;     
-        setTotalprogressBar(percentagePerItem);  
+        });
+        const percentagePerItem = roundToOneDecimal(100 / total);
+        setTotalprogressBar(percentagePerItem);
         console.log(percentagePerItem);
         let arr = calculateProgress(data);
         console.log(arr);
@@ -111,7 +116,6 @@ const LearningController = () => {
     refetchOnWindowFocus: false,
   });
 
-  
   const { data: courses } = useQuery("detail", {
     queryFn: () => {
       return getOneCourses(id && id);
@@ -137,9 +141,9 @@ const LearningController = () => {
               setExpanded(arr);
               setActiveLesson(itemChild._id);
               setDataLesson(itemChild);
-              // if (itemChild.type == "blog") {
-              //   setDone(true);
-              // }
+              if (itemChild.type == "blog") {
+                setDone(false);
+              }
               if (itemChild.type == "code") {
                 if (
                   Object.keys(JSON.parse(itemChild.type_exercise)).length == 2
@@ -163,9 +167,9 @@ const LearningController = () => {
                 progress[0].lesson_progress[0].sub_lesson[0].sub_lesson_id
               );
               setDataLesson(data.lesson[0].sub_lesson[0]);
-              // if (data.lesson[0].sub_lesson[0].type == "blog") {
-              //   setDone(true);
-              // }
+              if (data.lesson[0].sub_lesson[0].type == "blog") {
+                setDone(true);
+              }
               if (data.lesson[0].sub_lesson[0].type == "code") {
                 if (
                   Object.keys(
@@ -215,7 +219,7 @@ const LearningController = () => {
     setActiveLesson(data._id);
     setDataLesson(data);
     if (data.type == "blog") {
-      setDone(true);
+      setDone(false);
     }
     if (data.type == "code") {
       if (Object.keys(JSON.parse(data.type_exercise)).length == 2) {
@@ -224,8 +228,12 @@ const LearningController = () => {
         for (let key in JSON.parse(data.type_exercise)) {
           if (key == "html") {
             setTypeCode("html");
-          } else {
+          } else if (key == "javascript") {
             setTypeCode("javascript");
+          } else if (key == "java") {
+            setTypeCode("java");
+          } else if (key == "python") {
+            setTypeCode("python");
           }
         }
       }
@@ -337,8 +345,12 @@ const LearningController = () => {
                   )) {
                     if (key == "html") {
                       setTypeCode("html");
-                    } else {
+                    } else if (key == "javascript") {
                       setTypeCode("javascript");
+                    } else if (key == "java") {
+                      setTypeCode("java");
+                    } else if (key == "python") {
+                      setTypeCode("python");
                     }
                   }
                 }
@@ -388,8 +400,6 @@ const LearningController = () => {
               );
               setDataLesson(courses.lesson[index + 1].sub_lesson[0]);
               if (courses.lesson[index + 1].sub_lesson[0].type == "blog") {
-                setDone(true);
-              } else {
                 setDone(false);
               }
             } else {
@@ -398,11 +408,10 @@ const LearningController = () => {
                   .sub_lesson_id
               );
               setDataLesson(courses.lesson[index].sub_lesson[index2 + 1]);
-              arr[0].lesson_progress[index].sub_lesson[index2 + 1].result =
-                true;
+              arr[0].lesson_progress[index].sub_lesson[
+                index2 + 1
+              ].result = true;
               if (courses.lesson[index].sub_lesson[index2 + 1].type == "blog") {
-                setDone(true);
-              } else {
                 setDone(false);
               }
               arr[0].lesson_progress[index].sub_lesson[index2].completed = true;
@@ -421,8 +430,12 @@ const LearningController = () => {
                   )) {
                     if (key == "html") {
                       setTypeCode("html");
-                    } else {
+                    } else if (key == "javascript") {
                       setTypeCode("javascript");
+                    } else if (key == "java") {
+                      setTypeCode("java");
+                    } else if (key == "python") {
+                      setTypeCode("python");
                     }
                   }
                 }
@@ -481,7 +494,7 @@ const LearningController = () => {
       } catch (error) {}
     }
     if (arrCheck.length == 1) {
-      setprogressBar([100])
+      setprogressBar([100]);
     }
   };
 
@@ -524,7 +537,7 @@ const LearningController = () => {
           return Math.random() * (max - min) + min;
         }
 
-        var interval: any = setInterval(function () {
+        var interval: any = setInterval(function() {
           var timeLeft = animationEnd - Date.now();
 
           if (timeLeft <= 0) {
@@ -671,42 +684,45 @@ const LearningController = () => {
                       fontSize: "3.5rem",
                       textAlign: "center",
                     },
-                    ".css-1eed5fa-MuiInputBase-root-MuiInput-root:hover:not(.Mui-disabled, .Mui-error):before":
-                      {
-                        border: "none",
-                      },
-                  }}
-                >
-                 { progress[0].status_certificate? <Typography sx={{ fontFamily: "'Great Vibes', cursive",
-                      fontSize: "3.5rem",textAlign: "center"}}>{progress[0].user_name}</Typography>:
-                  <TextField
-                    value={
-                     
-                       
-                       nameCertificate
-                    }
-                    onChange={(e) => {
-                      const inputValue = e.target.value;
-                      const words = inputValue.split(" ");
+                    ".css-1eed5fa-MuiInputBase-root-MuiInput-root:hover:not(.Mui-disabled, .Mui-error):before": {
+                      border: "none",
+                    },
+                  }}>
+                  {progress[0].status_certificate ? (
+                    <Typography
+                      sx={{
+                        fontFamily: "'Great Vibes', cursive",
+                        fontSize: "3.5rem",
+                        textAlign: "center",
+                      }}>
+                      {progress[0].user_name}
+                    </Typography>
+                  ) : (
+                    <TextField
+                      value={nameCertificate}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        const words = inputValue.split(" ");
 
-                      for (let i = 0; i < words.length; i++) {
-                        if (words[i].length > 0) {
-                          words[i] =
-                            words[i][0].toUpperCase() +
-                            words[i].substring(1).toLowerCase();
+                        for (let i = 0; i < words.length; i++) {
+                          if (words[i].length > 0) {
+                            words[i] =
+                              words[i][0].toUpperCase() +
+                              words[i].substring(1).toLowerCase();
+                          }
                         }
-                      }
-                      setNameCertificate(words.join(" "));
-                    }}
-                    placeholder="Nhập họ và tên"
-                    variant="standard"
-                    autoComplete="off"
-                    sx={{
-                      height: "100%",
-                      fontSize: "30px",
-                      textAlign: "center",
-                    }}
-                  />}
+                        setNameCertificate(words.join(" "));
+                      }}
+                      placeholder='Nhập họ và tên'
+                      variant='standard'
+                      autoComplete='off'
+                      sx={{
+                        height: "100%",
+                        fontSize: "30px",
+                        textAlign: "center",
+                      }}
+                    />
+                  )}
                 </Box>
                 <img src={certificate} width={"100%"} alt='' />
               </Box>
@@ -717,11 +733,14 @@ const LearningController = () => {
                       "linear-gradient(to right bottom, #ff8f26, #ff5117)",
                     color: "white",
 
-                height: "34px",
-                mt: 1,
-                mr: 1,
-                float:"right"
-              }} onClick={handleCapture}><RiDownloadCloud2Line size={"20px"} /> Tải xuống</Button>
+                    height: "34px",
+                    mt: 1,
+                    mr: 1,
+                    float: "right",
+                  }}
+                  onClick={handleCapture}>
+                  <RiDownloadCloud2Line size={"20px"} /> Tải xuống
+                </Button>
               ) : (
                 <Box display={"flex"} flexDirection={"column"} gap={"15px"}>
                   <FormControlLabel
@@ -754,14 +773,14 @@ const LearningController = () => {
         </>
       ) : (
         <Box>
-          <Skeleton width="100%" sx={{ mt: "-20px" }} height={"90px"} />
+          <Skeleton width='100%' sx={{ mt: "-20px" }} height={"90px"} />
           <Stack direction={"row"} gap={"1%"}>
             <Box width={"74%"}>
-              <Skeleton width="100%" variant="rectangular" height={"60vh"} />
-              <Skeleton width="100%" height={"39vh"} sx={{ mt: "-20px" }} />
+              <Skeleton width='100%' variant='rectangular' height={"60vh"} />
+              <Skeleton width='100%' height={"39vh"} sx={{ mt: "-20px" }} />
             </Box>
             <Box width={"25%"}>
-              <Skeleton width="100%" variant="rectangular" height={"90vh"} />
+              <Skeleton width='100%' variant='rectangular' height={"90vh"} />
             </Box>
           </Stack>
         </Box>

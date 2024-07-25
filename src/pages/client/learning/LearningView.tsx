@@ -37,6 +37,8 @@ import ReactPlayer from "react-player";
 import logo from "../../../images/logo4.png";
 import direction from "../../../images/Screenshot from 2024-05-21 10-05-13.png";
 import left from "../../../images/left.png";
+import java from "../../../images/java-logo.png";
+import python from "../../../images/python-logo-png-big-image-png-2400.png";
 import right from "../../../images/right.png";
 import ques from "../../../images/q.png";
 import note2 from "../../../images/note2.png";
@@ -198,8 +200,7 @@ const LearningView = ({
               justifyContent: "center",
               alignItems: "center",
               background: "rgba(255,255,255,.8)",
-            }}
-          >
+            }}>
             <Box>
               <CircularProgress />
             </Box>
@@ -797,39 +798,35 @@ const Header = (props: any) => {
         ".css-79ws1d-MuiModal-root": {
           zIndex: 2000,
         },
-      }}
-    >
+      }}>
       <Stack
         height={"50px "}
         px={"30px"}
         direction={"row"}
         justifyContent={"space-between"}
         alignItems={"center"}
-        bgcolor={"#29303b"}
-      >
+        bgcolor={"#29303b"}>
         <Modal
           sx={{ zIndex: 1400 }}
           onClose={() => setIsSendPinCode(false)}
           open={isSendPinCode}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+          aria-labelledby='modal-modal-title'
+          aria-describedby='modal-modal-description'>
           <Box sx={style}>
             <Box
               textAlign={"center"}
               width={"430px"}
               padding={"20px"}
-              height={300}
-            >
-              <Typography my={"20px"} variant="h4">
+              height={300}>
+              <Typography my={"20px"} variant='h4'>
                 Xác thực mã Pin
               </Typography>
               <OTPInput
-                inputStyle="inputStyle"
+                inputStyle='inputStyle'
                 value={otp}
                 onChange={handleChangeOtp}
                 numInputs={6}
-                renderInput={(props) => <input {...props} type="password" />}
+                renderInput={(props) => <input {...props} type='password' />}
               />
               <Button
                 sx={{
@@ -842,8 +839,7 @@ const Header = (props: any) => {
                   borderRadius: "30px",
                   fontWeight: "700",
                 }}
-                onClick={handleSubmitPin}
-              >
+                onClick={handleSubmitPin}>
                 Xác nhận
               </Button>
             </Box>
@@ -853,15 +849,14 @@ const Header = (props: any) => {
           direction={"row"}
           alignItems={"center"}
           color={"white"}
-          gap={"15px"}
-        >
+          gap={"15px"}>
           <RiArrowLeftSLine onClick={() => props.navigate("/")} size={25} />
           <img
             src={logo}
             width={40}
             style={{ borderRadius: "8px", objectFit: "contain" }}
             height={40}
-            alt=""
+            alt=''
           />
           <Typography fontWeight={"bold"} fontSize={"13px"}>
             {props.courses.title}
@@ -875,8 +870,7 @@ const Header = (props: any) => {
               direction={"row"}
               color={"white"}
               alignItems={"center"}
-              gap={0.5}
-            >
+              gap={0.5}>
               <RiVipCrown2Fill />
               <Typography fontSize={"13px"}>
                 {props.progress[0].completed == true &&
@@ -896,8 +890,7 @@ const Header = (props: any) => {
               direction={"row"}
               color={"white"}
               alignItems={"center"}
-              gap={0.5}
-            >
+              gap={0.5}>
               <RiGift2Fill />
               <Typography fontSize={"13px"}>Tặng khóa học này</Typography>
             </Stack>
@@ -912,8 +905,7 @@ const Header = (props: any) => {
                 fill: "white !important",
                 fontSize: "30px !important",
               },
-            }}
-          >
+            }}>
             <Box style={{ width: "35px", position: "relative" }}>
               <CircularProgressbar
                 value={props.progressBar[0]}
@@ -942,8 +934,7 @@ const Header = (props: any) => {
             onClick={handleToggleStar(true)}
             color={"white"}
             alignItems={"center"}
-            gap={0.5}
-          >
+            gap={0.5}>
             <RiStarFill />
             <Typography fontSize={"13px"}>Đánh giá</Typography>
           </Stack>
@@ -952,8 +943,7 @@ const Header = (props: any) => {
             color={"white"}
             alignItems={"center"}
             gap={0.5}
-            onClick={props.toggleDrawerNote(true)}
-          >
+            onClick={props.toggleDrawerNote(true)}>
             <RiFile3Fill />
             <Typography fontSize={"13px"}>Ghi chú</Typography>
           </Stack>
@@ -962,8 +952,7 @@ const Header = (props: any) => {
             color={"white"}
             alignItems={"center"}
             gap={0.5}
-            onClick={props.toggleDrawerDirection(true)}
-          >
+            onClick={props.toggleDrawerDirection(true)}>
             <RiQuestionFill />
             <Typography fontSize={"13px"}>Hướng dẫn</Typography>
           </Stack>
@@ -971,16 +960,14 @@ const Header = (props: any) => {
         <Drawer
           open={props.openDirection}
           anchor={"right"}
-          onClose={props.toggleDrawerDirection(false)}
-        >
+          onClose={props.toggleDrawerDirection(false)}>
           <Box width={"1200px"} padding={"50px 100px"}>
             <Box sx={{ position: "relative" }}>
               <Box
                 width={"100%"}
                 sx={{ position: "absolute", top: 0, left: 0 }}
                 height={"485px"}
-                bgcolor={"rgba(0,0,0,.5)"}
-              >
+                bgcolor={"rgba(0,0,0,.5)"}>
                 {" "}
               </Box>
               {activeStep == 0 && (
@@ -994,7 +981,7 @@ const Header = (props: any) => {
                     boxShadow: "0px 0px 18px white",
                   }}
                   width={"75%"}
-                  alt=""
+                  alt=''
                 />
               )}
               {activeStep == 1 && (
@@ -1009,7 +996,7 @@ const Header = (props: any) => {
                     boxShadow: "0px 0px 18px white",
                   }}
                   width={"25%"}
-                  alt=""
+                  alt=''
                 />
               )}
               {activeStep == 2 && (
@@ -1025,7 +1012,7 @@ const Header = (props: any) => {
                     boxShadow: "0px 0px 18px white",
                   }}
                   width={"57px"}
-                  alt=""
+                  alt=''
                 />
               )}
               {activeStep == 3 && (
@@ -1041,7 +1028,7 @@ const Header = (props: any) => {
                     boxShadow: "0px 0px 18px white",
                   }}
                   width={"111px"}
-                  alt=""
+                  alt=''
                 />
               )}
               {activeStep == 4 && (
@@ -1056,7 +1043,7 @@ const Header = (props: any) => {
                     boxShadow: "0px 0px 18px white",
                   }}
                   width={"50px"}
-                  alt=""
+                  alt=''
                 />
               )}
 
@@ -1064,7 +1051,7 @@ const Header = (props: any) => {
                 src={direction}
                 style={{ objectFit: "cover" }}
                 width={"100%"}
-                alt=""
+                alt=''
               />
             </Box>
             <Box
@@ -1075,9 +1062,8 @@ const Header = (props: any) => {
                 ".css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed": {
                   color: "#ff5117",
                 },
-              }}
-            >
-              <Stepper activeStep={activeStep} orientation="vertical">
+              }}>
+              <Stepper activeStep={activeStep} orientation='vertical'>
                 {steps.map((step, index) => (
                   <Step key={step.label}>
                     <StepLabel>{step.label}</StepLabel>
@@ -1086,7 +1072,7 @@ const Header = (props: any) => {
                       <Box sx={{ mb: 2 }}>
                         <div>
                           <Button
-                            variant="contained"
+                            variant='contained'
                             onClick={handleNext}
                             sx={{
                               background:
@@ -1096,8 +1082,7 @@ const Header = (props: any) => {
                               height: "34px",
                               mt: 1,
                               mr: 1,
-                            }}
-                          >
+                            }}>
                             {index === steps.length - 1
                               ? "Hoàn thành"
                               : "Đi tiếp"}
@@ -1105,8 +1090,7 @@ const Header = (props: any) => {
                           <Button
                             disabled={index === 0}
                             onClick={handleBack}
-                            sx={{ mt: 1, mr: 1 }}
-                          >
+                            sx={{ mt: 1, mr: 1 }}>
                             Quay lại
                           </Button>
                         </div>
@@ -1128,8 +1112,7 @@ const Header = (props: any) => {
                     mt: 1,
                     mr: 1,
                   }}
-                  onClick={handleReset}
-                >
+                  onClick={handleReset}>
                   Thoát hướng dẫn
                 </Button>
               </Paper>
@@ -1139,10 +1122,9 @@ const Header = (props: any) => {
         <Drawer
           open={openGift}
           anchor={"right"}
-          onClose={handleToggleGift(false)}
-        >
+          onClose={handleToggleGift(false)}>
           <Box width={"600px"} padding={"50px 50px"}>
-            <Typography variant="h5" textAlign={"center"} fontWeight={"bold"}>
+            <Typography variant='h5' textAlign={"center"} fontWeight={"bold"}>
               Tặng khóa học {props.courses.title}
             </Typography>
             <Typography my={"20px"} color={"#333"} fontSize={"14px"}>
@@ -1150,29 +1132,27 @@ const Header = (props: any) => {
             </Typography>
             <form style={{ marginTop: "30px" }}>
               <TextField
-                id="outlined-basic"
-                type="email"
+                id='outlined-basic'
+                type='email'
                 value={emailGift}
                 onChange={(e) => setEmailGift(e.target.value)}
-                label="Email người nhận"
-                size="small"
+                label='Email người nhận'
+                size='small'
                 fullWidth
-                variant="outlined"
+                variant='outlined'
               />
               <Box
                 mt={"20px"}
                 width={"100%"}
                 padding={"10px"}
                 border={"1px solid #dddddd"}
-                borderRadius={"10px"}
-              >
+                borderRadius={"10px"}>
                 <Stack
                   direction={"row"}
                   justifyContent={"space-between"}
                   alignItems={"center"}
                   borderBottom={"1px dashed #dddddd"}
-                  paddingBottom={"20px"}
-                >
+                  paddingBottom={"20px"}>
                   <Box>Giá bán : </Box>
                   <Box>{convertToVND(props.courses.price)}</Box>
                 </Stack>
@@ -1215,31 +1195,29 @@ const Header = (props: any) => {
                   direction={"row"}
                   mt={"15px"}
                   justifyContent={"space-between"}
-                  alignItems={"center"}
-                >
+                  alignItems={"center"}>
                   <Box>Tổng tiền : </Box>
                   <Box>{convertToVND(price)}</Box>
                 </Stack>
                 <FormControl sx={{ mt: "20px", display: "block" }}>
-                  <FormLabel id="demo-radio-buttons-group-label">
+                  <FormLabel id='demo-radio-buttons-group-label'>
                     Phương thức thanh toán
                   </FormLabel>
 
                   <RadioGroup
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    aria-labelledby="demo-radio-buttons-group-label"
-                    name="radio-buttons-group"
-                  >
+                    aria-labelledby='demo-radio-buttons-group-label'
+                    name='radio-buttons-group'>
                     <FormControlLabel
-                      value="wallet"
+                      value='wallet'
                       control={<Radio />}
-                      label="Thanh toán bằng ví"
+                      label='Thanh toán bằng ví'
                     />
                     <FormControlLabel
-                      value="vnpay"
+                      value='vnpay'
                       control={<Radio />}
-                      label="Cổng thanh toán VNPAY"
+                      label='Cổng thanh toán VNPAY'
                     />
                   </RadioGroup>
                 </FormControl>
@@ -1249,14 +1227,12 @@ const Header = (props: any) => {
                   disabled={!emailGift || !paymentMethod}
                   onClick={handlePayment}
                   sx={{
-                    background:
-                      "#1250dc",
+                    background: "#1250dc",
                     color: "white",
                     borderRadius: "30px",
                     float: "right",
                     height: "34px",
-                  }}
-                >
+                  }}>
                   Thanh toán
                 </Button>
               </Box>
@@ -1266,8 +1242,7 @@ const Header = (props: any) => {
         <Drawer
           open={openStar}
           anchor={"right"}
-          onClose={handleToggleStar(false)}
-        >
+          onClose={handleToggleStar(false)}>
           <Box
             sx={{
               ".css-15befwp-MuiRating-root": {
@@ -1275,17 +1250,15 @@ const Header = (props: any) => {
               },
             }}
             width={"900px"}
-            padding={"50px 50px"}
-          >
-            <Typography variant="h4" textAlign={"center"} fontWeight={"bold"}>
+            padding={"50px 50px"}>
+            <Typography variant='h4' textAlign={"center"} fontWeight={"bold"}>
               Phản hồi của học viên
             </Typography>
             <Stack
               mt={"30px"}
               direction={"row"}
               gap={"4%"}
-              alignItems={"center"}
-            >
+              alignItems={"center"}>
               <Box
                 width={"20%"}
                 display={"flex"}
@@ -1297,9 +1270,8 @@ const Header = (props: any) => {
                     width: "30px !important",
                     height: "30px !important",
                   },
-                }}
-              >
-                <Typography variant="h2" color={"#b4690e"} fontWeight={"bold"}>
+                }}>
+                <Typography variant='h2' color={"#b4690e"} fontWeight={"bold"}>
                   {roundToOneDecimal(
                     star !== undefined && star.status == 0 && star.averageRating
                       ? star.averageRating
@@ -1312,11 +1284,11 @@ const Header = (props: any) => {
                       ? star.averageRating
                       : 0
                   }
-                  starRatedColor="blue"
+                  starRatedColor='blue'
                   numberOfStars={5}
-                  starSpacing="0"
+                  starSpacing='0'
                   starRatedColor={"#b4690e"}
-                  name="rating"
+                  name='rating'
                 />
 
                 <Typography color={"#b4690e"} fontWeight={"bold"}>
@@ -1328,8 +1300,7 @@ const Header = (props: any) => {
                 display={"flex"}
                 gap={"10px"}
                 alignItems={"center"}
-                flexDirection={"column"}
-              >
+                flexDirection={"column"}>
                 <ProgressBar
                   percentage={
                     star !== undefined && star?.status == 0
@@ -1381,10 +1352,9 @@ const Header = (props: any) => {
                 display={"flex"}
                 gap={"4px"}
                 alignItems={"start"}
-                flexDirection={"column"}
-              >
+                flexDirection={"column"}>
                 <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
-                  <Rating name="read-only" color="#b4690e" value={5} readOnly />
+                  <Rating name='read-only' color='#b4690e' value={5} readOnly />
                   <Typography>
                     {star !== undefined &&
                       star?.status == 0 &&
@@ -1393,7 +1363,7 @@ const Header = (props: any) => {
                   </Typography>
                 </Stack>
                 <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
-                  <Rating name="read-only" color="#b4690e" value={4} readOnly />
+                  <Rating name='read-only' color='#b4690e' value={4} readOnly />
                   <Typography>
                     {star !== undefined &&
                       star?.status == 0 &&
@@ -1403,7 +1373,7 @@ const Header = (props: any) => {
                 </Stack>
 
                 <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
-                  <Rating name="read-only" color="#b4690e" value={3} readOnly />
+                  <Rating name='read-only' color='#b4690e' value={3} readOnly />
                   <Typography>
                     {star !== undefined &&
                       star?.status == 0 &&
@@ -1412,7 +1382,7 @@ const Header = (props: any) => {
                   </Typography>
                 </Stack>
                 <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
-                  <Rating name="read-only" color="#b4690e" value={2} readOnly />
+                  <Rating name='read-only' color='#b4690e' value={2} readOnly />
                   <Typography>
                     {star !== undefined &&
                       star?.status == 0 &&
@@ -1421,7 +1391,7 @@ const Header = (props: any) => {
                   </Typography>
                 </Stack>
                 <Stack direction={"row"} alignItems={"start"} gap={"5px"}>
-                  <Rating name="read-only" color="#b4690e" value={1} readOnly />
+                  <Rating name='read-only' color='#b4690e' value={1} readOnly />
                   <Typography>
                     {star !== undefined &&
                       star?.status == 0 &&
@@ -1431,21 +1401,20 @@ const Header = (props: any) => {
                 </Stack>
               </Box>
             </Stack>
-            <Typography variant="h6" fontWeight={"bold"} mt={"30px"}>
+            <Typography variant='h6' fontWeight={"bold"} mt={"30px"}>
               Đánh giá của tôi
             </Typography>
             <Box
               mt={"10px"}
               display={"flex"}
               flexDirection={"column"}
-              gap={"10px"}
-            >
+              gap={"10px"}>
               {!userStar[0] || updateUserStar ? (
                 <Box>
                   <Stack direction={"row"} alignItems={"center"} gap={"20px"}>
                     <Rating
-                      name="hover-feedback"
-                      size="large"
+                      name='hover-feedback'
+                      size='large'
                       value={value}
                       getLabelText={getLabelText}
                       onChange={(event, newValue) => {
@@ -1457,7 +1426,7 @@ const Header = (props: any) => {
                       emptyIcon={
                         <StarIcon
                           style={{ opacity: 0.55 }}
-                          fontSize="inherit"
+                          fontSize='inherit'
                         />
                       }
                     />
@@ -1469,23 +1438,21 @@ const Header = (props: any) => {
                     <TextField
                       value={messageStar}
                       onChange={(e) => setMessageStar(e.target.value)}
-                      id="outlined-basic"
-                      placeholder="Hãy cho tôi biết cảm nhận của bạn khi học khóa học này."
-                      variant="outlined"
+                      id='outlined-basic'
+                      placeholder='Hãy cho tôi biết cảm nhận của bạn khi học khóa học này.'
+                      variant='outlined'
                       sx={{ width: "60%" }}
-                      size="small"
+                      size='small'
                     />
                     <Button
                       onClick={handleStar}
                       disabled={!value || !messageStar}
                       sx={{
-                        background:
-                          "#1250dc",
+                        background: "#1250dc",
                         color: "white",
                         borderRadius: "4px",
                         width: "92px",
-                      }}
-                    >
+                      }}>
                       Đánh giá
                     </Button>
                     {updateUserStar && (
@@ -1500,8 +1467,7 @@ const Header = (props: any) => {
                   direction={"row"}
                   mt={"30px"}
                   paddingBottom={"10px"}
-                  gap={"20px"}
-                >
+                  gap={"20px"}>
                   <img
                     src={
                       userStar[0].user_id[0].image.url
@@ -1511,19 +1477,18 @@ const Header = (props: any) => {
                     width={"50px"}
                     height={"50px"}
                     style={{ borderRadius: "50%" }}
-                    alt=""
+                    alt=''
                   />
                   <Box>
                     <Typography
                       display={"flex"}
                       gap={"20px"}
-                      fontWeight={"bold"}
-                    >
+                      fontWeight={"bold"}>
                       {userStar[0].user_id[0].user_name}{" "}
                     </Typography>
                     <Rating
-                      name="read-only"
-                      color="#b4690e"
+                      name='read-only'
+                      color='#b4690e'
                       value={userStar[0].star}
                       readOnly
                     />
@@ -1537,8 +1502,7 @@ const Header = (props: any) => {
                           borderRadius: "4px",
                           fontSize: "13px",
                           height: "20px",
-                        }}
-                      >
+                        }}>
                         Xóa
                       </Button>
                       <Button
@@ -1548,14 +1512,12 @@ const Header = (props: any) => {
                           setUpdateUserStar(userStar[0]);
                         }}
                         sx={{
-                          background:
-                            "#1250dc",
+                          background: "#1250dc",
                           color: "white",
                           borderRadius: "4px",
                           fontSize: "13px",
                           height: "20px",
-                        }}
-                      >
+                        }}>
                         Sửa
                       </Button>
                     </Box>
@@ -1564,7 +1526,7 @@ const Header = (props: any) => {
               )}
               {dataStar.length > 0 && (
                 <>
-                  <Typography variant="h6" fontWeight={"bold"} mt={"30px"}>
+                  <Typography variant='h6' fontWeight={"bold"} mt={"30px"}>
                     Tất cả đánh giá
                   </Typography>
                   <Stack direction={"column"} gap={"20px"} mt={"30px"}>
@@ -1576,8 +1538,7 @@ const Header = (props: any) => {
                             direction={"row"}
                             paddingBottom={"10px"}
                             borderBottom={"1px dashed #dddddd"}
-                            gap={"20px"}
-                          >
+                            gap={"20px"}>
                             <img
                               src={
                                 item.user_id[0].image.url
@@ -1587,15 +1548,15 @@ const Header = (props: any) => {
                               width={"50px"}
                               height={"50px"}
                               style={{ borderRadius: "50%" }}
-                              alt=""
+                              alt=''
                             />
                             <Box>
                               <Typography fontWeight={"bold"}>
                                 {item.user_id[0].user_name}
                               </Typography>
                               <Rating
-                                name="read-only"
-                                color="#b4690e"
+                                name='read-only'
+                                color='#b4690e'
                                 value={item.star}
                                 readOnly
                               />
@@ -1617,17 +1578,16 @@ const Header = (props: any) => {
 const ProgressBar = ({ percentage }: any) => {
   return (
     <div
-      className="progress-bar-container"
+      className='progress-bar-container'
       style={{
         width: "90%",
         backgroundColor: "#f0f0f0",
         borderRadius: "4px",
         overflow: "hidden",
         marginTop: "10px",
-      }}
-    >
+      }}>
       <div
-        className="progress-bar"
+        className='progress-bar'
         style={{
           height: "9px",
           backgroundColor: "#b4690e",
@@ -1637,8 +1597,7 @@ const ProgressBar = ({ percentage }: any) => {
           justifyContent: "center",
           transition: "width 0.5s ease",
           width: `${percentage}%`,
-        }}
-      ></div>
+        }}></div>
     </div>
   );
 };
@@ -1654,14 +1613,12 @@ const Footer = (props: any) => {
       display={"flex"}
       alignItems={"center"}
       justifyContent={"center"}
-      left={0}
-    >
+      left={0}>
       <Stack
         direction={"row"}
         alignItems={"center"}
         gap={"35px"}
-        justifyContent={"center"}
-      >
+        justifyContent={"center"}>
         <Button sx={{ color: "black" }}>
           <RiArrowLeftSLine size={25} />
           Bài trước
@@ -1674,8 +1631,7 @@ const Footer = (props: any) => {
             border: "2px solid #306de4",
             height: "35px",
             px: "15px",
-          }}
-        >
+          }}>
           Bài tiếp theo
           <RiArrowRightSLine size={25} />
         </Button>
@@ -1721,12 +1677,11 @@ const ContentLeftVideo = (props: any) => {
   return (
     <Box
       width={"75%"}
-      className="scroll-left"
+      className='scroll-left'
       height={"93vh"}
-      sx={{ overflowY: "scroll" }}
-    >
+      sx={{ overflowY: "scroll" }}>
       <Box>
-        <Stack className="section">
+        <Stack className='section'>
           <Box
             sx={{
               width: "100%",
@@ -1735,13 +1690,12 @@ const ContentLeftVideo = (props: any) => {
               display: "flex",
               justifyContent: "center",
             }}
-            className="player-wrapper"
-          >
+            className='player-wrapper'>
             <ReactPlayer
               ref={props.player}
-              className="react-player"
-              width="80%"
-              height="100%"
+              className='react-player'
+              width='80%'
+              height='100%'
               url={props.data.video_id.url}
               playing={props.playing}
               controls
@@ -1755,8 +1709,7 @@ const ContentLeftVideo = (props: any) => {
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
-            alignItems={"center"}
-          >
+            alignItems={"center"}>
             <Typography fontSize={"30px"} fontWeight={"700"}>
               {props.data.title}
             </Typography>
@@ -1769,8 +1722,7 @@ const ContentLeftVideo = (props: any) => {
                 display: "flex",
                 alignItems: "center",
                 gap: "3px",
-              }}
-            >
+              }}>
               <RiAddFill />{" "}
               <Typography mt={"2px"} fontSize={"15px"} color={"#333"}>
                 Thêm ghi chú tại <b>{props.timeVideo}</b>
@@ -1782,18 +1734,18 @@ const ContentLeftVideo = (props: any) => {
           </Typography>
           <Typography mt={"20px"} lineHeight={2.5}>
             Tham gia nhóm Học{" "}
-            <a style={{ color: "#1250dc" }} href="">
+            <a style={{ color: "#1250dc" }} href=''>
               lập trình tại FDemy
             </a>{" "}
             trên Facebook để cùng nhau trao đổi trong quá trình học tập ❤️
             <br></br>
             Các bạn subscribe{" "}
-            <a style={{ color: "#1250dc" }} href="">
+            <a style={{ color: "#1250dc" }} href=''>
               kênh Youtube Fdemy Official
             </a>{" "}
             để nhận thông báo khi có các bài học mới nhé ❤️<br></br>
             Form HTML template:{" "}
-            <a style={{ color: "#1250dc" }} href="">
+            <a style={{ color: "#1250dc" }} href=''>
               https://codepen.io/ng-ngc-sn-the-bashful/pen/mdVEoWP
             </a>
             <br></br>
@@ -1804,8 +1756,7 @@ const ContentLeftVideo = (props: any) => {
         <Typography
           fontSize={"14px"}
           color={"#333"}
-          sx={{ display: "flex", alignItems: "center", gap: "3px" }}
-        >
+          sx={{ display: "flex", alignItems: "center", gap: "3px" }}>
           Made with <RiHeartFill size={20} color={"#ff5117"} />· Powered by F8
         </Typography>
       </Box>
@@ -1818,24 +1769,20 @@ const ContentLeftVideo = (props: any) => {
                 display: "none !important",
               },
               width: "100%",
-            }}
-          >
+            }}>
             <Typography
               mb={"20px"}
               display={"flex"}
               alignItems={"center"}
-              gap={"10px"}
-            >
+              gap={"10px"}>
               Thêm ghi chú tại{" "}
               <Button
                 sx={{
-                  background:
-                    "#1250dc",
+                  background: "#1250dc",
                   color: "white",
                   borderRadius: "99px",
                   padding: "2px 5px",
-                }}
-              >
+                }}>
                 {props.timeVideo}
               </Button>{" "}
               bài : <b>{props.data.title}</b>
@@ -1843,7 +1790,7 @@ const ContentLeftVideo = (props: any) => {
             <Editor
               value={content}
               onChange={handleEditorChange}
-              apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+              apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
               init={{
                 plugins:
                   "preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion",
@@ -1914,13 +1861,11 @@ const ContentLeftVideo = (props: any) => {
             <Button
               onClick={handleNote}
               sx={{
-                background:
-                  "#1250dc",
+                background: "#1250dc",
                 color: "white",
 
                 height: "34px",
-              }}
-            >
+              }}>
               Tạo ghi chú
             </Button>
           </Box>
@@ -1945,11 +1890,10 @@ const ContentRight = (props: any) => {
   return (
     <Box
       width={"25%"}
-      className="list-learning"
+      className='list-learning'
       padding={"15px"}
       paddingBottom={"65px"}
-      sx={{ overflowY: "scroll", height: "93vh" }}
-    >
+      sx={{ overflowY: "scroll", height: "93vh" }}>
       <Typography fontWeight={"700"} fontSize={"16px"}>
         Nội dung khóa học
       </Typography>
@@ -1961,8 +1905,7 @@ const ContentRight = (props: any) => {
               mt={"15px"}
               maxHeight={props.expanded[index] ? "1000px" : "47px"}
               overflow={"hidden"}
-              sx={{ transition: ".4s" }}
-            >
+              sx={{ transition: ".4s" }}>
               <Box>
                 <Stack
                   direction={"row"}
@@ -1972,8 +1915,7 @@ const ContentRight = (props: any) => {
                   padding={"10px 20px"}
                   bgcolor={"#f5f5f5"}
                   borderRadius={"6px"}
-                  border={"1px solid #ebebeb"}
-                >
+                  border={"1px solid #ebebeb"}>
                   <Stack direction={"row"} gap={"10px"} alignItems={"center"}>
                     {props.expanded[index] ? (
                       <RiSubtractFill size={"25px"} color={"#1250dc"} />
@@ -2015,16 +1957,14 @@ const ContentRight = (props: any) => {
                               pointerEvents:
                                 !checkSuccess && !check ? "none" : "auto",
                               cursor: "pointer",
-                            }}
-                          >
+                            }}>
                             <Box
                               sx={{
                                 position: "relative",
                               }}
                               onClick={() =>
                                 props.handleActiveLesson(itemchild)
-                              }
-                            >
+                              }>
                               <Stack
                                 direction={"row"}
                                 borderTop={
@@ -2040,25 +1980,21 @@ const ContentRight = (props: any) => {
                                   opacity: !checkSuccess && !check ? ".5" : "1",
                                 }}
                                 justifyContent={"space-between"}
-                                padding={"15px 20px"}
-                              >
+                                padding={"15px 20px"}>
                                 <Stack
                                   direction={"row"}
                                   alignItems={"center"}
-                                  gap={"7px"}
-                                >
+                                  gap={"7px"}>
                                   <Typography color={"#333"} fontSize={"14px"}>
                                     {index2 + 1}.{itemchild.title}
                                     <Stack
                                       direction={"row"}
                                       alignItems={"center"}
-                                      justifyContent={"space-between"}
-                                    >
+                                      justifyContent={"space-between"}>
                                       <Stack
                                         direction={"row"}
                                         mt={"5px"}
-                                        gap={"10px"}
-                                      >
+                                        gap={"10px"}>
                                         {itemchild.type == "video" && (
                                           <RiYoutubeFill
                                             size={"20px"}
@@ -2095,7 +2031,7 @@ const ContentRight = (props: any) => {
                                     <>
                                       {checkSuccess && (
                                         <RiCheckboxCircleFill
-                                          color="green"
+                                          color='green'
                                           size={"20px"}
                                         />
                                       )}
@@ -2120,8 +2056,7 @@ const ContentRight = (props: any) => {
                                   display={"flex"}
                                   alignItems={"center"}
                                   gap={"3px"}
-                                  border={"1px solid #333"}
-                                >
+                                  border={"1px solid #333"}>
                                   <RiFolderOpenFill />
                                   <Typography fontSize={"13px"}>
                                     Tài nguyên
@@ -2145,16 +2080,14 @@ const ContentRight = (props: any) => {
                                   transformOrigin={{
                                     vertical: "top",
                                     horizontal: "right",
-                                  }}
-                                >
-                                  <a href={itemchild.source} target="_blank">
+                                  }}>
+                                  <a href={itemchild.source} target='_blank'>
                                     <Typography
                                       fontSize={"14px"}
                                       display={"flex"}
                                       alignItems={"center"}
                                       gap={"7px"}
-                                      sx={{ p: 1 }}
-                                    >
+                                      sx={{ p: 1 }}>
                                       <RiShareBoxFill />
                                       Mã nguồn
                                     </Typography>
@@ -2170,16 +2103,14 @@ const ContentRight = (props: any) => {
                             position={"relative"}
                             sx={{
                               cursor: "pointer",
-                            }}
-                          >
+                            }}>
                             <Box
                               sx={{
                                 position: "relative",
                               }}
                               onClick={() =>
                                 props.handleActiveLesson(itemchild)
-                              }
-                            >
+                              }>
                               <Stack
                                 direction={"row"}
                                 borderTop={
@@ -2187,30 +2118,24 @@ const ContentRight = (props: any) => {
                                 }
                                 alignItems={"start"}
                                 sx={{
-                                  background: active
-                                    ? "#E6EEFF"
-                                    : undefined,
+                                  background: active ? "#E6EEFF" : undefined,
                                 }}
                                 justifyContent={"space-between"}
-                                padding={"15px 20px"}
-                              >
+                                padding={"15px 20px"}>
                                 <Stack
                                   direction={"row"}
                                   alignItems={"center"}
-                                  gap={"7px"}
-                                >
+                                  gap={"7px"}>
                                   <Typography color={"#333"} fontSize={"14px"}>
                                     {index2 + 1}.{itemchild.title}
                                     <Stack
                                       direction={"row"}
                                       alignItems={"center"}
-                                      justifyContent={"space-between"}
-                                    >
+                                      justifyContent={"space-between"}>
                                       <Stack
                                         direction={"row"}
                                         mt={"5px"}
-                                        gap={"10px"}
-                                      >
+                                        gap={"10px"}>
                                         {itemchild.type == "video" && (
                                           <RiYoutubeFill
                                             size={"20px"}
@@ -2247,7 +2172,7 @@ const ContentRight = (props: any) => {
                                     <>
                                       {checkSuccess && (
                                         <RiCheckboxCircleFill
-                                          color="green"
+                                          color='green'
                                           size={"20px"}
                                         />
                                       )}
@@ -2268,8 +2193,7 @@ const ContentRight = (props: any) => {
                                   display={"flex"}
                                   alignItems={"center"}
                                   gap={"3px"}
-                                  border={"1px solid #333"}
-                                >
+                                  border={"1px solid #333"}>
                                   <RiFolderOpenFill />
                                   <Typography fontSize={"13px"}>
                                     Tài nguyên
@@ -2293,16 +2217,14 @@ const ContentRight = (props: any) => {
                                   transformOrigin={{
                                     vertical: "top",
                                     horizontal: "right",
-                                  }}
-                                >
-                                  <a href={itemchild.source} target="_blank">
+                                  }}>
+                                  <a href={itemchild.source} target='_blank'>
                                     <Typography
                                       fontSize={"14px"}
                                       display={"flex"}
                                       alignItems={"center"}
                                       gap={"7px"}
-                                      sx={{ p: 1 }}
-                                    >
+                                      sx={{ p: 1 }}>
                                       <RiShareBoxFill />
                                       Mã nguồn
                                     </Typography>
@@ -2355,6 +2277,12 @@ const ContentLeftExercise = (props: any) => {
     if (props.typeCode == "javascript") {
       setExercise(JSON.parse(props.data.type_exercise).javascript);
     }
+    if (props.typeCode == "java") {
+      setExercise(JSON.parse(props.data.type_exercise).java);
+    }
+    if (props.typeCode == "python") {
+      setExercise(JSON.parse(props.data.type_exercise).python);
+    }
     if (props.typeCode == "html-css") {
       setexerciseCss(JSON.parse(props.data.type_exercise).css);
       setexerciseHtml(JSON.parse(props.data.type_exercise).html);
@@ -2384,7 +2312,9 @@ const ContentLeftExercise = (props: any) => {
           id: props.data.solution_key,
           type: props.typeCode,
           exercise:
-            props.typeCode == "javascript"
+            props.typeCode == "javascript" ||
+            props.typeCode == "java" ||
+            props.typeCode == "python"
               ? exercise
               : `${exerciseHtml}<style>${exerciseCss}</style>`,
         });
@@ -2439,16 +2369,14 @@ const ContentLeftExercise = (props: any) => {
             },
           }}
           width={"45%"}
-          borderRight={"1px solid #dddddd"}
-        >
+          borderRight={"1px solid #dddddd"}>
           <Tabs value={value} onChange={handleChange} centered>
             <Tab
               label={
                 <>
                   <Typography
                     sx={{ display: "flex", alignItems: "center", gap: "5px" }}
-                    fontWeight={600}
-                  >
+                    fontWeight={600}>
                     <RiFile3Fill /> Nội dung
                   </Typography>
                 </>
@@ -2459,8 +2387,7 @@ const ContentLeftExercise = (props: any) => {
                 <>
                   <Typography
                     sx={{ display: "flex", alignItems: "center", gap: "5px" }}
-                    fontWeight={600}
-                  >
+                    fontWeight={600}>
                     {" "}
                     <RiPlayCircleFill size={"19px"} />
                     Trình duyệt
@@ -2473,7 +2400,7 @@ const ContentLeftExercise = (props: any) => {
             <Box p={"15px"}>
               <Box
                 width={"100%"}
-                className="resultCourses"
+                className='resultCourses'
                 sx={{
                   " .tox-editor-header": {
                     display: "none !important",
@@ -2487,10 +2414,9 @@ const ContentLeftExercise = (props: any) => {
                   },
 
                   overflowY: "scroll",
-                }}
-              >
+                }}>
                 <Editor
-                  apiKey="vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6"
+                  apiKey='vr0wwkbvph803e16rtf0mauheh4p5jy4fiw0akbjnf1benb6'
                   initialValue={props.data.content_code}
                   init={{
                     height: "85vh",
@@ -2504,14 +2430,15 @@ const ContentLeftExercise = (props: any) => {
 
           {value == 1 && (
             <>
-              {props.typeCode == "javascript" ? (
+              {props.typeCode == "javascript" ||
+              props.typeCode == "java" ||
+              props.typeCode == "python" ? (
                 <>
                   <Typography
                     textAlign={"center"}
                     color={"grey"}
                     mt={"20px"}
-                    fontSize={"14px"}
-                  >
+                    fontSize={"14px"}>
                     Nếu có file index.html thì nội dung của nó<br></br>
                     sẽ được hiển thị tại đây.
                   </Typography>
@@ -2519,7 +2446,7 @@ const ContentLeftExercise = (props: any) => {
               ) : (
                 <Box>
                   <iframe
-                    title="result"
+                    title='result'
                     srcDoc={`<!DOCTYPE html><html><head><title>Result</title> <style>${exerciseCss}</style></head><body>${exerciseHtml}</body></html>`}
                     style={{
                       width: "100%",
@@ -2556,14 +2483,12 @@ const ContentLeftExercise = (props: any) => {
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"center"}
-            width={"99.9%"}
-          >
+            width={"99.9%"}>
             {props.typeCode !== null && props.typeCode == "html" && (
               <Tabs
                 value={valueRight}
                 onChange={handleChangeRight}
-                aria-label="basic tabs example"
-              >
+                aria-label='basic tabs example'>
                 <Tab
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
@@ -2572,13 +2497,68 @@ const ContentLeftExercise = (props: any) => {
                         width={17}
                         height={17}
                         style={{ borderRadius: "5px" }}
-                        alt=""
+                        alt=''
                       />
                       <Typography
                         fontSize={"12px"}
-                        sx={{ textTransform: "lowercase" }}
-                      >
+                        sx={{ textTransform: "lowercase" }}>
                         index.html
+                      </Typography>
+                    </Stack>
+                  }
+                />
+              </Tabs>
+            )}
+            {props.typeExersice !== null && props.typeExersice == "python" && (
+              <Tabs
+                value={props.valueRight}
+                onChange={props.handleChangeRight}
+                aria-label='basic tabs example'>
+                <Tab
+                  label={
+                    <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                      <img
+                        src={python}
+                        width={35}
+                        height={35}
+                        style={{
+                          borderRadius: "5px",
+                          objectFit: "cover",
+                        }}
+                        alt=''
+                      />
+                      <Typography
+                        fontSize={"12px"}
+                        sx={{ textTransform: "lowercase" }}>
+                        main.py
+                      </Typography>
+                    </Stack>
+                  }
+                />
+              </Tabs>
+            )}
+            {props.typeExersice !== null && props.typeExersice == "java" && (
+              <Tabs
+                value={props.valueRight}
+                onChange={props.handleChangeRight}
+                aria-label='basic tabs example'>
+                <Tab
+                  label={
+                    <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
+                      <img
+                        src={java}
+                        width={35}
+                        height={35}
+                        style={{
+                          borderRadius: "5px",
+                          objectFit: "cover",
+                        }}
+                        alt=''
+                      />
+                      <Typography
+                        fontSize={"12px"}
+                        sx={{ textTransform: "lowercase" }}>
+                        main.java
                       </Typography>
                     </Stack>
                   }
@@ -2589,8 +2569,7 @@ const ContentLeftExercise = (props: any) => {
               <Tabs
                 value={valueRight}
                 onChange={handleChangeRight}
-                aria-label="basic tabs example"
-              >
+                aria-label='basic tabs example'>
                 <Tab
                   label={
                     <Stack direction={"row"} alignItems={"center"} gap={"4px"}>
@@ -2599,12 +2578,11 @@ const ContentLeftExercise = (props: any) => {
                         width={17}
                         height={17}
                         style={{ borderRadius: "5px" }}
-                        alt=""
+                        alt=''
                       />
                       <Typography
                         fontSize={"12px"}
-                        sx={{ textTransform: "lowercase" }}
-                      >
+                        sx={{ textTransform: "lowercase" }}>
                         main.js
                       </Typography>
                     </Stack>
@@ -2617,26 +2595,23 @@ const ContentLeftExercise = (props: any) => {
                 <Tabs
                   value={valueRight}
                   onChange={handleChangeRight}
-                  aria-label="basic tabs example"
-                >
+                  aria-label='basic tabs example'>
                   <Tab
                     label={
                       <Stack
                         direction={"row"}
                         alignItems={"center"}
-                        gap={"4px"}
-                      >
+                        gap={"4px"}>
                         <img
                           src={html}
                           width={17}
                           height={17}
                           style={{ borderRadius: "5px" }}
-                          alt=""
+                          alt=''
                         />
                         <Typography
                           fontSize={"12px"}
-                          sx={{ textTransform: "lowercase" }}
-                        >
+                          sx={{ textTransform: "lowercase" }}>
                           index.html
                         </Typography>
                       </Stack>
@@ -2647,19 +2622,17 @@ const ContentLeftExercise = (props: any) => {
                       <Stack
                         direction={"row"}
                         alignItems={"center"}
-                        gap={"4px"}
-                      >
+                        gap={"4px"}>
                         <img
                           src={css}
                           width={17}
                           height={17}
                           style={{ borderRadius: "5px" }}
-                          alt=""
+                          alt=''
                         />
                         <Typography
                           fontSize={"12px"}
-                          sx={{ textTransform: "lowercase" }}
-                        >
+                          sx={{ textTransform: "lowercase" }}>
                           style.css
                         </Typography>
                       </Stack>
@@ -2674,8 +2647,7 @@ const ContentLeftExercise = (props: any) => {
               display={"flex"}
               alignItems={"center"}
               justifyContent={"center"}
-              bgcolor={"#1e1e1e"}
-            >
+              bgcolor={"#1e1e1e"}>
               <ReplayIcon sx={{ color: "white" }} />
             </Box>
           </Stack>
@@ -2684,23 +2656,25 @@ const ContentLeftExercise = (props: any) => {
               " .slider-mouseover": {
                 display: "none",
               },
-            }}
-          >
-            {props.typeCode !== null && props.typeCode == "javascript" && (
-              <MonacoEditor
-                width={"100%"}
-                height="50vh"
-                language="javascript"
-                theme="vs-dark"
-                value={exercise}
-                onChange={(value) => handleChangeExercise(value)}
-              />
-            )}
+            }}>
+            {props.typeCode !== null &&
+              (props.typeCode == "javascript" ||
+                props.typeCode == "java" ||
+                props.typeCode == "python") && (
+                <MonacoEditor
+                  width={"100%"}
+                  height='50vh'
+                  language={props.typeCode}
+                  theme='vs-dark'
+                  value={exercise}
+                  onChange={(value) => handleChangeExercise(value)}
+                />
+              )}
             {props.typeCode !== null && props.typeCode == "html" && (
               <MonacoEditor
-                height="50vh"
-                language="html"
-                theme="vs-dark"
+                height='50vh'
+                language='html'
+                theme='vs-dark'
                 value={exerciseHtml}
                 onChange={(value) => handleChangeExerciseHtml(value)}
               />
@@ -2709,18 +2683,18 @@ const ContentLeftExercise = (props: any) => {
               <>
                 {valueRight == 0 && (
                   <MonacoEditor
-                    height="50vh"
-                    language="html"
-                    theme="vs-dark"
+                    height='50vh'
+                    language='html'
+                    theme='vs-dark'
                     value={exerciseHtml}
                     onChange={(value) => handleChangeExerciseHtml(value)}
                   />
                 )}
                 {valueRight == 1 && (
                   <MonacoEditor
-                    height="50vh"
-                    language="css"
-                    theme="vs-dark"
+                    height='50vh'
+                    language='css'
+                    theme='vs-dark'
                     value={exerciseCss}
                     onChange={(value) => handleChangeExerciseCss(value)}
                   />
@@ -2733,8 +2707,7 @@ const ContentLeftExercise = (props: any) => {
             justifyContent={"space-between"}
             alignItems={"center"}
             padding={"10px"}
-            borderBottom={"1px solid #dddddd"}
-          >
+            borderBottom={"1px solid #dddddd"}>
             <Typography fontWeight={"600"} fontSize={"14px"}>
               {success ? "Bài kiểm tra (1/1)" : "Bài kiểm tra (0/1)"}
             </Typography>
@@ -2748,8 +2721,7 @@ const ContentLeftExercise = (props: any) => {
                 width: "92px",
                 height: "34px",
                 fontSize: "12px",
-              }}
-            >
+              }}>
               Kiểm tra
             </Button>
           </Stack>
@@ -2763,12 +2735,11 @@ const ContentLeftExercise = (props: any) => {
                         <Box
                           display={"flex"}
                           alignItems={"center"}
-                          gap={"10px"}
-                        >
+                          gap={"10px"}>
                           {item.status ? (
-                            <RiCheckLine color="#5db85c" size={"25px"} />
+                            <RiCheckLine color='#5db85c' size={"25px"} />
                           ) : (
-                            <RiCloseLine size={"25px"} color="red" />
+                            <RiCloseLine size={"25px"} color='red' />
                           )}
                           <Typography fontWeight={"400"} fontSize={"16px"}>
                             {item.message}
@@ -2811,13 +2782,12 @@ const ContentLeftBlog = (props: any) => {
         ref={blogRef}
         width={"100%"}
         paddingLeft={"95px"}
-        className="resultCourses"
+        className='resultCourses'
         sx={{
           height: "85vh",
           overflowY: "scroll",
           paddingRight: "20px",
-        }}
-      >
+        }}>
         <BlogContent content={props.data.content_blog} />
       </Box>
     </Box>
@@ -2854,8 +2824,7 @@ const ContentLeftQuiz = (props: any) => {
         mt={"40px"}
         flexDirection={"column"}
         alignItems={"center"}
-        justifyContent={"center"}
-      >
+        justifyContent={"center"}>
         <Box
           width={"80%"}
           sx={{
@@ -2875,8 +2844,7 @@ const ContentLeftQuiz = (props: any) => {
             "iframe code ": {
               background: "none",
             },
-          }}
-        >
+          }}>
           <BlogContent content={props.data.content_quizz} />
         </Box>
         <Stack
@@ -2885,8 +2853,7 @@ const ContentLeftQuiz = (props: any) => {
           position={"relative"}
           zIndex={"1"}
           gap={"15px"}
-          width={"70%"}
-        >
+          width={"70%"}>
           {quiz.map((item: any) => {
             let check = false;
             if (total) {
@@ -2903,8 +2870,7 @@ const ContentLeftQuiz = (props: any) => {
                 justifyContent={"center"}
                 borderRadius={"10px"}
                 height={"50px"}
-                bgcolor={"#f6f7f9"}
-              >
+                bgcolor={"#f6f7f9"}>
                 {item.answer}
               </Box>
             );
@@ -2923,8 +2889,7 @@ const ContentLeftQuiz = (props: any) => {
               height: "34px",
               fontSize: "12px",
               float: "right",
-            }}
-          >
+            }}>
             Kiểm tra
           </Button>
         </Box>

@@ -343,3 +343,6 @@ footer {
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.3);
 }
+.css-xi4g2m-MuiPaper-root-MuiAppBar-root {
+  z-index: 1 !important;
+}
