@@ -2509,7 +2509,7 @@ const ContentLeftExercise = (props: any) => {
                 />
               </Tabs>
             )}
-            {props.typeExersice !== null && props.typeExersice == "python" && (
+            {props.typeCode !== null && props.typeCode == "python" && (
               <Tabs
                 value={props.valueRight}
                 onChange={props.handleChangeRight}
@@ -2537,7 +2537,7 @@ const ContentLeftExercise = (props: any) => {
                 />
               </Tabs>
             )}
-            {props.typeExersice !== null && props.typeExersice == "java" && (
+            {props.typeCode !== null && props.typeCode == "java" && (
               <Tabs
                 value={props.valueRight}
                 onChange={props.handleChangeRight}
@@ -2763,19 +2763,25 @@ const ContentLeftBlog = (props: any) => {
   useEffect(() => {
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight }: any = blogRef.current;
+
+      // Kiểm tra nếu cuộn đến cuối phần tử
       if (scrollTop + clientHeight >= scrollHeight) {
         props.setDone(true);
       }
     };
 
     const blogElement: any = blogRef.current;
-    blogElement.addEventListener("scroll", handleScroll);
 
-    // Cleanup event listener on component unmount
+    if (blogElement) {
+      blogElement.addEventListener("scroll", handleScroll);
+    }
+
     return () => {
-      blogElement.removeEventListener("scroll", handleScroll);
+      if (blogElement) {
+        blogElement.removeEventListener("scroll", handleScroll);
+      }
     };
-  }, []);
+  }, [props]);
   return (
     <Box width={"75%"}>
       <Box

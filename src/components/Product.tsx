@@ -36,7 +36,7 @@ const Product = ({
             <img
               src={item.image.url}
               width={"100%"}
-             
+              height={"183px"}
               style={{ borderRadius: "18px", objectFit: "cover" }}
               alt=''
             />
@@ -194,7 +194,7 @@ const Product = ({
                   transition: ".5s",
                   transform: "translateY(20px)",
                   "&:hover": {
-                    color: "black", 
+                    color: "black",
                     backgroundColor: "white",
                   },
                 }}>
