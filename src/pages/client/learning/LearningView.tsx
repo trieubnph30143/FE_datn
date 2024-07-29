@@ -2763,9 +2763,10 @@ const ContentLeftBlog = (props: any) => {
   useEffect(() => {
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight }: any = blogRef.current;
-
+      console.log(scrollTop + clientHeight);
+      console.log(scrollHeight);
       // Kiểm tra nếu cuộn đến cuối phần tử
-      if (scrollTop + clientHeight >= scrollHeight) {
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
         props.setDone(true);
       }
     };
