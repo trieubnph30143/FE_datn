@@ -184,7 +184,7 @@ const SubLessonView = ({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
+  console.log(rowsPerPage);
   return (
     <>
       <Drawer
@@ -216,9 +216,9 @@ const SubLessonView = ({
         </Box>
       ) : (
         <>
-          {courses &&
-            courses.length &&
-            courses.map((item_courses: any) => {
+          {paginatedRows &&
+            paginatedRows.length &&
+            paginatedRows.map((item_courses: any) => {
               let check = item_courses.lesson[0];
               if (check) {
                 return (
