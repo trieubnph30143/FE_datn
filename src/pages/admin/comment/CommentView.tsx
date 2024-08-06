@@ -54,23 +54,14 @@ const CommentView = (props: Props) => {
             queryKey: ["get_report"],
           });
           socket.emit("getCommentsNew", {
-            lesson_id:data.data.lesson_id,
-            courses_id:data.data.courses_id[0],
+            lesson_id: data.data.lesson_id,
+            courses_id: data.data.courses_id[0],
           });
         }
       } else {
         let res = await deleteCommentChild(data._id, commentId);
         if (res?.status == 0) {
-          toast.success("Xóa thành công");
-          queryClient.invalidateQueries({
-            queryKey: ["get_report"],
-          });
-          socket.emit("getCommentsNew", { 
-            lesson_id:res.data.lesson_id,
-            courses_id:res.data.courses_id[0],
-            
-          });
-        }
+         
       }
     } catch (error) {
       console.log(error);
@@ -83,7 +74,7 @@ const CommentView = (props: Props) => {
   return (
     <div>
       <Typography variant="h4" gutterBottom>
-        Bình luận bị báo cáo
+        Reported Comments
       </Typography>
       {comments.length > 0 ? (
         comments.map((comment: any) => (
@@ -112,43 +103,11 @@ const CommentView = (props: Props) => {
                 Nội dung không phù hợp
               </Typography>
             )}
-            <div>
-              <Typography fontWeight={"bold"} gutterBottom>
-                Bình luận con bị báo cáo
-              </Typography>
-              {comment.comments_child.map((child: any) => (
-                <StyledChildPaper key={child._id}>
-                  <Typography variant="body1">
-                    <strong>Nội dung</strong>{" "}
-                    {<BlogContent content={child.content} />}
-                  </Typography>
-                  {child.report_spam.length > 1 ||
-                  child.report_inappropriate.length > 1 ? (
-                    <StyledButton
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => handleDeleteComment(child._id, 1, comment)}
-                    >
-                      Xóa
-                    </StyledButton>
-                  ) : null}
-                  {child.report_spam.length > 1 && (
-                    <Typography variant="body2" color="error">
-                      Spam bình luận
-                    </Typography>
-                  )}
-                  {child.report_inappropriate.length > 1 && (
-                    <Typography variant="body2" color="error">
-                     Nội dung không phù hợp
-                    </Typography>
-                  )}
-                </StyledChildPaper>
-              ))}
-            </div>
+           
           </StyledPaper>
         ))
       ) : (
-        <Typography variant="body1">Không có bình luận nào bị báo cáo </Typography>
+        <Typography variant="body1">No reported comments found.</Typography>
       )}
     </div>
   );
